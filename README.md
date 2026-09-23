@@ -10,16 +10,16 @@ flowchart LR
   dns[GoDaddy DNS]
   vercel[Vercel]
   sitio[Sitio Vite]
-  api[Función /api/contact]
+  api["Función /api/contact"]
   turnstile[Cloudflare Turnstile]
   resend[Resend]
-  correo[focusacademy.agency@gmail.com]
+  correo["focusacademy.agency@gmail.com"]
   wa[WhatsApp]
 
   visitante --> dns --> vercel --> sitio
   sitio -->|formulario| turnstile --> api
   api --> resend --> correo
-  sitio -->|wa.me| wa
+  sitio -->|"wa.me"| wa
 ```
 
 El dominio `focuschat.co` apunta a Vercel. El sitio es una aplicación Vite + React. El formulario vive en una función de Vercel: Turnstile confirma que hay una persona y Resend entrega el mensaje desde `hola@focuschat.co`. El botón de WhatsApp abre el chat de Focus Agency Marketing en el teléfono `573106309679`, con el texto que escribió el visitante.
@@ -47,13 +47,13 @@ sequenceDiagram
   participant V as Visitante
   participant S as Sitio
   participant T as Turnstile
-  participant A as /api/contact
+  participant A as API de contacto
   participant R as Resend
 
   V->>S: Nombre, correo, empresa y mensaje
   S->>T: Verificación
   T-->>S: Token
-  S->>A: POST /api/contact
+  S->>A: Envío del formulario
   A->>A: Valida datos y descarta el campo oculto
   A->>T: siteverify
   A->>R: Correo al equipo
