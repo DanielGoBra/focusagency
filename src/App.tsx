@@ -6,6 +6,7 @@ import { Flows } from "./pages/Flows";
 import { Inbox } from "./pages/Inbox";
 import { Integrations } from "./pages/Integrations";
 import { Intel } from "./pages/Intel";
+import { Academy, Agency } from "./pages/Brands";
 import { Landing } from "./pages/Landing";
 import { Pipeline } from "./pages/Pipeline";
 import { Pulse } from "./pages/Pulse";
@@ -16,6 +17,8 @@ export default function App() {
     <HubProvider>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/agency" element={<Agency />} />
+        <Route path="/academy" element={<Academy />} />
         <Route path="/hub" element={<Shell />}>
           <Route index element={<Pulse />} />
           <Route path="bandeja" element={<Inbox />} />

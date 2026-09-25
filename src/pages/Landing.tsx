@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { BrandLogo, Mascot } from "../components/Logo";
+import { ChannelReel } from "../components/ChannelHalo";
+import { LiveMascot } from "../components/LiveMascot";
+import { BrandLogo } from "../components/Logo";
+import { SiteHeader } from "../components/SiteHeader";
 import { TurnstileField, turnstileSiteKey } from "../components/TurnstileField";
 
 const MARQUEE = ["WhatsApp", "Instagram", "Meta Ads", "Score", "Flujos", "Bandeja", "Calendario", "Inteligencia"];
@@ -170,8 +173,8 @@ const FAQ = [
 type NeuralTone = "light" | "navy" | "lime" | "focus";
 
 const NEURAL: Record<NeuralTone, { a: string; b: string; node: string; lime: string }> = {
-  light: { a: "110, 182, 52", b: "32, 34, 70", node: "#202246", lime: "#6eb634" },
-  navy: { a: "110, 182, 52", b: "186, 224, 255", node: "#ffffff", lime: "#6eb634" },
+  light: { a: "30, 250, 93", b: "43, 189, 239", node: "#202246", lime: "#1EFA5D" },
+  navy: { a: "30, 250, 93", b: "186, 224, 255", node: "#ffffff", lime: "#1EFA5D" },
   lime: { a: "32, 34, 70", b: "26, 28, 51", node: "#202246", lime: "#1a1c33" },
   focus: { a: "32, 34, 70", b: "255, 255, 255", node: "#202246", lime: "#ffffff" },
 };
@@ -201,9 +204,11 @@ function NeuralField() {
       const height = window.innerHeight;
       const count = Math.max(36, Math.min(58, Math.round((width * height) / 28000)));
       nodes.length = 0;
+      const band = sideBand(width);
       for (let i = 0; i < count; i += 1) {
+        const slot = band ? (i % 2 === 0 ? unit(i + 1) * band.left : band.right + unit(i + 1) * (width - band.right)) : unit(i + 1) * width;
         nodes.push({
-          x: unit(i + 1) * width,
+          x: slot,
           y: unit(i + 2) * height,
           angle: unit(i + 11) * Math.PI * 2,
           spin: (unit(i + 17) - 0.5) * 0.004,
@@ -247,17 +252,26 @@ function NeuralField() {
       }
       const scroll = window.scrollY;
       ctx.clearRect(0, 0, width, height);
+      if (width < 960) {
+        frame += 1;
+        if (!reduce) raf = window.requestAnimationFrame(draw);
+        return;
+      }
       if (nodes.length === 0) seed();
-      const reach = width < 760 ? 150 : 220;
+      const reach = Math.min(120, sideBand(width).left * 0.85);
 
+      const band = sideBand(width);
       for (const node of nodes) {
         if (!reduce) {
           node.angle += node.spin;
           node.x += Math.cos(node.angle) * node.speed;
           node.y += Math.sin(node.angle) * node.speed;
         }
-        if (node.x < -30) node.x = width + 30;
-        if (node.x > width + 30) node.x = -30;
+        if (band && node.x > band.left && node.x < band.right) {
+          node.x = node.x < width / 2 ? band.left - 12 : band.right + 12;
+        }
+        if (node.x < -30) node.x = band ? band.left - 12 : width + 30;
+        if (node.x > width + 30) node.x = band ? band.right + 12 : -30;
         if (node.y < -30) node.y = height + 30;
         if (node.y > height + 30) node.y = -30;
       }
@@ -265,14 +279,18 @@ function NeuralField() {
       for (let i = 0; i < nodes.length; i += 1) {
         const a = nodes[i];
         const tone = NEURAL[toneAt(scroll + a.y)];
+        if (band && a.x > band.left && a.x < band.right) continue;
         const near: { index: number; dist: number }[] = [];
         for (let j = i + 1; j < nodes.length; j += 1) {
+          if (band && nodes[j].x > band.left && nodes[j].x < band.right) continue;
           const dist = Math.hypot(a.x - nodes[j].x, a.y - nodes[j].y);
           if (dist <= reach) near.push({ index: j, dist });
         }
         near.sort((left, right) => left.dist - right.dist);
         for (const link of near.slice(0, 3)) {
           const b = nodes[link.index];
+          const sameSide = (a.x < band.left && b.x < band.left) || (a.x > band.right && b.x > band.right);
+          if (!sameSide) continue;
           const fade = 1 - link.dist / reach;
           const organic = a.lime || b.lime;
           const rgb = organic ? tone.a : tone.b;
@@ -296,6 +314,7 @@ function NeuralField() {
       }
 
       for (const node of nodes) {
+        if (band && node.x > band.left && node.x < band.right) continue;
         const tone = NEURAL[toneAt(scroll + node.y)];
         ctx.fillStyle = node.lime ? tone.lime : tone.node;
         ctx.globalAlpha = 0.35;
@@ -332,7 +351,12 @@ function NeuralField() {
     };
   }, []);
 
-  return <canvas ref={ref} className="pointer-events-none fixed inset-0 z-[1] h-full w-full opacity-40" aria-hidden="true" />;
+  return <canvas ref={ref} className="neural-sides pointer-events-none fixed inset-0 z-[1] h-full w-full opacity-70" aria-hidden="true" />;
+}
+
+function sideBand(width: number) {
+  const gutter = Math.max(96, width * 0.11);
+  return { left: gutter, right: width - gutter };
 }
 
 function Reveal({
@@ -583,7 +607,7 @@ function ContactForm() {
 
   return (
     <section id="contacto" data-tone="light" className="relative">
-      <div className="absolute inset-0 z-0 bg-[#f4f7fb]" />
+      <div className="absolute inset-0 z-0 bg-white" />
       <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-5 py-20 md:grid-cols-[0.85fr_1.15fr]">
         <Reveal from="left">
           <p className="text-xs font-bold tracking-[0.18em] text-focus">CONTACTO</p>
@@ -1117,7 +1141,7 @@ function Story() {
               <div className="h-full rounded-full bg-lime transition-all duration-700" style={{ width: `${((step + 1) / STORY.length) * 100}%` }} />
             </div>
           </div>
-          <Mascot tone="navy" className="float mx-auto h-52 w-auto md:h-64" />
+          <img src="/brand/mascot/chat.png" alt="" className="float mx-auto h-52 w-auto object-contain md:h-64" />
         </article>
       </div>
     </section>
@@ -1131,66 +1155,66 @@ export function Landing() {
   const openWhatsApp = useCallback(() => setWhatsappOpen(true), []);
   const closeWhatsApp = useCallback(() => setWhatsappOpen(false), []);
 
-  return (
-    <div className="bg-paper text-navy">
-      <NeuralField />
-      <header className="sticky top-0 z-30 border-b border-navy/5 bg-paper/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-[1580px] items-center justify-between gap-4 px-4 py-3">
-          <a href="#inicio" className="shrink-0">
-            <BrandLogo className="h-11 w-auto" />
-          </a>
-          <nav className="hidden items-center gap-6 text-sm font-bold md:flex">
-            <a href="#sistema" className="hover:text-focus">Sistema</a>
-            <a href="#servicios" className="hover:text-focus">Servicios</a>
-            <a href="#preguntas" className="hover:text-focus">Preguntas</a>
-            <a href="#contacto" className="hover:text-focus">Contacto</a>
-          </nav>
-          <SocialLinks onWhatsApp={openWhatsApp} />
-          <Link to="/hub" className="shrink-0 rounded-full bg-lime px-3 py-2 text-xs font-bold text-navy transition hover:-translate-y-0.5 sm:px-4 sm:text-sm">
-            Entrar al Hub
-          </Link>
-        </div>
-      </header>
+  useEffect(() => {
+    document.title = "Focuschat";
+    const id = window.location.hash.replace("#", "");
+    if (!id) return;
+    const go = () => {
+      const target = document.getElementById(id);
+      if (!target) return;
+      target.scrollIntoView();
+    };
+    go();
+    const late = window.setTimeout(go, 60);
+    return () => window.clearTimeout(late);
+  }, []);
 
-      <section id="inicio" data-tone="light" className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 z-0 bg-[#f4f7fb]" />
-        <div className="pointer-events-none absolute -top-24 left-1/4 z-0 h-72 w-72 rounded-full bg-focus/20 blur-3xl" />
-        <div className="pointer-events-none absolute top-40 -right-10 z-0 h-80 w-80 rounded-full bg-lime/20 blur-3xl" />
-        <div className="relative z-10 mx-auto max-w-[1280px] px-4 pt-6 pb-8 md:px-8">
-          <div className="glass-sheet rounded-[32px] p-2 md:p-3">
-            <div className="hero-video">
+  return (
+    <div className="bg-white text-navy">
+      <NeuralField />
+      <SiteHeader />
+
+      <section id="inicio" data-tone="light" className="relative">
+        <div className="pointer-events-none absolute inset-0 z-0 bg-white" />
+        <div className="relative z-10 mx-auto w-full max-w-5xl px-4 pt-6 text-center md:pt-10">
+          <ChannelReel />
+          <h1 id="frase-hero" data-cue="frase" className="mx-auto max-w-[22rem] text-[1.7rem] leading-[1.08] font-extrabold tracking-tight text-navy sm:max-w-4xl sm:text-5xl lg:max-w-5xl lg:text-[3.15rem]">
+            <span className="text-lime">WhatsApp API</span>
+            <span className="mt-1 block">para hacer crecer tu negocio.</span>
+          </h1>
+          <p className="mx-auto mt-4 max-w-xl text-base text-navy/70 md:text-lg">Integra la comunicación con tus clientes en un solo lugar.</p>
+        </div>
+        <div className="relative z-10 mx-auto mt-6 w-full max-w-[1500px] px-4 pb-8 sm:px-8 lg:mt-8">
+          <div className="relative">
+            <div id="video-hero" data-cue="video" className="hero-video relative z-10 mx-auto w-full max-w-[720px]">
               <iframe
                 className="aspect-video w-full"
                 src="https://www.youtube.com/embed/ERUiJeoRlX4?si=aEknFyAF9cXk55Lk"
-                title="Video de Focus Chat & Agency"
+                title="Video de Focuschat"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
               />
             </div>
-          </div>
-          <div className="glass-sheet relative z-10 mx-auto mt-5 flex max-w-5xl flex-col items-center gap-4 rounded-[28px] px-5 py-4 md:flex-row md:px-7">
-            <div className="min-w-0 flex-1 text-center md:text-left">
-              <p className="text-[11px] font-bold tracking-[0.22em] text-focus">FOCUS CHAT & AGENCY</p>
-              <h1 className="mt-1 text-2xl leading-tight font-extrabold tracking-tight md:text-3xl">
-                El cliente escribe. El sistema decide si entras tú.
-              </h1>
-            </div>
-            <div className="flex shrink-0 flex-wrap justify-center gap-3">
-              <Link to="/hub" className="rounded-full bg-navy px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5">
-                Abrir el Hub
-              </Link>
-              <a href="#sistema" className="rounded-full border border-navy/10 bg-white/70 px-5 py-3 text-sm font-bold backdrop-blur">
-                Ver cómo se mueve
-              </a>
+            <div className="pointer-events-none absolute bottom-0 left-0 z-20 hidden xl:block">
+              <LiveMascot />
             </div>
           </div>
-          <ProductStage />
+          <div className="mt-6 xl:hidden">
+            <LiveMascot />
+          </div>
+          <p className="mx-auto mt-8 max-w-4xl text-center text-2xl leading-tight font-extrabold tracking-tight text-navy sm:text-3xl lg:text-4xl">
+            Responde, asesora, agenda y vende de forma automática, 24/7
+          </p>
         </div>
       </section>
 
+      <div className="relative px-4 pb-6">
+        <ProductStage />
+      </div>
+
       <div data-tone="light" className="relative">
-        <div className="absolute inset-0 z-0 border-y border-navy/10 bg-white/75" />
+        <div className="absolute inset-0 z-0 bg-white" />
         <div className="marquee relative z-10 py-4">
         <div className="marquee-track">
           {[...MARQUEE, ...MARQUEE].map((item, index) => (
@@ -1205,7 +1229,7 @@ export function Landing() {
       <Story />
 
       <section id="servicios" data-tone="light" className="relative">
-        <div className="absolute inset-0 z-0 bg-paper" />
+        <div className="absolute inset-0 z-0 bg-white" />
         <div className="relative z-10 mx-auto max-w-6xl px-5 py-20">
         <Reveal>
           <p className="text-xs font-bold tracking-[0.18em] text-focus">QUÉ HACEMOS</p>
@@ -1237,7 +1261,7 @@ export function Landing() {
         <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-6 px-5 py-16 md:grid-cols-[0.8fr_1.2fr]">
           <Reveal from="zoom">
             <div className="float">
-              <Mascot tone="navy" className="mx-auto h-72 w-auto md:h-[26rem]" />
+              <img src="/brand/mascot/frente.png" alt="" className="mx-auto h-72 w-auto object-contain md:h-[26rem]" />
             </div>
           </Reveal>
           <Reveal from="right" delay={140}>
@@ -1254,7 +1278,7 @@ export function Landing() {
       </section>
 
       <section id="preguntas" data-tone="light" className="relative">
-        <div className="absolute inset-0 z-0 bg-paper" />
+        <div className="absolute inset-0 z-0 bg-white" />
         <div className="relative z-10 mx-auto max-w-3xl px-5 py-20">
         <Reveal>
           <h2 className="text-4xl font-extrabold tracking-tight md:text-5xl">Preguntas cortas.</h2>
