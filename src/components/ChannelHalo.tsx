@@ -27,8 +27,8 @@ const ICONS: { name: string; Icon: IconType; color: string }[] = [
 ];
 
 const SLOT = 76;
-const HOLD = 5200;
-const MOVE = 1400;
+const HOLD = 1500;
+const MOVE = 450;
 
 function easeInOut(value: number) {
   return value < 0.5 ? 2 * value * value : 1 - ((-2 * value + 2) ** 2) / 2;

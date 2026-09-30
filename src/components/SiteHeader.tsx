@@ -1,19 +1,11 @@
-import type { CSSProperties } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { BrandLogo } from "./Logo";
-import { MetaPartner } from "./MetaPartner";
 
 const BRANDS = [
   { to: "/", label: "Focuschat", end: true, cue: "chat" },
   { to: "/agency", label: "Focus Agency", end: false, cue: "agency" },
   { to: "/academy", label: "Focus Academy", end: false, cue: "academy" },
 ] as const;
-
-const BRAND_PARTS: Record<string, [string, string, string]> = {
-  Focuschat: ["Foc", "us", "chat"],
-  "Focus Agency": ["Focus", " ", "Agency"],
-  "Focus Academy": ["Focus", " ", "Academy"],
-};
 
 const SECTIONS = [
   { hash: "sistema", label: "Sistema", cue: "sistema" },
@@ -23,18 +15,44 @@ const SECTIONS = [
 ] as const;
 
 function BrandWord({ label }: { label: string }) {
-  const [start, mid, end] = BRAND_PARTS[label] ?? [label, "", ""];
+  return <span>{label}</span>;
+}
+
+function ThemeSwitch({ dark, onToggle }: { dark: boolean; onToggle: (dark: boolean) => void }) {
   return (
-    <span>
-      <span className="brand-shade-start">{start}</span>
-      <span className="brand-shade-mid">{mid}</span>
-      <span className="brand-shade-end">{end}</span>
-    </span>
+    <button
+      type="button"
+      className="theme-switch"
+      aria-label={dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+      aria-pressed={dark}
+      onClick={() => onToggle(!dark)}
+    >
+      <svg className="theme-sun" viewBox="0 0 24 24" aria-hidden>
+        <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="1.8" />
+        <path
+          d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.05 5.05l1.63 1.63M17.32 17.32l1.63 1.63M18.95 5.05l-1.63 1.63M6.68 17.32l-1.63 1.63"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+      </svg>
+      <svg className="theme-moon" viewBox="0 0 24 24" aria-hidden>
+        <path fill="currentColor" d="M15.2 3.1a8.4 8.4 0 1 0 5.7 13.1A7.15 7.15 0 0 1 15.2 3.1z" />
+      </svg>
+    </button>
   );
 }
 
-export function SiteHeader() {
+export function SiteHeader({
+  theme = "light",
+  onThemeChange,
+}: {
+  theme?: "light" | "dark";
+  onThemeChange?: (dark: boolean) => void;
+}) {
   const { pathname } = useLocation();
+  const dark = theme === "dark";
 
   return (
     <header className="sticky top-3 z-40 px-3 sm:top-4 sm:px-5">
@@ -43,15 +61,14 @@ export function SiteHeader() {
         aria-label="Marcas"
         className="grid w-full grid-cols-3 gap-1 rounded-full bg-[#d7e6fb]/80 p-1.5 text-sm leading-tight font-extrabold sm:gap-3 sm:p-2 sm:text-lg lg:text-2xl"
       >
-        {BRANDS.map((brand, index) => (
+        {BRANDS.map((brand) => (
           <NavLink
             key={brand.to}
             to={brand.to}
             end={brand.end}
             data-cue={brand.cue}
-            style={{ "--brand-delay": `${index * 0.55}s` } as CSSProperties}
             className={({ isActive }) =>
-              `brand-link rounded-full px-2 py-2 text-center text-navy transition sm:px-6 sm:py-3 ${isActive ? "brand-link-on bg-white shadow-sm" : "hover:bg-white/50"}`
+              `rounded-full border-2 border-[#2bbdef] px-2 py-2 text-center text-navy transition sm:px-6 sm:py-3 ${isActive ? "bg-white" : "hover:bg-white/50"}`
             }
           >
             <BrandWord label={brand.label} />
@@ -61,11 +78,10 @@ export function SiteHeader() {
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
         <div className="flex min-w-0 items-center gap-3 sm:gap-4">
           <Link to="/" className="shrink-0" aria-label="Focuschat, inicio">
-            <BrandLogo className="h-12 w-auto sm:h-14 lg:h-16" />
+            <BrandLogo variant={dark ? "white" : "navy"} className="h-12 w-auto sm:h-14 lg:h-16" />
           </Link>
-          <MetaPartner />
         </div>
-        <div className="ml-auto flex min-w-0 items-center gap-4 sm:gap-6">
+        <div className="ml-auto flex min-w-0 items-center gap-3 sm:gap-5">
           <nav aria-label="Secciones" className="flex gap-4 overflow-x-auto text-sm font-bold sm:gap-6 sm:text-base">
             {SECTIONS.map((item) => (
               <a
@@ -78,6 +94,7 @@ export function SiteHeader() {
               </a>
             ))}
           </nav>
+          {onThemeChange ? <ThemeSwitch dark={dark} onToggle={onThemeChange} /> : null}
         </div>
       </div>
       </div>

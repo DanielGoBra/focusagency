@@ -17,23 +17,23 @@ const COPY: Record<string, { kicker: string; text: string; partner?: boolean }> 
 };
 
 const POSES = {
-  senala: "/brand/mascot/senala.png",
-  chat: "/brand/mascot/chat.png",
+  frente: "/brand/mascot/frente.png?v=5",
+  senala: "/brand/mascot/senala.png?v=5",
 } as const;
 
 type Pose = keyof typeof POSES;
 
 const POSE_FOR: Record<string, Pose> = {
   partner: "senala",
-  frase: "senala",
+  frase: "frente",
   video: "senala",
-  agency: "senala",
+  agency: "frente",
   academy: "senala",
+  servicios: "frente",
   sistema: "senala",
-  chat: "chat",
-  servicios: "chat",
-  preguntas: "chat",
-  contacto: "chat",
+  preguntas: "frente",
+  contacto: "senala",
+  chat: "frente",
 };
 
 export function LiveMascot() {
@@ -105,20 +105,20 @@ export function LiveMascot() {
 
   return (
     <div className="pointer-events-none relative mx-auto w-[220px] sm:w-[260px]">
-      <div className="relative z-10 mb-3 rounded-[22px] border-2 border-[#2BBDEF] bg-white px-3 py-2.5 text-navy shadow-[0_0_16px_rgb(94_211_252_/_0.9),0_0_34px_rgb(43_189_239_/_0.6)]">
+      <div className="focu-bubble relative z-10 mb-3 rounded-[22px] border-2 border-[#2BBDEF] bg-white px-3 py-2.5 text-[#202246] shadow-[0_0_16px_rgb(94_211_252_/_0.9),0_0_34px_rgb(43_189_239_/_0.6)]">
         {line?.partner ? (
           <p className="flex items-center gap-2">
-            <span className="text-[10px] font-bold tracking-[0.16em] text-navy/50 uppercase">Somos</span>
+            <span className="text-[10px] font-bold tracking-[0.16em] text-[#202246]/55 uppercase">Somos</span>
             <MetaInfinity className="h-4 w-7 shrink-0 text-[#0081FB]" />
-            <span className="text-[13px] leading-tight font-extrabold">
+            <span className="text-[13px] leading-tight font-extrabold text-[#202246]">
               Meta
-              <span className="block text-[10px] font-bold text-navy/70">Business Partner</span>
+              <span className="block text-[10px] font-bold text-[#202246]/70">Business Partner</span>
             </span>
           </p>
         ) : (
           <p>
-            <span className="text-[10px] font-bold tracking-[0.16em] text-focus uppercase">{line?.kicker}</span>
-            <span className="mt-0.5 block text-sm leading-snug font-extrabold">{line?.text}</span>
+            <span className="text-[10px] font-bold tracking-[0.16em] text-[#202246] uppercase">{line?.kicker}</span>
+            <span className="mt-0.5 block text-sm leading-snug font-extrabold text-[#202246]">{line?.text}</span>
           </p>
         )}
         <span className="absolute -bottom-2 left-9 h-4 w-4 rotate-45 border-2 border-[#2BBDEF] bg-[#2BBDEF]" />

@@ -1,4 +1,7 @@
 focusagency.pdf
+focuschta.pdf
+*.pdf
+InscripcionCuentas*.txt
 node_modules
 dist
 .DS_Store
