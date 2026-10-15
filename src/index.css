@@ -14,7 +14,6 @@
   --color-aqua: #4ef2e4;
   --color-sky: #5fe4fa;
   --color-mint: #52faa4;
-  --color-iris: #8b9cec;
   --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-soft: "Nunito", ui-sans-serif, system-ui, sans-serif;
 }
@@ -197,6 +196,213 @@ body {
   to { stroke-dashoffset: -320; }
 }
 
+/* ---------- Focus Agency / Academy: cards, flujos y gráficos ---------- */
+
+@property --beam {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.glow-card {
+  --card-bg: #07141f;
+  position: relative;
+  isolation: isolate;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+    conic-gradient(
+        from var(--beam),
+        rgb(78 242 228 / 0.1) 0deg,
+        rgb(78 242 228 / 0.1) 230deg,
+        rgb(78 242 228 / 0.9) 300deg,
+        rgb(95 228 250 / 1) 325deg,
+        rgb(78 242 228 / 0.1) 360deg
+      )
+      border-box;
+  animation: beam 7s linear infinite;
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
+  transition:
+    transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.45s ease;
+}
+
+.glow-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 0%), rgb(78 242 228 / 0.16), transparent 50%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.glow-card:hover {
+  --lift: -6px;
+  box-shadow:
+    0 26px 60px rgb(0 0 0 / 0.45),
+    0 0 46px rgb(78 242 228 / 0.18);
+}
+
+.glow-card:hover::before,
+.glow-card.is-live::before {
+  opacity: 1;
+}
+
+.glow-card.is-live {
+  box-shadow:
+    0 0 0 1px rgb(78 242 228 / 0.55),
+    0 0 44px rgb(78 242 228 / 0.28);
+}
+
+.glow-card.tone-sky {
+  background:
+    linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+    conic-gradient(from var(--beam), rgb(95 228 250 / 0.18) 0deg, rgb(95 228 250 / 0.18) 220deg, #5fe4fa 300deg, #ffffff 325deg, rgb(95 228 250 / 0.18) 360deg) border-box;
+}
+
+@keyframes beam {
+  to { --beam: 360deg; }
+}
+
+.live-icon {
+  transition: transform 0.5s cubic-bezier(0.3, 1.6, 0.4, 1), filter 0.5s ease;
+}
+
+.is-live .live-icon {
+  transform: translateY(-4px) scale(1.12);
+  filter: drop-shadow(0 0 14px rgb(78 242 228 / 0.7));
+}
+
+.flow-track {
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgb(78 242 228 / 0.08), rgb(78 242 228 / 0.45), rgb(78 242 228 / 0.08));
+}
+
+.flow-track::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -40%;
+  width: 40%;
+  height: 4px;
+  translate: 0 -50%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #4ef2e4, #ffffff, transparent);
+  filter: drop-shadow(0 0 6px #4ef2e4);
+  animation: flow-run 1.9s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+.flow-track.vertical {
+  background: linear-gradient(180deg, rgb(78 242 228 / 0.08), rgb(78 242 228 / 0.45), rgb(78 242 228 / 0.08));
+}
+
+.flow-track.vertical::after {
+  top: -40%;
+  left: 50%;
+  width: 4px;
+  height: 40%;
+  translate: -50% 0;
+  background: linear-gradient(180deg, transparent, #4ef2e4, #ffffff, transparent);
+  animation-name: flow-run-y;
+}
+
+@keyframes flow-run {
+  to { left: 100%; }
+}
+
+@keyframes flow-run-y {
+  to { top: 100%; }
+}
+
+.blur-rise {
+  animation: blur-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes blur-rise {
+  from {
+    opacity: 0;
+    filter: blur(14px);
+    transform: translateY(28px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+.orbit-spin {
+  animation: orbit 36s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes orbit {
+  to { transform: rotate(360deg); }
+}
+
+.ping-soft::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  border: 2px solid rgb(78 242 228 / 0.6);
+  animation: ping-soft 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ping-soft {
+  0% { transform: scale(0.9); opacity: 0.9; }
+  100% { transform: scale(1.45); opacity: 0; }
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.07) 45%, rgb(78 242 228 / 0.12) 50%, transparent 65%);
+  transform: translateX(-100%);
+  animation: shimmer 4.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  60%,
+  100% { transform: translateX(100%); }
+}
+
+.chart-dark,
+.chart-light {
+  --ts-chart-tooltip-border-radius: 0.875rem;
+  --ts-chart-tooltip-padding: 0.55rem 0.8rem;
+  --ts-chart-tooltip-font: 600 13px/1.4 "Outfit", ui-sans-serif, system-ui, sans-serif;
+}
+
+.chart-dark {
+  color: rgb(255 255 255 / 0.82);
+  --ts-chart-tooltip-background: rgb(4 11 18 / 0.92);
+  --ts-chart-tooltip-color: #ffffff;
+  --ts-chart-tooltip-border: 1px solid rgb(78 242 228 / 0.35);
+  --ts-chart-tooltip-shadow: 0 14px 40px rgb(0 0 0 / 0.5), 0 0 24px rgb(78 242 228 / 0.18);
+}
+
+.chart-light {
+  color: #202246;
+  --ts-chart-tooltip-background: rgb(255 255 255 / 0.96);
+  --ts-chart-tooltip-color: #202246;
+  --ts-chart-tooltip-border: 1px solid rgb(32 34 70 / 0.12);
+  --ts-chart-tooltip-shadow: 0 14px 34px rgb(32 34 70 / 0.16);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .float,
   .orb,
@@ -205,8 +411,18 @@ body {
   .marquee-track,
   .flow-line,
   .reveal,
-  .step-in {
+  .step-in,
+  .glow-card,
+  .flow-track::after,
+  .blur-rise,
+  .orbit-spin,
+  .ping-soft::after,
+  .shimmer::after {
     animation: none !important;
+  }
+
+  .glow-card {
+    transform: none !important;
   }
 
   .reveal,

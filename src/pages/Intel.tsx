@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { ChannelValueChart, WeeklyChatsChart } from "../components/Charts";
 import { WEEK } from "../data";
 import { cop, cpl } from "../lib/format";
 import { useHub } from "../store";
@@ -8,7 +9,6 @@ const CHANNELS: Channel[] = ["WhatsApp", "Instagram", "Meta Ads", "Web"];
 
 export function Intel() {
   const { data } = useHub();
-  const maxChats = Math.max(...WEEK.map((day) => day.chats));
   const byChannel = useMemo(
     () =>
       CHANNELS.map((channel) => ({
@@ -18,7 +18,6 @@ export function Intel() {
       })),
     [data.leads],
   );
-  const maxValue = Math.max(...byChannel.map((item) => item.value), 1);
   const best = [...data.campaigns].filter((campaign) => campaign.leads > 0).sort(
     (a, b) => cpl(a.spend, a.leads) - cpl(b.spend, b.leads),
   )[0];
@@ -59,36 +58,17 @@ export function Intel() {
         </article>
       </section>
 
-      <section className="rounded-[28px] bg-white p-6">
-        <h2 className="font-extrabold">Conversaciones de la semana</h2>
-        <div className="mt-6 flex h-48 items-end gap-3">
-          {WEEK.map((day) => (
-            <div key={day.day} className="flex flex-1 flex-col items-center gap-2">
-              <div className="flex h-40 w-full items-end">
-                <div className="w-full rounded-t-2xl bg-focus" style={{ height: `${(day.chats / maxChats) * 100}%` }} />
-              </div>
-              <span className="text-xs font-bold">{day.day}</span>
-              <span className="text-[11px] text-navy/55">{day.qualified} calificados</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="rounded-[28px] bg-white p-6">
-        <h2 className="font-extrabold">Origen del pipeline</h2>
-        <ul className="mt-5 space-y-4">
-          {byChannel.map((item) => (
-            <li key={item.channel}>
-              <div className="mb-1 flex justify-between text-sm font-bold">
-                <span>{item.channel}</span>
-                <span>{item.count} · {cop(item.value)}</span>
-              </div>
-              <div className="h-2 rounded-full bg-paper">
-                <div className="h-full rounded-full bg-navy" style={{ width: `${(item.value / maxValue) * 100}%` }} />
-              </div>
-            </li>
-          ))}
-        </ul>
+      <section className="grid gap-4 xl:grid-cols-2">
+        <article className="rounded-[28px] bg-white p-6">
+          <h2 className="font-extrabold">Conversaciones de la semana</h2>
+          <p className="mb-4 text-sm text-navy/60">Cuántas entraron cada día y cuántas terminaron calificadas.</p>
+          <WeeklyChatsChart rows={WEEK} />
+        </article>
+        <article className="rounded-[28px] bg-white p-6">
+          <h2 className="font-extrabold">Origen del pipeline</h2>
+          <p className="mb-4 text-sm text-navy/60">Valor abierto por canal de entrada. Pasa el cursor para ver los leads.</p>
+          <ChannelValueChart rows={byChannel} height={284} />
+        </article>
       </section>
     </div>
   );

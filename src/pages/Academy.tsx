@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState, type ComponentType } from "react";
 import {
   ArrowRight,
   ChartNoAxesCombined,
-  ChevronRight,
   Clapperboard,
   DatabaseZap,
   FilePenLine,
@@ -11,7 +10,7 @@ import {
   Lightbulb,
   Megaphone,
 } from "lucide-react";
-import { DarkFaq, DarkHeader, HeroWave, Kicker, Testimonials, ToolPills, VideoSlot, type Testimonial } from "../components/Dark";
+import { DarkFaq, DarkHeader, FlowLink, GlowCard, HeroWave, Kicker, Testimonials, ToolPills, VideoSlot, useCycle, type Testimonial } from "../components/Dark";
 import { Reveal, SiteFooter, SiteSwitcher, WhatsAppChat, openFocusWhatsApp } from "../components/Site";
 
 type Icon = ComponentType<{ className?: string; strokeWidth?: number }>;
@@ -38,7 +37,7 @@ const STEPS: { title: string; text: string; icon: Icon; paid?: boolean }[] = [
   { title: "CRM", text: "Organiza, automatiza y convierte.", icon: DatabaseZap, paid: true },
 ];
 
-const TESTIMONIALS: [Testimonial, Testimonial, Testimonial] = [
+const TESTIMONIALS: Testimonial[] = [
   { name: "Nombre del estudiante", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del estudiante, qué aprendió y cómo lo aplicó en su negocio." },
   { name: "Nombre del estudiante", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del estudiante, qué aprendió y cómo lo aplicó en su negocio." },
   { name: "Nombre del estudiante", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del estudiante, qué aprendió y cómo lo aplicó en su negocio." },
@@ -56,38 +55,37 @@ const FAQ = [
   ["¿Cómo accedo a la academia?", "Con tu suscripción a Focus Chat. Si aún no la tienes, escríbenos por WhatsApp y te ayudamos a empezar."],
 ] as const;
 
-function StepCard({ step }: { step: (typeof STEPS)[number] }) {
+function StepCard({ step, live }: { step: (typeof STEPS)[number]; live: boolean }) {
   const Glyph = step.icon;
   return (
-    <div
-      className={`relative flex h-full flex-col items-center rounded-2xl border px-3 pt-8 pb-5 text-center backdrop-blur-md ${
-        step.paid
-          ? "border-iris/70 bg-[#0b1233]/85 shadow-[0_0_30px_rgb(139_156_236/0.25)]"
-          : "border-aqua/45 bg-[#07141f]/85 shadow-[0_0_28px_rgb(78_242_228/0.15)]"
-      }`}
+    <GlowCard
+      live={live}
+      tone={step.paid ? "sky" : "aqua"}
+      className="flex h-[214px] w-[164px] flex-col items-center rounded-2xl px-3 pt-9 pb-5 text-center lg:w-full"
     >
       <span
-        className={`absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-lg py-1 font-bold whitespace-nowrap ${
-          step.paid ? "bg-[#3b3fd1] px-2 text-[10px] text-white" : "bg-mint px-3 text-[11px] text-abyss shadow-[0_0_18px_rgb(82_250_164/0.5)]"
+        className={`absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-lg px-2.5 py-1 text-[10px] font-bold whitespace-nowrap xl:text-[11px] ${
+          step.paid ? "bg-gradient-to-r from-sky to-white text-abyss shadow-[0_0_18px_rgb(95_228_250/0.5)]" : "bg-mint text-abyss shadow-[0_0_18px_rgb(82_250_164/0.5)]"
         }`}
       >
         {step.paid ? "PAGAS TU SUSCRIPCIÓN" : "GRATIS"}
       </span>
-      <Glyph className={`h-11 w-11 ${step.paid ? "text-sky" : "text-aqua"}`} strokeWidth={1.5} />
+      <Glyph className={`live-icon h-11 w-11 ${step.paid ? "text-sky" : "text-aqua"}`} strokeWidth={1.5} />
       <p className="mt-3 text-[17px] leading-tight font-bold">{step.title}</p>
       <p className="mt-2 text-[13px] leading-snug text-white/70">{step.text}</p>
-    </div>
+    </GlowCard>
   );
 }
 
 function Hero() {
+  const active = useCycle(STEPS.length, 1300);
   return (
     <section id="inicio" className="relative overflow-hidden">
       <div className="pointer-events-none absolute top-0 right-0 h-[34rem] w-[44rem] rounded-full bg-[#0a3150]/60 blur-3xl" />
       <HeroWave className="h-[18%]! opacity-60" />
       <div className="relative mx-auto max-w-[1400px] px-5 pt-14 md:px-8 lg:pt-20">
         <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
-          <Reveal from="left">
+          <Reveal from="blur">
             <Kicker>Aprende · Aplica · Haz crecer tu negocio</Kicker>
             <h1 className="mt-6 text-5xl leading-[1.04] font-bold tracking-tight md:text-6xl xl:text-[4.25rem]">
               <span className="block lg:whitespace-nowrap">Suscríbete a un CRM.</span>
@@ -99,29 +97,35 @@ function Hero() {
               nuevas estrategias para crecer.
             </p>
           </Reveal>
-          <Reveal from="right" delay={120}>
-            <VideoSlot src={ACADEMY_VIDEO || undefined} title="Video de Focus Academy" className="aspect-video shadow-[0_30px_90px_rgb(139_156_236/0.25)]" />
+          <Reveal from="blur" delay={150}>
+            <VideoSlot
+              src={ACADEMY_VIDEO || undefined}
+              title="Aquí irá el video de Focus Academy"
+              note="Pronto publicaremos en este espacio un recorrido por la academia y sus clases gratuitas."
+              className="aspect-video"
+            />
           </Reveal>
         </div>
 
         <div id="clases" className="mt-16 pt-4 lg:mt-20">
-          <ol className="grid grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-3 md:grid-cols-4 lg:flex lg:items-stretch lg:gap-1">
+          <ol className="snap-rail flex items-center overflow-x-auto pt-5 pb-2 lg:overflow-visible">
             {STEPS.map((step, index) => (
-              <li key={step.title} className={`flex items-stretch lg:flex-1 ${step.paid ? "col-span-2 mx-auto w-1/2 sm:col-span-1 sm:w-full" : ""}`}>
-                <Reveal delay={index * 70} className="w-full">
-                  <StepCard step={step} />
+              <li key={step.title} className="flex shrink-0 items-center lg:min-w-0 lg:flex-1 lg:last:flex-none lg:last:basis-[calc((100%-6*1.25rem)/7)]">
+                <Reveal from="blur" delay={index * 90} className="lg:w-full">
+                  <StepCard step={step} live={index === active} />
                 </Reveal>
-                {index < STEPS.length - 1 && <ChevronRight className="hidden h-6 w-6 shrink-0 self-center text-sky lg:block" />}
+                {index < STEPS.length - 1 && <FlowLink className="w-4 shrink-0 lg:w-5" delay={index * 0.25} />}
               </li>
             ))}
           </ol>
+          <p className="mt-2 text-center text-xs text-white/45 lg:hidden">Desliza para ver las 7 clases →</p>
         </div>
 
-        <Reveal className="relative mt-14 pb-16 text-center lg:mt-16 lg:pb-20">
+        <Reveal from="blur" className="relative mt-14 pb-16 text-center lg:mt-16 lg:pb-20">
           <svg viewBox="0 0 1200 60" className="absolute inset-x-0 top-6 mx-auto h-10 w-full max-w-5xl" preserveAspectRatio="none" aria-hidden="true">
             <path d="M0 58C260 58 380 6 600 6S940 58 1200 58" fill="none" stroke="#4ef2e4" strokeOpacity="0.5" strokeWidth="1.5" />
           </svg>
-          <span className="relative mx-auto grid h-14 w-14 place-items-center rounded-full border border-aqua/50 bg-abyss text-aqua shadow-[0_0_30px_rgb(78_242_228/0.3)]">
+          <span className="ping-soft relative mx-auto grid h-14 w-14 place-items-center rounded-full border border-aqua/50 bg-abyss text-aqua shadow-[0_0_30px_rgb(78_242_228/0.3)]">
             <GraduationCap className="h-7 w-7" strokeWidth={1.7} />
           </span>
           <p className="mt-5 text-4xl font-bold tracking-tight md:text-5xl">
@@ -140,7 +144,7 @@ function Resources() {
   return (
     <section id="recursos" className="relative overflow-hidden">
       <div className="relative mx-auto grid max-w-[1400px] items-center gap-12 px-5 py-20 md:px-8 md:py-28 lg:grid-cols-[0.9fr_1.1fr]">
-        <Reveal from="left">
+        <Reveal from="blur">
           <Kicker>Aprende · Aplica · Haz crecer tu negocio</Kicker>
           <h2 className="mt-6 text-4xl leading-[1.05] font-bold tracking-tight md:text-6xl">
             En Focus Academy{" "}
@@ -159,9 +163,9 @@ function Resources() {
           </a>
           <ToolPills className="mt-12" />
         </Reveal>
-        <Reveal from="right" delay={120}>
+        <Reveal from="blur" delay={150}>
           <div className="relative">
-            <div className="pointer-events-none absolute -inset-6 rounded-[40px] bg-gradient-to-br from-aqua/20 via-iris/10 to-sky/20 blur-2xl" />
+            <div className="pointer-events-none absolute -inset-6 rounded-[40px] bg-gradient-to-br from-aqua/20 via-sky/10 to-mint/15 blur-2xl" />
             <img
               src="/academy/hero-estudio.jpg"
               alt="Estudiante tomando una clase de Focus Academy"

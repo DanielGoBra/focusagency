@@ -62,6 +62,16 @@ sequenceDiagram
 
 Un envío incompleto responde que hay que revisar los datos. Si la verificación falla, pide confirmar que no es un robot. El campo oculto `fax` corta el envío de bots sin avisarles.
 
+## Páginas
+
+| Ruta | Página |
+| --- | --- |
+| `/` | Focus Chat |
+| `/agency` | Focus Agency |
+| `/academy` | Focus Academy |
+
+Agency y Academy dejan listas al inicio de su archivo (`src/pages/Agency.tsx`, `src/pages/Academy.tsx`) las URL de los videos, los testimonios y las cifras de los casos. Mientras un video no tenga URL, su espacio muestra un aviso de que se publicará más adelante. Los gráficos usan TanStack Charts (`src/components/Charts.tsx`) y sus datos de Agency son de ejemplo.
+
 ## Hub
 
 El Hub guarda leads, conversaciones, campañas, flujos e integraciones en el navegador (`focus-hub-mvp-2`). WhatsApp Business, Instagram y Meta Ads de esa vista usan datos de demostración.

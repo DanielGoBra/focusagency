@@ -1,5 +1,5 @@
-import { useEffect, useId, useState, type ComponentType, type ReactNode } from "react";
-import { ArrowRight, ChevronDown, Cpu, Database, Infinity as InfinityIcon, ScanLine } from "lucide-react";
+import { useEffect, useId, useRef, useState, type ComponentType, type CSSProperties, type PointerEvent, type ReactNode } from "react";
+import { ArrowRight, ChevronDown, Clapperboard, Cpu, Database, Infinity as InfinityIcon, ScanLine } from "lucide-react";
 import { Reveal, SocialGlyph } from "./Site";
 
 type Icon = ComponentType<{ className?: string; strokeWidth?: number }>;
@@ -104,35 +104,18 @@ export function DarkHeader({
   );
 }
 
-function ReelGlyph({ className, cut }: { className?: string; cut: string }) {
-  const id = useId();
-  return (
-    <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <defs>
-        <mask id={`${id}-m`}>
-          <rect width="48" height="48" fill="white" />
-          <path d="M14.5 4 19.5 13.6h4.2L18.7 4zM24.7 4l5 9.6h4.2L28.9 4zM34.9 4l5 9.6h3.3l-4.6-9.6z" fill="black" />
-          <path d="M20.5 23.6v12.2c0 1.1 1.2 1.8 2.1 1.2l9.5-6.1c.9-.6.9-1.8 0-2.4l-9.5-6.1c-.9-.6-2.1.1-2.1 1.2z" fill="black" />
-        </mask>
-      </defs>
-      <g mask={`url(#${id}-m)`} fill={cut}>
-        <path d="M14 3.5h20a9.5 9.5 0 0 1 9.5 9.5v.6h-39V13A9.5 9.5 0 0 1 14 3.5z" />
-        <path d="M4.5 16.6h39v18.2a9.7 9.7 0 0 1-9.7 9.7H14.2a9.7 9.7 0 0 1-9.7-9.7z" />
-      </g>
-    </svg>
-  );
-}
-
 export function VideoSlot({
   src,
   title,
+  note,
   className = "aspect-video",
-  tone = "iris",
+  compact = false,
 }: {
   src?: string;
   title: string;
+  note: string;
   className?: string;
-  tone?: "iris" | "navy";
+  compact?: boolean;
 }) {
   if (src) {
     return (
@@ -149,13 +132,25 @@ export function VideoSlot({
     );
   }
   return (
-    <div
-      role="img"
-      aria-label={`${title} (video pendiente)`}
-      className={`grid place-items-center overflow-hidden rounded-[28px] ${tone === "iris" ? "bg-iris" : "bg-[#0d1850]"} ${className}`}
-    >
-      <ReelGlyph className="h-[38%] max-h-48 w-auto text-white" cut="#ffffff" />
-    </div>
+    <GlowCard className={`shimmer rounded-[28px] ${className}`} tilt={false}>
+      <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-[radial-gradient(circle_at_50%_40%,rgb(78_242_228/0.14),transparent_60%)]" />
+      <div className="paper-grid pointer-events-none absolute inset-0 rounded-[inherit] opacity-[0.06] invert" />
+      <div className={`relative flex h-full flex-col items-center justify-center text-center ${compact ? "gap-2 p-4" : "gap-4 p-6"}`}>
+        <span
+          className={`ping-soft relative grid place-items-center rounded-full bg-gradient-to-br from-aqua to-sky text-abyss shadow-[0_0_40px_rgb(78_242_228/0.45)] ${
+            compact ? "h-12 w-12" : "h-16 w-16 md:h-20 md:w-20"
+          }`}
+        >
+          <Clapperboard className={compact ? "h-5 w-5" : "h-7 w-7 md:h-9 md:w-9"} strokeWidth={1.8} />
+        </span>
+        <p className={`font-bold tracking-tight ${compact ? "text-base" : "text-xl md:text-3xl"}`}>{title}</p>
+        <p className={`max-w-md text-white/65 ${compact ? "text-xs" : "text-sm md:text-base"}`}>{note}</p>
+        <span className="inline-flex items-center gap-2 rounded-full border border-aqua/30 bg-aqua/10 px-3 py-1 text-[11px] font-bold tracking-[0.18em] text-aqua uppercase">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-aqua" />
+          Próximamente
+        </span>
+      </div>
+    </GlowCard>
   );
 }
 
@@ -207,36 +202,32 @@ export function HeroWave({ className = "" }: { className?: string }) {
 
 export type Testimonial = { name: string; business: string; quote: string; video?: string };
 
-function TestimonialCaption({ item }: { item: Testimonial }) {
-  return (
-    <div className="mt-5 text-center">
-      <p className="mx-auto max-w-xs text-[15px] leading-relaxed text-white/75">“{item.quote}”</p>
-      <p className="mt-3 text-sm font-bold text-white">{item.name}</p>
-      <p className="text-xs tracking-[0.14em] text-aqua uppercase">{item.business}</p>
-    </div>
-  );
-}
-
-export function Testimonials({ items, id = "testimonios" }: { items: readonly [Testimonial, Testimonial, Testimonial]; id?: string }) {
-  const [first, second, third] = items;
+export function Testimonials({ items, id = "testimonios" }: { items: readonly Testimonial[]; id?: string }) {
   return (
     <section id={id} className="relative mx-auto max-w-[1400px] px-5 py-20 md:px-8 md:py-28">
-      <div className="grid gap-x-8 gap-y-10 md:grid-cols-[0.95fr_1fr_1fr] md:grid-rows-[auto_1fr]">
-        <Reveal className="md:col-span-2 md:col-start-2 md:self-end">
-          <h2 className="text-center text-5xl font-light tracking-[0.04em] uppercase md:text-left md:text-7xl lg:text-8xl">Testimonios</h2>
-        </Reveal>
-        <Reveal className="md:col-start-1 md:row-span-2 md:row-start-1" from="left">
-          <VideoSlot src={first.video} title={`Testimonio de ${first.name}`} tone="navy" className="aspect-[5/6]" />
-          <TestimonialCaption item={first} />
-        </Reveal>
-        <Reveal className="md:col-start-2 md:row-start-2" delay={120}>
-          <VideoSlot src={second.video} title={`Testimonio de ${second.name}`} tone="navy" className="aspect-[7/5]" />
-          <TestimonialCaption item={second} />
-        </Reveal>
-        <Reveal className="md:col-start-3 md:row-start-2" delay={220}>
-          <VideoSlot src={third.video} title={`Testimonio de ${third.name}`} tone="navy" className="aspect-[7/5]" />
-          <TestimonialCaption item={third} />
-        </Reveal>
+      <Reveal from="blur" className="text-center">
+        <Kicker>Lo que dicen de Focus</Kicker>
+        <h2 className="mt-4 text-5xl font-light tracking-[0.04em] uppercase md:text-7xl">Testimonios</h2>
+      </Reveal>
+      <div className="mt-12 grid auto-rows-fr gap-6 md:grid-cols-3">
+        {items.map((item, index) => (
+          <Reveal key={index} from="blur" delay={index * 140} className="h-full">
+            <GlowCard className="flex h-full flex-col rounded-[28px] p-3" style={{ animationDelay: `${index * -2.3}s` }}>
+              <VideoSlot
+                src={item.video}
+                title="Testimonio en video"
+                note="Aquí subiremos el video de este cliente más adelante."
+                className="aspect-video"
+                compact
+              />
+              <div className="flex flex-1 flex-col px-3 pt-5 pb-3 text-center">
+                <p className="flex-1 text-[15px] leading-relaxed text-white/75">“{item.quote}”</p>
+                <p className="mt-4 text-sm font-bold text-white">{item.name}</p>
+                <p className="text-xs tracking-[0.14em] text-aqua uppercase">{item.business}</p>
+              </div>
+            </GlowCard>
+          </Reveal>
+        ))}
       </div>
     </section>
   );
@@ -375,4 +366,75 @@ export function TikTokMark({ className = "h-6 w-6" }: { className?: string }) {
 
 export function Kicker({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <p className={`text-xs font-medium tracking-[0.32em] text-aqua uppercase md:text-sm ${className}`}>{children}</p>;
+}
+
+/** Tarjeta con borde de luz giratorio, foco que sigue al cursor e inclinación 3D suave. */
+export function GlowCard({
+  children,
+  className = "",
+  style,
+  live = false,
+  tone = "aqua",
+  tilt = true,
+}: {
+  children: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+  live?: boolean;
+  tone?: "aqua" | "sky";
+  tilt?: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  function move(event: PointerEvent<HTMLDivElement>) {
+    const el = ref.current;
+    if (!el || event.pointerType === "touch") return;
+    const rect = el.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
+    el.style.setProperty("--mx", `${x * 100}%`);
+    el.style.setProperty("--my", `${y * 100}%`);
+    if (tilt) {
+      el.style.setProperty("--rx", `${(0.5 - y) * 7}deg`);
+      el.style.setProperty("--ry", `${(x - 0.5) * 9}deg`);
+    }
+  }
+  function leave() {
+    const el = ref.current;
+    if (!el) return;
+    el.style.setProperty("--rx", "0deg");
+    el.style.setProperty("--ry", "0deg");
+  }
+  return (
+    <div
+      ref={ref}
+      onPointerMove={move}
+      onPointerLeave={leave}
+      style={style}
+      className={`glow-card ${tone === "sky" ? "tone-sky" : ""} ${live ? "is-live" : ""} ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** Índice activo que recorre los pasos de un flujo en bucle. */
+export function useCycle(length: number, every = 1600) {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => setIndex((value) => (value + 1) % length), every);
+    return () => window.clearInterval(id);
+  }, [length, every]);
+  return index;
+}
+
+/** Conector con un pulso de luz que viaja de un paso al siguiente. */
+export function FlowLink({ vertical = false, delay = 0, className = "" }: { vertical?: boolean; delay?: number; className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`flow-track ${vertical ? "vertical w-[2px]" : "h-[2px]"} block ${className}`}
+      style={{ "--delay": `${delay}s` } as CSSProperties}
+    />
+  );
 }

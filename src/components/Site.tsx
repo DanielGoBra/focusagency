@@ -66,7 +66,7 @@ export function Reveal({
   children: ReactNode;
   className?: string;
   delay?: number;
-  from?: "up" | "left" | "right" | "zoom";
+  from?: "up" | "left" | "right" | "zoom" | "blur";
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
@@ -95,12 +95,13 @@ export function Reveal({
     left: "slide-in-from-left-10",
     right: "slide-in-from-right-10",
     zoom: "zoom-in-95 slide-in-from-bottom-6",
+    blur: "",
   }[from];
 
   return (
     <div
       ref={ref}
-      className={`reveal ${className} ${shown ? `animate-in fade-in ${motion} duration-700 fill-mode-both` : "opacity-0"}`}
+      className={`reveal ${className} ${shown ? (from === "blur" ? "blur-rise" : `animate-in fade-in ${motion} duration-700 fill-mode-both`) : "opacity-0"}`}
       style={{ animationDelay: shown ? `${delay}ms` : undefined }}
     >
       {children}
@@ -386,17 +387,27 @@ const SITES = [
 ] as const;
 
 export function SiteSwitcher({ tone = "light" }: { tone?: "light" | "dark" }) {
+  const dark = tone === "dark";
   return (
-    <div data-tone={tone === "dark" ? "navy" : "light"} className={`relative z-40 px-3 pt-3 ${tone === "dark" ? "bg-abyss" : "bg-paper"}`}>
-      <nav aria-label="Sitios de Focus" className="mx-auto flex max-w-[1580px] items-center justify-center gap-1 rounded-[22px] bg-iris px-2 py-2 sm:gap-6 md:py-3">
+    <div data-tone={dark ? "navy" : "light"} className={`relative z-40 px-3 pt-3 ${dark ? "bg-abyss" : "bg-paper"}`}>
+      <nav
+        aria-label="Sitios de Focus"
+        className={`mx-auto flex max-w-[1580px] items-center justify-center gap-1 rounded-[22px] px-2 py-2 sm:gap-4 md:py-2.5 ${
+          dark ? "border border-white/10 bg-white/[0.04] backdrop-blur" : "bg-navy"
+        }`}
+      >
         {SITES.map((site) => (
           <NavLink
             key={site.to}
             to={site.to}
             end
             className={({ isActive }) =>
-              `font-soft rounded-full px-3 py-1.5 text-[15px] leading-none font-extrabold tracking-tight text-[#0b0d1f] transition sm:px-5 sm:text-xl md:text-[1.7rem] ${
-                isActive ? "bg-white/45 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.6)]" : "hover:bg-white/25"
+              `font-soft rounded-full px-3 py-1.5 text-[15px] leading-none font-extrabold tracking-tight transition sm:px-5 sm:text-lg md:text-xl ${
+                isActive
+                  ? dark
+                    ? "bg-aqua text-abyss shadow-[0_0_24px_rgb(78_242_228/0.4)]"
+                    : "bg-lime text-navy"
+                  : "text-white/75 hover:bg-white/10 hover:text-white"
               }`
             }
           >
