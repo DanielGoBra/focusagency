@@ -1,7 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import { LeadDialog, Notice } from "./components/LeadDialog";
 import { Shell } from "./components/Shell";
+import { Academy } from "./pages/Academy";
 import { Ads } from "./pages/Ads";
+import { Agency } from "./pages/Agency";
 import { Flows } from "./pages/Flows";
 import { Inbox } from "./pages/Inbox";
 import { Integrations } from "./pages/Integrations";
@@ -16,6 +18,8 @@ export default function App() {
     <HubProvider>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/agency" element={<Agency />} />
+        <Route path="/academy" element={<Academy />} />
         <Route path="/hub" element={<Shell />}>
           <Route index element={<Pulse />} />
           <Route path="bandeja" element={<Inbox />} />

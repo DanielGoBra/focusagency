@@ -9,6 +9,12 @@
   --color-mist: #bcc3cc;
   --color-paper: #eef1f4;
   --color-ink: #1a1c33;
+  --color-abyss: #040b12;
+  --color-abyss-2: #08161f;
+  --color-aqua: #4ef2e4;
+  --color-sky: #5fe4fa;
+  --color-mint: #52faa4;
+  --color-iris: #8b9cec;
   --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-soft: "Nunito", ui-sans-serif, system-ui, sans-serif;
 }
@@ -21,7 +27,13 @@ html {
 #servicios,
 #sistema,
 #preguntas,
-#contacto {
+#contacto,
+#casos,
+#nosotros,
+#testimonios,
+#clases,
+#recursos,
+#soporte {
   scroll-margin-top: 5.5rem;
 }
 
