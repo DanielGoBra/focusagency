@@ -20,8 +20,8 @@ export default function App() {
     <HubProvider>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/agency" element={<Suspense fallback={<div className="min-h-screen bg-abyss" />}><Agency /></Suspense>} />
-        <Route path="/academy" element={<Suspense fallback={<div className="min-h-screen bg-abyss" />}><Academy /></Suspense>} />
+        <Route path="/agency" element={<Suspense fallback={<div className="min-h-screen bg-[#071428]" />}><Agency /></Suspense>} />
+        <Route path="/academy" element={<Suspense fallback={<div className="min-h-screen bg-[#071428]" />}><Academy /></Suspense>} />
         <Route path="/hub" element={<Shell />}>
           <Route index element={<Pulse />} />
           <Route path="bandeja" element={<Inbox />} />
