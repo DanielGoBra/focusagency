@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { BrandLogo } from "./Logo";
 import { TurnstileField, turnstileSiteKey } from "./TurnstileField";
 
@@ -244,8 +244,8 @@ export function WhatsAppChat({ open, onOpen, onClose }: { open: boolean; onOpen:
   );
 }
 
-export function ContactForm({ tone = "light" }: { tone?: "light" | "dark" }) {
-  const dark = tone === "dark";
+export function ContactForm({ tone = "light" }: { tone?: "light" | "brand" }) {
+  const brand = tone === "brand";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
@@ -306,18 +306,18 @@ export function ContactForm({ tone = "light" }: { tone?: "light" | "dark" }) {
   const field = "mt-1 w-full rounded-2xl border border-navy/10 bg-white/75 px-4 py-3 text-navy outline-none backdrop-blur transition focus:border-focus focus:ring-4 focus:ring-focus/20";
 
   return (
-    <section id="contacto" data-tone="light" className={`relative ${dark ? "text-white" : ""}`}>
-      {!dark && <div className="absolute inset-0 z-0 bg-[#f4f7fb]" />}
+    <section id="contacto" data-tone="light" className="relative">
+      {!brand && <div className="absolute inset-0 z-0 bg-[#f4f7fb]" />}
       <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-5 py-20 md:grid-cols-[0.85fr_1.15fr]">
         <Reveal from="left">
-          <p className={`text-xs font-bold tracking-[0.18em] ${dark ? "text-aqua" : "text-focus"}`}>CONTACTO</p>
+          <p className={`text-xs font-bold tracking-[0.18em] ${brand ? "text-accent-ink" : "text-focus"}`}>CONTACTO</p>
           <h2 className="mt-2 text-4xl font-extrabold tracking-tight md:text-6xl">Contáctanos.</h2>
-          <p className={`mt-4 max-w-md text-lg font-light ${dark ? "text-white/70" : "text-navy/75"}`}>
+          <p className={`mt-4 max-w-md text-lg ${brand ? "text-fg/75" : "font-light text-navy/75"}`}>
             Cuéntanos qué canal te está trayendo ruido. El mensaje llega al equipo de Focus.
           </p>
         </Reveal>
         <Reveal from="right" delay={120}>
-          <form onSubmit={submit} className={`${dark ? "bg-white shadow-[0_30px_80px_rgb(0_0_0/0.35)]" : "glass-card"} rounded-[28px] p-6 text-navy md:p-8`} noValidate>
+          <form onSubmit={submit} className={`${brand ? "rounded-[22px] border-2 border-[#2bbdef] bg-white shadow-[0_0_24px_rgb(43_189_239/0.25)]" : "glass-card rounded-[28px]"} p-6 text-navy md:p-8`} noValidate>
             {sent ? (
               <div>
                 <p className="text-xs font-bold tracking-[0.18em] text-focus">MENSAJE REGISTRADO</p>
@@ -380,50 +380,11 @@ export function ContactForm({ tone = "light" }: { tone?: "light" | "dark" }) {
   );
 }
 
-const SITES = [
-  { to: "/", label: "focuschat" },
-  { to: "/agency", label: "focus agency" },
-  { to: "/academy", label: "focus academy" },
-] as const;
-
-export function SiteSwitcher({ tone = "light" }: { tone?: "light" | "dark" }) {
-  const dark = tone === "dark";
-  return (
-    <div data-tone={dark ? "navy" : "light"} className={`relative z-40 px-3 pt-3 ${dark ? "bg-abyss" : "bg-paper"}`}>
-      <nav
-        aria-label="Sitios de Focus"
-        className={`mx-auto flex max-w-[1580px] items-center justify-center gap-1 rounded-[22px] px-2 py-2 sm:gap-4 md:py-2.5 ${
-          dark ? "border border-white/10 bg-white/[0.04] backdrop-blur" : "bg-navy"
-        }`}
-      >
-        {SITES.map((site) => (
-          <NavLink
-            key={site.to}
-            to={site.to}
-            end
-            className={({ isActive }) =>
-              `font-soft rounded-full px-3 py-1.5 text-[15px] leading-none font-extrabold tracking-tight transition sm:px-5 sm:text-lg md:text-xl ${
-                isActive
-                  ? dark
-                    ? "bg-aqua text-abyss shadow-[0_0_24px_rgb(78_242_228/0.4)]"
-                    : "bg-lime text-navy"
-                  : "text-white/75 hover:bg-white/10 hover:text-white"
-              }`
-            }
-          >
-            {site.label}
-          </NavLink>
-        ))}
-      </nav>
-    </div>
-  );
-}
-
-export function SiteFooter({ band = "focus", onWhatsApp }: { band?: "focus" | "aqua"; onWhatsApp?: () => void }) {
+export function SiteFooter({ onWhatsApp }: { onWhatsApp?: () => void }) {
   return (
     <>
       <section data-tone="focus" className="relative text-navy">
-        <div className={`absolute inset-0 z-0 ${band === "aqua" ? "bg-aqua" : "bg-focus"}`} />
+        <div className="absolute inset-0 z-0 bg-focus" />
         <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-5 py-16 md:flex-row md:items-center">
           <div>
             <h2 className="text-4xl font-extrabold tracking-tight md:text-5xl">Entra y mueve el negocio de prueba.</h2>

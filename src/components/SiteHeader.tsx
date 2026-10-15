@@ -7,12 +7,14 @@ const BRANDS = [
   { to: "/academy", label: "Focus Academy", end: false, cue: "academy" },
 ] as const;
 
-const SECTIONS = [
+type Section = { hash: string; label: string; cue?: string };
+
+const SECTIONS: readonly Section[] = [
   { hash: "sistema", label: "Sistema", cue: "sistema" },
   { hash: "servicios", label: "Servicios", cue: "servicios" },
   { hash: "preguntas", label: "Preguntas", cue: "preguntas" },
   { hash: "contacto", label: "Contacto", cue: "contacto" },
-] as const;
+];
 
 function BrandWord({ label }: { label: string }) {
   return <span>{label}</span>;
@@ -47,11 +49,15 @@ function ThemeSwitch({ dark, onToggle }: { dark: boolean; onToggle: (dark: boole
 export function SiteHeader({
   theme = "light",
   onThemeChange,
+  sections = SECTIONS,
 }: {
   theme?: "light" | "dark";
   onThemeChange?: (dark: boolean) => void;
+  /** Secciones de la página actual; por defecto, las de la portada de Focuschat. */
+  sections?: readonly Section[];
 }) {
   const { pathname } = useLocation();
+  const local = sections !== SECTIONS || pathname === "/";
   const dark = theme === "dark";
 
   return (
@@ -83,10 +89,10 @@ export function SiteHeader({
         </div>
         <div className="ml-auto flex min-w-0 items-center gap-3 sm:gap-5">
           <nav aria-label="Secciones" className="flex gap-4 overflow-x-auto text-sm font-bold sm:gap-6 sm:text-base">
-            {SECTIONS.map((item) => (
+            {sections.map((item) => (
               <a
                 key={item.hash}
-                href={pathname === "/" ? `#${item.hash}` : `/#${item.hash}`}
+                href={local ? `#${item.hash}` : `/#${item.hash}`}
                 data-cue={item.cue}
                 className="shrink-0 py-1 hover:text-focus"
               >

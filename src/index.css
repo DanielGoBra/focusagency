@@ -1929,6 +1929,38 @@ body:has([data-theme="dark"]) {
   background: #3ef3ff;
 }
 
+/* ---------- Focus Agency / Academy: tokens por tema ---------- */
+
+@theme inline {
+  --color-fg: var(--brand-fg);
+  --color-page: var(--brand-page);
+  --color-card: var(--brand-card);
+  --color-accent-ink: var(--brand-accent-ink);
+  --color-lime-ink: var(--brand-lime-ink);
+}
+
+.brand-page {
+  --brand-fg: #202246;
+  --brand-page: #ffffff;
+  --brand-card: #ffffff;
+  --brand-accent-ink: #19b7e6;
+  --brand-lime-ink: #0e9f45;
+  background: var(--brand-page);
+  color: var(--brand-fg);
+}
+
+.brand-page[data-theme="dark"] {
+  --brand-fg: #f4fbff;
+  --brand-page: #071428;
+  --brand-card: #0c1f3d;
+  --brand-accent-ink: #3ef3ff;
+  --brand-lime-ink: #1efa5d;
+}
+
+.brand-surface {
+  background: linear-gradient(180deg, var(--brand-page) 0%, color-mix(in srgb, var(--color-focus) 7%, var(--brand-page)) 50%, var(--brand-page) 100%);
+}
+
 /* ---------- Focus Agency / Academy: cards, flujos y gráficos ---------- */
 
 @property --beam {
@@ -1938,7 +1970,7 @@ body:has([data-theme="dark"]) {
 }
 
 .glow-card {
-  --card-bg: #07141f;
+  --card-bg: var(--brand-card, #0c1f3d);
   position: relative;
   isolation: isolate;
   border: 1px solid transparent;
@@ -1946,11 +1978,11 @@ body:has([data-theme="dark"]) {
     linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
     conic-gradient(
         from var(--beam),
-        rgb(78 242 228 / 0.1) 0deg,
-        rgb(78 242 228 / 0.1) 230deg,
-        rgb(78 242 228 / 0.9) 300deg,
-        rgb(95 228 250 / 1) 325deg,
-        rgb(78 242 228 / 0.1) 360deg
+        color-mix(in srgb, var(--color-focus) 22%, transparent) 0deg,
+        color-mix(in srgb, var(--color-focus) 22%, transparent) 230deg,
+        var(--color-focus) 300deg,
+        var(--color-lime) 325deg,
+        color-mix(in srgb, var(--color-focus) 22%, transparent) 360deg
       )
       border-box;
   animation: beam 7s linear infinite;
@@ -1960,6 +1992,10 @@ body:has([data-theme="dark"]) {
     box-shadow 0.45s ease;
 }
 
+.brand-page:not([data-theme="dark"]) .glow-card {
+  box-shadow: 0 18px 44px rgb(32 34 70 / 0.08);
+}
+
 .glow-card::before {
   content: "";
   position: absolute;
@@ -1967,7 +2003,7 @@ body:has([data-theme="dark"]) {
   z-index: -1;
   border-radius: inherit;
   pointer-events: none;
-  background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 0%), rgb(78 242 228 / 0.16), transparent 50%);
+  background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--color-focus) 18%, transparent), transparent 50%);
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -1976,7 +2012,7 @@ body:has([data-theme="dark"]) {
   --lift: -6px;
   box-shadow:
     0 26px 60px rgb(0 0 0 / 0.45),
-    0 0 46px rgb(78 242 228 / 0.18);
+    0 0 46px color-mix(in srgb, var(--color-focus) 18%, transparent);
 }
 
 .glow-card:hover::before,
@@ -1986,14 +2022,14 @@ body:has([data-theme="dark"]) {
 
 .glow-card.is-live {
   box-shadow:
-    0 0 0 1px rgb(78 242 228 / 0.55),
-    0 0 44px rgb(78 242 228 / 0.28);
+    0 0 0 1px color-mix(in srgb, var(--color-focus) 55%, transparent),
+    0 0 44px color-mix(in srgb, var(--color-focus) 28%, transparent);
 }
 
 .glow-card.tone-sky {
   background:
     linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
-    conic-gradient(from var(--beam), rgb(95 228 250 / 0.18) 0deg, rgb(95 228 250 / 0.18) 220deg, #5fe4fa 300deg, #ffffff 325deg, rgb(95 228 250 / 0.18) 360deg) border-box;
+    conic-gradient(from var(--beam), color-mix(in srgb, var(--color-lime) 20%, transparent) 0deg, color-mix(in srgb, var(--color-lime) 20%, transparent) 220deg, var(--color-lime) 300deg, #ffffff 325deg, color-mix(in srgb, var(--color-lime) 20%, transparent) 360deg) border-box;
 }
 
 @keyframes beam {
@@ -2006,14 +2042,14 @@ body:has([data-theme="dark"]) {
 
 .is-live .live-icon {
   transform: translateY(-4px) scale(1.12);
-  filter: drop-shadow(0 0 14px rgb(78 242 228 / 0.7));
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--color-focus) 70%, transparent));
 }
 
 .flow-track {
   position: relative;
   overflow: hidden;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgb(78 242 228 / 0.08), rgb(78 242 228 / 0.45), rgb(78 242 228 / 0.08));
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-focus) 8%, transparent), color-mix(in srgb, var(--color-focus) 45%, transparent), color-mix(in srgb, var(--color-focus) 8%, transparent));
 }
 
 .flow-track::after {
@@ -2025,14 +2061,14 @@ body:has([data-theme="dark"]) {
   height: 4px;
   translate: 0 -50%;
   border-radius: 999px;
-  background: linear-gradient(90deg, transparent, #4ef2e4, #ffffff, transparent);
-  filter: drop-shadow(0 0 6px #4ef2e4);
+  background: linear-gradient(90deg, transparent, var(--color-focus), #ffffff, transparent);
+  filter: drop-shadow(0 0 6px var(--color-focus));
   animation: flow-run 1.9s cubic-bezier(0.6, 0, 0.4, 1) infinite;
   animation-delay: var(--delay, 0s);
 }
 
 .flow-track.vertical {
-  background: linear-gradient(180deg, rgb(78 242 228 / 0.08), rgb(78 242 228 / 0.45), rgb(78 242 228 / 0.08));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-focus) 8%, transparent), color-mix(in srgb, var(--color-focus) 45%, transparent), color-mix(in srgb, var(--color-focus) 8%, transparent));
 }
 
 .flow-track.vertical::after {
@@ -2041,7 +2077,7 @@ body:has([data-theme="dark"]) {
   width: 4px;
   height: 40%;
   translate: -50% 0;
-  background: linear-gradient(180deg, transparent, #4ef2e4, #ffffff, transparent);
+  background: linear-gradient(180deg, transparent, var(--color-focus), #ffffff, transparent);
   animation-name: flow-run-y;
 }
 
@@ -2084,7 +2120,7 @@ body:has([data-theme="dark"]) {
   position: absolute;
   inset: -6px;
   border-radius: inherit;
-  border: 2px solid rgb(78 242 228 / 0.6);
+  border: 2px solid color-mix(in srgb, var(--color-focus) 60%, transparent);
   animation: ping-soft 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
@@ -2103,7 +2139,7 @@ body:has([data-theme="dark"]) {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.07) 45%, rgb(78 242 228 / 0.12) 50%, transparent 65%);
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.07) 45%, color-mix(in srgb, var(--color-focus) 12%, transparent) 50%, transparent 65%);
   transform: translateX(-100%);
   animation: shimmer 4.5s ease-in-out infinite;
 }
@@ -2113,19 +2149,19 @@ body:has([data-theme="dark"]) {
   100% { transform: translateX(100%); }
 }
 
-.chart-dark,
+.chart-brand,
 .chart-light {
   --ts-chart-tooltip-border-radius: 0.875rem;
   --ts-chart-tooltip-padding: 0.55rem 0.8rem;
   --ts-chart-tooltip-font: 600 13px/1.4 "Outfit", ui-sans-serif, system-ui, sans-serif;
 }
 
-.chart-dark {
-  color: rgb(255 255 255 / 0.82);
-  --ts-chart-tooltip-background: rgb(4 11 18 / 0.92);
-  --ts-chart-tooltip-color: #ffffff;
-  --ts-chart-tooltip-border: 1px solid rgb(78 242 228 / 0.35);
-  --ts-chart-tooltip-shadow: 0 14px 40px rgb(0 0 0 / 0.5), 0 0 24px rgb(78 242 228 / 0.18);
+.chart-brand {
+  color: var(--brand-fg);
+  --ts-chart-tooltip-background: var(--brand-card);
+  --ts-chart-tooltip-color: var(--brand-fg);
+  --ts-chart-tooltip-border: 1px solid color-mix(in srgb, var(--color-focus) 45%, transparent);
+  --ts-chart-tooltip-shadow: 0 14px 40px rgb(7 20 40 / 0.3), 0 0 22px color-mix(in srgb, var(--color-focus) 22%, transparent);
 }
 
 .chart-light {

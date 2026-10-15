@@ -8,20 +8,28 @@ import { scaleLinear } from "@tanstack/charts/scales/linear";
 import { scalePoint } from "@tanstack/charts/scales/point";
 import { tooltip } from "@tanstack/charts/tooltip";
 import { curveMonotoneX } from "d3-shape";
+import { useBrandDark } from "./brandTheme";
 
 // Colores validados con el verificador de paletas (banda de luminosidad, contraste y daltonismo).
-const DARK_MARK = "#14a89e";
-const DARK_GLOW = "#4ef2e4";
+// BRAND_MARK pasa en fondo blanco y en la tarjeta navy; el cian de marca solo pinta el brillo.
+const BRAND_MARK = "#1a9fd0";
 const LIGHT_A = "#2b7fc0";
 const LIGHT_B = "#4f9a26";
 
-const DARK_THEME = {
-  foreground: "rgb(255 255 255 / 0.82)",
-  muted: "rgb(255 255 255 / 0.5)",
-  grid: "rgb(255 255 255 / 0.08)",
-  background: "transparent",
-  palette: [DARK_MARK],
-};
+function brandPaint(dark: boolean) {
+  return {
+    glow: dark ? "#3ef3ff" : "#2bbdef",
+    line: dark ? "#3ef3ff" : BRAND_MARK,
+    surface: dark ? "#0c1f3d" : "#ffffff",
+    theme: {
+      foreground: dark ? "rgb(244 251 255 / 0.85)" : "#202246",
+      muted: dark ? "rgb(244 251 255 / 0.55)" : "rgb(32 34 70 / 0.6)",
+      grid: dark ? "rgb(244 251 255 / 0.08)" : "rgb(32 34 70 / 0.08)",
+      background: "transparent",
+      palette: [BRAND_MARK],
+    },
+  };
+}
 
 const LIGHT_THEME = {
   foreground: "#202246",
@@ -59,10 +67,10 @@ function useInView<T extends Element>() {
 }
 
 /** Monta el gráfico cuando entra en pantalla, para que la animación de entrada se vea. */
-function ChartStage({ height, tone, children }: { height: number; tone: "dark" | "light"; children: ReactNode }) {
+function ChartStage({ height, tone, children }: { height: number; tone: "brand" | "light"; children: ReactNode }) {
   const [ref, seen] = useInView<HTMLDivElement>();
   return (
-    <div ref={ref} className={tone === "dark" ? "chart-dark" : "chart-light"} style={{ minHeight: height }}>
+    <div ref={ref} className={tone === "brand" ? "chart-brand" : "chart-light"} style={{ minHeight: height }}>
       {seen ? children : null}
     </div>
   );
@@ -84,14 +92,15 @@ const GROWTH = [
 /** Área + línea: leads calificados por mes tras aplicar la estrategia (datos de ejemplo). */
 export function GrowthChart({ height = 190 }: { height?: number }) {
   const renderer = useMotion();
-  const definition = useMemo(
-    () =>
-      defineChart({
+  const dark = useBrandDark();
+  const definition = useMemo(() => {
+    const paint = brandPaint(dark);
+    return defineChart({
         marks: [
-          crosshair({ x: { label: true }, y: false, stroke: DARK_GLOW, strokeOpacity: 0.4, strokeDasharray: "3 4" }),
+          crosshair({ x: { label: true }, y: false, stroke: paint.glow, strokeOpacity: 0.5, strokeDasharray: "3 4" }),
           areaY(GROWTH, { x: "month", y: "leads", key: "month", fill: "url(#growth-fill)", fillOpacity: 1, curve }),
-          lineY(GROWTH, { x: "month", y: "leads", key: "month", stroke: DARK_GLOW, strokeWidth: 2, curve }),
-          dot(GROWTH.slice(-1), { x: "month", y: "leads", key: "month", r: 5, fill: DARK_GLOW, stroke: "#081723", strokeWidth: 2 }),
+          lineY(GROWTH, { x: "month", y: "leads", key: "month", stroke: paint.line, strokeWidth: 2, curve }),
+          dot(GROWTH.slice(-1), { x: "month", y: "leads", key: "month", r: 5, fill: paint.line, stroke: paint.surface, strokeWidth: 2 }),
         ],
         scales: {
           x: { scale: () => scalePoint<string>().padding(0.25) },
@@ -110,24 +119,23 @@ export function GrowthChart({ height = 190 }: { height?: number }) {
             x2: 0,
             y2: 0,
             stops: [
-              { offset: 0, color: DARK_MARK, opacity: 0 },
-              { offset: 1, color: DARK_GLOW, opacity: 0.35 },
+              { offset: 0, color: BRAND_MARK, opacity: 0 },
+              { offset: 1, color: paint.glow, opacity: 0.35 },
             ],
           },
         ],
-        theme: DARK_THEME,
+        theme: paint.theme,
         focus: "group-x",
         maxFocusDistance: Number.POSITIVE_INFINITY,
         tooltip: {
           use: tooltip,
           items: [{ channel: "y", label: "Leads", text: (point) => `${whole.format(Number(point.yValue))} leads` }],
         },
-      }),
-    [],
-  );
+      });
+  }, [dark]);
   return (
-    <ChartStage height={height} tone="dark">
-      <Chart definition={definition} renderer={renderer} height={height} idPrefix="growth" ariaLabel="Leads calificados por mes, datos de ejemplo" />
+    <ChartStage height={height} tone="brand">
+      <Chart key={dark ? "dark" : "light"} definition={definition} renderer={renderer} height={height} idPrefix="growth" ariaLabel="Leads calificados por mes, datos de ejemplo" />
     </ChartStage>
   );
 }
@@ -143,13 +151,15 @@ export type CampaignMetric = keyof typeof CAMPAIGN;
 /** Barras por semana con selector de métrica; las barras se transforman con resorte al cambiar. */
 export function CampaignBars({ height = 210 }: { height?: number }) {
   const renderer = useMotion();
+  const dark = useBrandDark();
   const [metric, setMetric] = useState<CampaignMetric>("leads");
   const current = CAMPAIGN[metric];
   const definition = useMemo(() => {
+    const paint = brandPaint(dark);
     const rows = current.rows.map((value, index) => ({ week: `S${index + 1}`, value }));
     return defineChart({
       marks: [
-        crosshair({ x: { band: { fill: DARK_GLOW, fillOpacity: 0.08, radius: 8, inset: -4 } }, y: false }),
+        crosshair({ x: { band: { fill: paint.glow, fillOpacity: 0.1, radius: 8, inset: -4 } }, y: false }),
         barY(rows, { x: "week", y: "value", key: "week", fill: "url(#bar-fill)", radius: { end: 4 }, maxThickness: 24 }),
       ],
       scales: {
@@ -169,22 +179,22 @@ export function CampaignBars({ height = 210 }: { height?: number }) {
           x2: 0,
           y2: 0,
           stops: [
-            { offset: 0, color: DARK_MARK, opacity: 0.9 },
-            { offset: 1, color: DARK_GLOW, opacity: 1 },
+            { offset: 0, color: BRAND_MARK, opacity: 0.95 },
+            { offset: 1, color: paint.glow, opacity: 1 },
           ],
         },
       ],
-      theme: DARK_THEME,
+      theme: paint.theme,
       tooltip: {
         use: tooltip,
         items: [{ channel: "y", label: current.label, text: (point) => `${whole.format(Number(point.yValue))} ${current.unit}` }],
       },
     });
-  }, [current]);
+  }, [current, dark]);
 
   return (
     <div>
-      <div role="tablist" aria-label="Métrica de la campaña" className="flex gap-1 rounded-full bg-white/[0.05] p-1">
+      <div role="tablist" aria-label="Métrica de la campaña" className="flex gap-1 rounded-full bg-fg/[0.06] p-1">
         {(Object.keys(CAMPAIGN) as CampaignMetric[]).map((key) => (
           <button
             key={key}
@@ -192,14 +202,14 @@ export function CampaignBars({ height = 210 }: { height?: number }) {
             role="tab"
             aria-selected={metric === key}
             onClick={() => setMetric(key)}
-            className={`flex-1 rounded-full px-3 py-1.5 text-xs font-bold transition ${metric === key ? "bg-aqua text-abyss shadow-[0_0_18px_rgb(78_242_228/0.4)]" : "text-white/70 hover:text-white"}`}
+            className={`flex-1 rounded-full px-3 py-1.5 text-xs font-extrabold transition ${metric === key ? "bg-focus text-navy shadow-[0_0_18px_rgb(43_189_239/0.4)]" : "text-fg/70 hover:text-fg"}`}
           >
             {CAMPAIGN[key].label}
           </button>
         ))}
       </div>
-      <ChartStage height={height} tone="dark">
-        <Chart definition={definition} renderer={renderer} height={height} idPrefix="campaign" ariaLabel={`${current.label} por semana, datos de ejemplo`} />
+      <ChartStage height={height} tone="brand">
+        <Chart key={dark ? "dark" : "light"} definition={definition} renderer={renderer} height={height} idPrefix="campaign" ariaLabel={`${current.label} por semana, datos de ejemplo`} />
       </ChartStage>
     </div>
   );

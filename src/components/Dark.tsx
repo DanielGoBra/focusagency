@@ -1,106 +1,81 @@
 import { useEffect, useId, useRef, useState, type ComponentType, type CSSProperties, type PointerEvent, type ReactNode } from "react";
-import { ArrowRight, ChevronDown, Clapperboard, Cpu, Database, Infinity as InfinityIcon, ScanLine } from "lucide-react";
+import { ChevronDown, Clapperboard, Cpu, Database, Infinity as InfinityIcon, ScanLine } from "lucide-react";
+import { BrandDarkContext } from "./brandTheme";
+import { NeuralField } from "./NeuralField";
+import { SiteHeader } from "./SiteHeader";
 import { Reveal, SocialGlyph } from "./Site";
 
 type Icon = ComponentType<{ className?: string; strokeWidth?: number }>;
 
-export function FocusWordmark({ suffix, className = "" }: { suffix: string; className?: string }) {
-  const id = useId();
+/** Marco común de Agency y Academy: header de marcas, red neuronal lateral y tema claro/oscuro como en Focuschat. */
+export function BrandPage({
+  title,
+  sections,
+  children,
+}: {
+  title: string;
+  sections: readonly { hash: string; label: string }[];
+  children: ReactNode;
+}) {
+  const [dark, setDark] = useState(true);
+
+  useEffect(() => {
+    document.title = title;
+    return () => {
+      document.title = "Focuschat";
+    };
+  }, [title]);
+
   return (
-    <span className={`inline-flex flex-col leading-none text-white ${className}`} aria-label={`Focus ${suffix.toLowerCase()}`}>
-      <span className="flex items-center text-[1.95rem] font-bold tracking-[0.03em]" aria-hidden="true">
-        F
-        <svg viewBox="0 0 40 40" className="mx-[0.04em] h-[0.74em] w-[0.74em]">
-          <defs>
-            <linearGradient id={`${id}-ring`} x1="0" y1="1" x2="1" y2="0">
-              <stop offset="0" stopColor="#4ef2e4" />
-              <stop offset="0.55" stopColor="#5fe4fa" />
-              <stop offset="1" stopColor="#ffffff" />
-            </linearGradient>
-          </defs>
-          <circle cx="20" cy="20" r="15.5" fill="none" stroke={`url(#${id}-ring)`} strokeWidth="7" />
-        </svg>
-        CUS
-      </span>
-      <span className="mt-1 pl-[0.35em] text-[0.62rem] font-medium tracking-[0.62em]" aria-hidden="true">
-        {suffix}
-      </span>
-    </span>
+    <BrandDarkContext.Provider value={dark}>
+      <div data-theme={dark ? "dark" : "light"} className="brand-page min-h-screen">
+        <NeuralField />
+        <SiteHeader theme={dark ? "dark" : "light"} onThemeChange={setDark} sections={sections} />
+        {children}
+      </div>
+    </BrandDarkContext.Provider>
   );
 }
 
-export function useActiveSection(ids: readonly string[]) {
-  const [active, setActive] = useState(ids[0] ?? "");
-  useEffect(() => {
-    const seen = new Map<string, number>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) seen.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0);
-        let best = "";
-        let ratio = 0;
-        for (const id of ids) {
-          const value = seen.get(id) ?? 0;
-          if (value > ratio) {
-            best = id;
-            ratio = value;
-          }
-        }
-        if (best) setActive(best);
-      },
-      { threshold: [0, 0.15, 0.35, 0.6], rootMargin: "-80px 0px -35% 0px" },
-    );
-    for (const id of ids) {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    }
-    return () => observer.disconnect();
-  }, [ids]);
-  return active;
-}
+const POSES = {
+  frente: "/brand/mascot/frente.png?v=5",
+  senala: "/brand/mascot/senala.png?v=5",
+  chat: "/brand/mascot/chat.png",
+  cafe: "/brand/mascot/cafe.png",
+  serio: "/brand/mascot/serio.png",
+  "perfil-azul": "/brand/mascot/perfil-azul.png",
+  "perfil-cerebro": "/brand/mascot/perfil-cerebro.png",
+} as const;
 
-export function DarkHeader({
-  suffix,
-  links,
-  cta,
-  onCta,
+export type Pose = keyof typeof POSES;
+
+/** FOCU con su burbuja; cada sección usa una pose distinta (DESIGN.md). */
+export function PageMascot({
+  pose,
+  kicker,
+  text,
+  className = "w-[200px] sm:w-[230px]",
+  bubbleSide = "left",
 }: {
-  suffix: string;
-  links: readonly { id: string; label: string }[];
-  cta: string;
-  onCta: () => void;
+  pose: Pose;
+  kicker?: string;
+  text?: string;
+  className?: string;
+  bubbleSide?: "left" | "right";
 }) {
-  const [ids] = useState(() => links.map((link) => link.id));
-  const active = useActiveSection(ids);
   return (
-    <header className="sticky top-0 z-30 border-b border-white/5 bg-abyss/80 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-4 py-3 md:px-8">
-        <a href="#inicio" className="shrink-0">
-          <FocusWordmark suffix={suffix} />
-        </a>
-        <nav className="hidden items-center gap-8 text-[15px] text-white/85 lg:flex">
-          {links.map((link) => (
-            <a
-              key={link.id}
-              href={`#${link.id}`}
-              className={`relative py-2 transition hover:text-white ${active === link.id ? "text-white" : ""}`}
-            >
-              {link.label}
-              <span
-                className={`absolute inset-x-0 -bottom-0.5 h-[3px] rounded-full bg-aqua transition-opacity ${active === link.id ? "opacity-100" : "opacity-0"}`}
-              />
-            </a>
-          ))}
-        </nav>
-        <button
-          type="button"
-          onClick={onCta}
-          className="inline-flex shrink-0 items-center gap-2 rounded-full bg-aqua px-4 py-2.5 text-sm font-medium text-abyss shadow-[0_0_30px_rgb(78_242_228/0.35)] transition hover:-translate-y-0.5 sm:px-6 sm:py-3 sm:text-[15px]"
-        >
-          {cta}
-          <ArrowRight className="h-4 w-4" />
-        </button>
-      </div>
-    </header>
+    <div className={`pointer-events-none relative mx-auto ${className}`}>
+      {text ? (
+        <div className="focu-bubble relative z-10 mb-3 rounded-[22px] border-2 border-[#2BBDEF] bg-white px-3 py-2.5 text-[#202246] shadow-[0_0_16px_rgb(94_211_252_/_0.9),0_0_34px_rgb(43_189_239_/_0.6)]">
+          {kicker && <span className="block text-[10px] font-bold tracking-[0.16em] uppercase">{kicker}</span>}
+          <span className="mt-0.5 block text-sm leading-snug font-extrabold">{text}</span>
+          <span className={`absolute -bottom-2 h-4 w-4 rotate-45 border-2 border-[#2BBDEF] bg-[#2BBDEF] ${bubbleSide === "left" ? "left-9" : "right-9"}`} />
+          <span className={`absolute -bottom-[5px] h-3.5 w-3.5 rotate-45 bg-white ${bubbleSide === "left" ? "left-[38px]" : "right-[38px]"}`} />
+        </div>
+      ) : null}
+      <img src={POSES[pose]} alt="" draggable={false} className="float w-full object-contain object-bottom select-none" />
+      <div className="mx-auto mt-1 h-3 w-1/2 rounded-full bg-navy/20 blur-sm" />
+    </div>
   );
 }
 
@@ -117,9 +92,10 @@ export function VideoSlot({
   className?: string;
   compact?: boolean;
 }) {
+  const frame = `hero-video relative ${compact ? "border-4! rounded-[1.1rem]!" : "w-full min-h-[250px] sm:min-h-0"} ${className}`;
   if (src) {
     return (
-      <div className={`overflow-hidden rounded-[28px] bg-abyss ${className}`}>
+      <div className={frame}>
         <iframe
           className="h-full w-full"
           src={src}
@@ -132,25 +108,25 @@ export function VideoSlot({
     );
   }
   return (
-    <GlowCard className={`shimmer rounded-[28px] ${className}`} tilt={false}>
-      <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-[radial-gradient(circle_at_50%_40%,rgb(78_242_228/0.14),transparent_60%)]" />
-      <div className="paper-grid pointer-events-none absolute inset-0 rounded-[inherit] opacity-[0.06] invert" />
-      <div className={`relative flex h-full flex-col items-center justify-center text-center ${compact ? "gap-2 p-4" : "gap-4 p-6"}`}>
+    <div className={`${frame} shimmer text-white`}>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgb(43_189_239/0.28),transparent_62%)]" />
+      <div className="paper-grid pointer-events-none absolute inset-0 opacity-[0.08] invert" />
+      <div className={`relative flex h-full flex-col items-center justify-center text-center ${compact ? "gap-2 p-4" : "gap-3 p-5 sm:gap-4 sm:p-6"}`}>
         <span
-          className={`ping-soft relative grid place-items-center rounded-full bg-gradient-to-br from-aqua to-sky text-abyss shadow-[0_0_40px_rgb(78_242_228/0.45)] ${
-            compact ? "h-12 w-12" : "h-16 w-16 md:h-20 md:w-20"
+          className={`ping-soft relative grid place-items-center rounded-full bg-gradient-to-br from-[#2ad8ff] to-lime text-navy shadow-[0_0_40px_rgb(43_189_239/0.45)] ${
+            compact ? "h-12 w-12" : "h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20"
           }`}
         >
           <Clapperboard className={compact ? "h-5 w-5" : "h-7 w-7 md:h-9 md:w-9"} strokeWidth={1.8} />
         </span>
-        <p className={`font-bold tracking-tight ${compact ? "text-base" : "text-xl md:text-3xl"}`}>{title}</p>
-        <p className={`max-w-md text-white/65 ${compact ? "text-xs" : "text-sm md:text-base"}`}>{note}</p>
-        <span className="inline-flex items-center gap-2 rounded-full border border-aqua/30 bg-aqua/10 px-3 py-1 text-[11px] font-bold tracking-[0.18em] text-aqua uppercase">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-aqua" />
+        <p className={`font-extrabold tracking-tight ${compact ? "text-base" : "text-lg sm:text-xl md:text-3xl"}`}>{title}</p>
+        <p className={`max-w-md text-white/70 ${compact ? "text-xs" : "text-xs sm:text-sm md:text-base"}`}>{note}</p>
+        <span className="inline-flex items-center gap-2 rounded-full bg-lime px-3 py-1 text-[11px] font-extrabold tracking-[0.18em] text-navy uppercase">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-navy" />
           Próximamente
         </span>
       </div>
-    </GlowCard>
+    </div>
   );
 }
 
@@ -164,11 +140,11 @@ const PILLS: { label: string; icon: Icon | "wa" }[] = [
 
 export function ToolPills({ className = "" }: { className?: string }) {
   return (
-    <ul className={`flex flex-wrap items-center gap-y-3 text-sm text-white/85 xl:text-[15px] ${className}`}>
+    <ul className={`flex flex-wrap items-center gap-y-3 text-sm text-fg/85 xl:text-[15px] ${className}`}>
       {PILLS.map((pill, index) => {
         const Glyph = pill.icon;
         return (
-          <li key={pill.label} className={`flex items-center gap-2 pr-4 sm:px-3 sm:first:pl-0 xl:px-4 ${index > 0 ? "sm:border-l sm:border-white/20" : ""}`}>
+          <li key={pill.label} className={`flex items-center gap-2 pr-4 sm:px-3 sm:first:pl-0 xl:px-4 ${index > 0 ? "sm:border-l sm:border-fg/20" : ""}`}>
             {Glyph === "wa" ? <SocialGlyph name="WhatsApp" className="h-5 w-5" /> : <Glyph className="h-5 w-5" strokeWidth={1.6} />}
             {pill.label}
           </li>
@@ -189,13 +165,13 @@ export function HeroWave({ className = "" }: { className?: string }) {
     >
       <defs>
         <linearGradient id={`${id}-w`} x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0" stopColor="#0d6f6a" stopOpacity="0" />
-          <stop offset="0.45" stopColor="#0f7c78" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#1b5fd6" stopOpacity="0.75" />
+          <stop offset="0" stopColor="#2bbdef" stopOpacity="0" />
+          <stop offset="0.5" stopColor="#2bbdef" stopOpacity="0.18" />
+          <stop offset="1" stopColor="#1efa5d" stopOpacity="0.22" />
         </linearGradient>
       </defs>
       <path d="M0 320C420 320 780 285 1060 180 1240 112 1350 46 1440 0V320Z" fill={`url(#${id}-w)`} />
-      <path d="M0 320C420 320 780 285 1060 180 1240 112 1350 46 1440 0" fill="none" stroke="#4ef2e4" strokeOpacity="0.45" strokeWidth="1.5" />
+      <path d="M0 320C420 320 780 285 1060 180 1240 112 1350 46 1440 0" fill="none" stroke="#2bbdef" strokeOpacity="0.55" strokeWidth="1.5" />
     </svg>
   );
 }
@@ -207,7 +183,9 @@ export function Testimonials({ items, id = "testimonios" }: { items: readonly Te
     <section id={id} className="relative mx-auto max-w-[1400px] px-5 py-20 md:px-8 md:py-28">
       <Reveal from="blur" className="text-center">
         <Kicker>Lo que dicen de Focus</Kicker>
-        <h2 className="mt-4 text-5xl font-light tracking-[0.04em] uppercase md:text-7xl">Testimonios</h2>
+        <h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
+          Clientes que ya <span className="text-accent-ink">venden con Focus</span>
+        </h2>
       </Reveal>
       <div className="mt-12 grid auto-rows-fr gap-6 md:grid-cols-3">
         {items.map((item, index) => (
@@ -221,9 +199,9 @@ export function Testimonials({ items, id = "testimonios" }: { items: readonly Te
                 compact
               />
               <div className="flex flex-1 flex-col px-3 pt-5 pb-3 text-center">
-                <p className="flex-1 text-[15px] leading-relaxed text-white/75">“{item.quote}”</p>
-                <p className="mt-4 text-sm font-bold text-white">{item.name}</p>
-                <p className="text-xs tracking-[0.14em] text-aqua uppercase">{item.business}</p>
+                <p className="flex-1 text-[15px] leading-relaxed text-fg/75">“{item.quote}”</p>
+                <p className="mt-4 text-sm font-bold text-fg">{item.name}</p>
+                <p className="text-xs font-bold tracking-[0.14em] text-accent-ink uppercase">{item.business}</p>
               </div>
             </GlowCard>
           </Reveal>
@@ -237,26 +215,29 @@ export function DarkFaq({
   id,
   subtitle,
   items,
+  mascot,
 }: {
   id: string;
   subtitle: string;
   items: readonly (readonly [string, string])[];
+  mascot?: ReactNode;
 }) {
   const [open, setOpen] = useState<number | null>(0);
   return (
     <section id={id} className="relative overflow-hidden">
-      <div className="pointer-events-none absolute top-1/3 left-1/3 h-80 w-[36rem] rounded-full bg-mint/10 blur-3xl" />
-      <div className="pointer-events-none absolute top-1/2 right-1/4 h-80 w-[30rem] rounded-full bg-sky/10 blur-3xl" />
-      <div className="relative mx-auto max-w-6xl px-5 py-20 md:py-24">
-        <Reveal>
-          <h2 className="text-5xl leading-[0.95] font-bold tracking-tight md:text-7xl">
-            Preguntas
-            <br />
-            frecuentes
-          </h2>
-          <p className="mt-4 text-white/70">{subtitle}</p>
+      <div className="pointer-events-none absolute top-1/3 left-1/3 h-80 w-[36rem] max-w-full rounded-full bg-lime/10 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/2 right-1/4 h-80 w-[30rem] max-w-full rounded-full bg-focus/10 blur-3xl" />
+      <div className="relative mx-auto max-w-4xl px-5 py-20 md:py-24">
+        <Reveal className="flex items-end justify-between gap-6">
+          <div>
+            <h2 className="text-4xl font-extrabold tracking-tight md:text-5xl">
+              Preguntas <span className="text-accent-ink">frecuentes</span>
+            </h2>
+            <p className="mt-4 text-fg/70">{subtitle}</p>
+          </div>
+          {mascot && <div className="hidden shrink-0 md:block">{mascot}</div>}
         </Reveal>
-        <div className="mt-10 divide-y divide-white/10 border-y border-white/10">
+        <div className="mt-10 divide-y divide-fg/10 border-y border-fg/10">
           {items.map(([question, answer], index) => {
             const shown = open === index;
             return (
@@ -267,10 +248,12 @@ export function DarkFaq({
                   onClick={() => setOpen(shown ? null : index)}
                   className="flex w-full items-center justify-between gap-4 py-6 text-left"
                 >
-                  <span className="text-lg font-bold md:text-xl">{question}</span>
-                  <ChevronDown className={`h-5 w-5 shrink-0 text-aqua transition-transform ${shown ? "rotate-180" : ""}`} strokeWidth={2.4} />
+                  <span className="text-lg font-extrabold">{question}</span>
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-focus text-navy">
+                    <ChevronDown className={`h-4 w-4 transition-transform ${shown ? "rotate-180" : ""}`} strokeWidth={3} />
+                  </span>
                 </button>
-                {shown && <p className="animate-in fade-in slide-in-from-top-1 max-w-4xl pb-6 leading-relaxed text-white/75 duration-300">{answer}</p>}
+                {shown && <p className="animate-in fade-in slide-in-from-top-1 max-w-4xl pb-6 leading-relaxed text-fg/75 duration-300">{answer}</p>}
               </div>
             );
           })}
@@ -365,7 +348,7 @@ export function TikTokMark({ className = "h-6 w-6" }: { className?: string }) {
 }
 
 export function Kicker({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <p className={`text-xs font-medium tracking-[0.32em] text-aqua uppercase md:text-sm ${className}`}>{children}</p>;
+  return <p className={`text-xs font-bold tracking-[0.22em] text-accent-ink uppercase md:text-sm ${className}`}>{children}</p>;
 }
 
 /** Tarjeta con borde de luz giratorio, foco que sigue al cursor e inclinación 3D suave. */

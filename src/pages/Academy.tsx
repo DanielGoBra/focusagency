@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ComponentType } from "react";
+import { useCallback, useState, type ComponentType } from "react";
 import {
   ArrowRight,
   ChartNoAxesCombined,
@@ -10,8 +10,8 @@ import {
   Lightbulb,
   Megaphone,
 } from "lucide-react";
-import { DarkFaq, DarkHeader, FlowLink, GlowCard, HeroWave, Kicker, Testimonials, ToolPills, VideoSlot, useCycle, type Testimonial } from "../components/Dark";
-import { Reveal, SiteFooter, SiteSwitcher, WhatsAppChat, openFocusWhatsApp } from "../components/Site";
+import { BrandPage, DarkFaq, FlowLink, GlowCard, HeroWave, Kicker, PageMascot, Testimonials, ToolPills, VideoSlot, useCycle, type Testimonial } from "../components/Dark";
+import { Reveal, SiteFooter, WhatsAppChat, openFocusWhatsApp } from "../components/Site";
 
 type Icon = ComponentType<{ className?: string; strokeWidth?: number }>;
 
@@ -20,12 +20,12 @@ const ACADEMY_VIDEO = "";
 
 const ACCESS_TEXT = "Hola, quiero acceder a Focus Academy.";
 
-const LINKS = [
-  { id: "clases", label: "Clases gratis" },
-  { id: "recursos", label: "Recursos" },
-  { id: "testimonios", label: "Comunidad" },
-  { id: "soporte", label: "Soporte" },
-] as const;
+const SECTIONS = [
+  { hash: "clases", label: "Clases gratis" },
+  { hash: "recursos", label: "Recursos" },
+  { hash: "testimonios", label: "Comunidad" },
+  { hash: "soporte", label: "Soporte" },
+];
 
 const STEPS: { title: string; text: string; icon: Icon; paid?: boolean }[] = [
   { title: "Aprende estrategias", text: "Clases prácticas y directas al grano.", icon: Lightbulb },
@@ -65,14 +65,14 @@ function StepCard({ step, live }: { step: (typeof STEPS)[number]; live: boolean 
     >
       <span
         className={`absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-lg px-2.5 py-1 text-[10px] font-bold whitespace-nowrap xl:text-[11px] ${
-          step.paid ? "bg-gradient-to-r from-sky to-white text-abyss shadow-[0_0_18px_rgb(95_228_250/0.5)]" : "bg-mint text-abyss shadow-[0_0_18px_rgb(82_250_164/0.5)]"
+          step.paid ? "bg-gradient-to-r from-[#2ad8ff] to-lime text-navy shadow-[0_0_18px_rgb(43_189_239/0.5)]" : "bg-lime text-navy shadow-[0_0_18px_rgb(30_250_93/0.5)]"
         }`}
       >
         {step.paid ? "PAGAS TU SUSCRIPCIÓN" : "GRATIS"}
       </span>
-      <Glyph className={`live-icon h-11 w-11 ${step.paid ? "text-sky" : "text-aqua"}`} strokeWidth={1.5} />
+      <Glyph className={`live-icon h-11 w-11 ${step.paid ? "text-[#19b7e6]" : "text-accent-ink"}`} strokeWidth={1.5} />
       <p className="mt-3 text-[17px] leading-tight font-bold">{step.title}</p>
-      <p className="mt-2 text-[13px] leading-snug text-white/70">{step.text}</p>
+      <p className="mt-2 text-[13px] leading-snug text-fg/70">{step.text}</p>
     </GlowCard>
   );
 }
@@ -81,21 +81,37 @@ function Hero() {
   const active = useCycle(STEPS.length, 1300);
   return (
     <section id="inicio" className="relative overflow-hidden">
-      <div className="pointer-events-none absolute top-0 right-0 h-[34rem] w-[44rem] rounded-full bg-[#0a3150]/60 blur-3xl" />
+      <div className="pointer-events-none absolute top-0 right-0 h-[34rem] w-[44rem] rounded-full bg-focus/10 blur-3xl" />
       <HeroWave className="h-[18%]! opacity-60" />
       <div className="relative mx-auto max-w-[1400px] px-5 pt-14 md:px-8 lg:pt-20">
         <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
           <Reveal from="blur">
             <Kicker>Aprende · Aplica · Haz crecer tu negocio</Kicker>
-            <h1 className="mt-6 text-5xl leading-[1.04] font-bold tracking-tight md:text-6xl xl:text-[4.25rem]">
+            <h1 className="mt-6 text-5xl leading-[1.04] font-extrabold tracking-tight md:text-6xl xl:text-[4.25rem]">
               <span className="block lg:whitespace-nowrap">Suscríbete a un CRM.</span>
-              <span className="block bg-gradient-to-r from-aqua to-sky bg-clip-text text-transparent lg:whitespace-nowrap">Accede a una academia.</span>
+              <span className="block text-accent-ink lg:whitespace-nowrap">Accede a una academia.</span>
               <span className="block lg:whitespace-nowrap">Impulsa tus ventas.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/85 md:text-xl">
-              Con tu suscripción a <span className="text-aqua">Focus Chat</span>, accede a las <span className="text-aqua">clases gratuitas</span> de Focus Academy y aprende
-              nuevas estrategias para crecer.
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-fg/85 md:text-xl">
+              Con tu suscripción a <span className="font-bold text-accent-ink">Focus Chat</span>, accede a las{" "}
+              <span className="font-bold text-accent-ink">clases gratuitas</span> de Focus Academy y aprende nuevas estrategias para crecer.
             </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => openFocusWhatsApp(ACCESS_TEXT)}
+                className="inline-flex items-center gap-2 rounded-full bg-focus px-6 py-3.5 text-base font-extrabold text-navy shadow-[0_0_28px_rgb(43_189_239/0.4)] transition hover:-translate-y-0.5"
+              >
+                Acceder a la academia
+                <ArrowRight className="h-5 w-5" />
+              </button>
+              <a
+                href="#clases"
+                className="inline-flex items-center rounded-full border-2 border-[#2bbdef] bg-white px-6 py-3.5 text-base font-extrabold text-[#14245c] transition hover:-translate-y-0.5"
+              >
+                Ver las clases
+              </a>
+            </div>
           </Reveal>
           <Reveal from="blur" delay={150}>
             <VideoSlot
@@ -118,22 +134,27 @@ function Hero() {
               </li>
             ))}
           </ol>
-          <p className="mt-2 text-center text-xs text-white/45 lg:hidden">Desliza para ver las 7 clases →</p>
+          <p className="mt-2 text-center text-xs text-fg/45 lg:hidden">Desliza para ver las 7 clases →</p>
         </div>
 
-        <Reveal from="blur" className="relative mt-14 pb-16 text-center lg:mt-16 lg:pb-20">
-          <svg viewBox="0 0 1200 60" className="absolute inset-x-0 top-6 mx-auto h-10 w-full max-w-5xl" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0 58C260 58 380 6 600 6S940 58 1200 58" fill="none" stroke="#4ef2e4" strokeOpacity="0.5" strokeWidth="1.5" />
-          </svg>
-          <span className="ping-soft relative mx-auto grid h-14 w-14 place-items-center rounded-full border border-aqua/50 bg-abyss text-aqua shadow-[0_0_30px_rgb(78_242_228/0.3)]">
-            <GraduationCap className="h-7 w-7" strokeWidth={1.7} />
-          </span>
-          <p className="mt-5 text-4xl font-bold tracking-tight md:text-5xl">
-            Todo esto es <span className="text-mint">GRATIS.</span>
-          </p>
-          <p className="mt-3 text-sm tracking-[0.22em] text-white/85 uppercase md:text-base">
-            Y solo pagas tu <span className="text-aqua">suscripción</span> por utilizar la plataforma.
-          </p>
+        <Reveal from="blur" className="mt-14 pb-16 lg:mt-16 lg:pb-20 xl:grid xl:grid-cols-[230px_1fr_230px] xl:items-end">
+          <div className="hidden xl:block">
+            <PageMascot pose="senala" kicker="Sin costo" text="Las 6 clases son gratis" className="ml-0 w-[210px]" />
+          </div>
+          <div className="relative text-center">
+            <svg viewBox="0 0 1200 60" className="absolute inset-x-0 top-6 mx-auto h-10 w-full" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M0 58C260 58 380 6 600 6S940 58 1200 58" fill="none" stroke="#2bbdef" strokeOpacity="0.5" strokeWidth="1.5" />
+            </svg>
+            <span className="ping-soft relative mx-auto grid h-14 w-14 place-items-center rounded-full border border-focus/50 bg-page text-accent-ink shadow-[0_0_30px_rgb(43_189_239/0.3)]">
+              <GraduationCap className="h-7 w-7" strokeWidth={1.7} />
+            </span>
+            <p className="mt-5 text-4xl font-extrabold tracking-tight md:text-5xl">
+              Todo esto es <span className="rounded-2xl bg-lime px-3 text-navy">GRATIS.</span>
+            </p>
+            <p className="mt-4 text-sm font-bold tracking-[0.2em] text-fg/85 uppercase md:text-base">
+              Y solo pagas tu <span className="text-accent-ink">suscripción</span> por utilizar la plataforma.
+            </p>
+          </div>
         </Reveal>
       </div>
     </section>
@@ -146,17 +167,17 @@ function Resources() {
       <div className="relative mx-auto grid max-w-[1400px] items-center gap-12 px-5 py-20 md:px-8 md:py-28 lg:grid-cols-[0.9fr_1.1fr]">
         <Reveal from="blur">
           <Kicker>Aprende · Aplica · Haz crecer tu negocio</Kicker>
-          <h2 className="mt-6 text-4xl leading-[1.05] font-bold tracking-tight md:text-6xl">
+          <h2 className="mt-6 text-4xl leading-[1.05] font-extrabold tracking-tight md:text-6xl">
             En Focus Academy{" "}
-            <span className="bg-gradient-to-r from-aqua to-sky bg-clip-text text-transparent">aprendes todo lo que necesitas para atraer, gestionar y vender más.</span>
+            <span className="text-accent-ink">aprendes todo lo que necesitas para atraer, gestionar y vender más.</span>
           </h2>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/85">
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-fg/85">
             De nada te sirve automatizar <strong>tus leads</strong> si no tienes leads que gestionar. Por eso, aquí aprenderás a <strong>llenar</strong> tu WhatsApp de leads
             potenciales. Te enseñamos desde la creación de copys hasta la automatización en el CRM.
           </p>
           <a
             href="#clases"
-            className="mt-9 inline-flex items-center gap-3 rounded-full bg-aqua px-8 py-4 text-lg font-medium text-abyss shadow-[0_0_40px_rgb(78_242_228/0.35)] transition hover:-translate-y-0.5"
+            className="mt-9 inline-flex items-center gap-3 rounded-full bg-focus px-8 py-4 text-lg font-extrabold text-navy shadow-[0_0_28px_rgb(43_189_239/0.4)] transition hover:-translate-y-0.5"
           >
             Explora las clases gratis
             <ArrowRight className="h-5 w-5" />
@@ -165,14 +186,14 @@ function Resources() {
         </Reveal>
         <Reveal from="blur" delay={150}>
           <div className="relative">
-            <div className="pointer-events-none absolute -inset-6 rounded-[40px] bg-gradient-to-br from-aqua/20 via-sky/10 to-mint/15 blur-2xl" />
+            <div className="pointer-events-none absolute -inset-6 rounded-[40px] bg-gradient-to-br from-focus/20 via-focus/5 to-lime/15 blur-2xl" />
             <img
               src="/academy/hero-estudio.jpg"
               alt="Estudiante tomando una clase de Focus Academy"
               width={902}
               height={377}
               loading="lazy"
-              className="relative w-full rounded-[28px] border border-white/10 object-cover"
+              className="relative w-full rounded-[28px] border border-fg/10 object-cover"
             />
           </div>
         </Reveal>
@@ -186,25 +207,21 @@ export function Academy() {
   const openWhatsApp = useCallback(() => setWhatsappOpen(true), []);
   const closeWhatsApp = useCallback(() => setWhatsappOpen(false), []);
 
-  useEffect(() => {
-    document.title = "Focus Academy · Aprende, aplica y haz crecer tu negocio";
-    return () => {
-      document.title = "Focus Agency";
-    };
-  }, []);
-
   return (
-    <div className="min-h-screen bg-abyss text-white">
-      <SiteSwitcher tone="dark" />
-      <DarkHeader suffix="ACADEMY" links={LINKS} cta="Acceder a la academia" onCta={() => openFocusWhatsApp(ACCESS_TEXT)} />
-      <main>
+    <BrandPage title="Focus Academy · Aprende, aplica y haz crecer tu negocio" sections={SECTIONS}>
+      <main className="relative z-10">
         <Hero />
         <Resources />
         <Testimonials items={TESTIMONIALS} />
-        <DarkFaq id="soporte" subtitle="Preguntas o información sobre la academia y tu suscripción" items={FAQ} />
+        <DarkFaq
+          id="soporte"
+          subtitle="Preguntas o información sobre la academia y tu suscripción"
+          items={FAQ}
+          mascot={<PageMascot pose="perfil-azul" kicker="¿Dudas?" text="Aquí te respondo" className="w-[150px]" />}
+        />
       </main>
-      <SiteFooter band="aqua" onWhatsApp={openWhatsApp} />
+      <SiteFooter onWhatsApp={openWhatsApp} />
       <WhatsAppChat open={whatsappOpen} onOpen={openWhatsApp} onClose={closeWhatsApp} />
-    </div>
+    </BrandPage>
   );
 }

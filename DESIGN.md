@@ -111,6 +111,15 @@ Hover: sube 2px. La tarjeta sube 8px.
 
 Lo usan Essential, Premium y el formulario general. El mensaje prellenado de un plan es `Quiero el plan {nombre}.` solo si el campo está vacío o ya era una frase de plan. No inventes dirección ni teléfono. WhatsApp de contacto: `https://wa.me/573106309679`.
 
+### Focus Agency y Focus Academy
+
+Usan el mismo header de marcas (`SiteHeader` con sus propias secciones), la red neuronal lateral (`NeuralField`) y el botón de tema; arrancan en oscuro como la portada. El marco común es `BrandPage` en `src/components/Dark.tsx`.
+
+- Colores por tema con `text-fg`, `bg-page`, `bg-card`, `text-accent-ink` y `text-lime-ink` (definidos en `.brand-page` de `src/index.css`). El cian de acción sigue siendo `focus`.
+- Los videos sin URL muestran el marco `.hero-video` con el aviso “Próximamente”.
+- FOCU con burbuja (`PageMascot`), una pose distinta por sección.
+- Gráficos con TanStack Charts en `src/components/Charts.tsx`; la marca de datos es `#1a9fd0`, que pasa en fondo blanco y en la tarjeta navy.
+
 ## 5. Layout
 
 - Ancho de lectura del hero: `max-w-5xl`. El video puede llegar a `max-w-[720px]` dentro de un contenedor más ancho para dejar sitio a FOCU.

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ComponentType, type ReactNode } from "react";
+import { useCallback, useState, type ComponentType, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -7,7 +7,6 @@ import {
   CalendarCheck,
   ChartNoAxesCombined,
   Check,
-  Crosshair,
   Database,
   Filter,
   Goal,
@@ -26,8 +25,8 @@ import {
   Zap,
 } from "lucide-react";
 import {
+  BrandPage,
   DarkFaq,
-  DarkHeader,
   FlowLink,
   GlowCard,
   GmailMark,
@@ -36,6 +35,7 @@ import {
   InstagramMark,
   Kicker,
   MetaMark,
+  PageMascot,
   TikTokMark,
   Testimonials,
   ToolPills,
@@ -43,8 +43,9 @@ import {
   useCycle,
   type Testimonial,
 } from "../components/Dark";
+import { useBrandDark } from "../components/brandTheme";
 import { CampaignBars, GrowthChart } from "../components/Charts";
-import { ContactForm, Reveal, SiteFooter, SiteSwitcher, SocialGlyph, WhatsAppChat, openFocusWhatsApp } from "../components/Site";
+import { ContactForm, Reveal, SiteFooter, SocialGlyph, WhatsAppChat, openFocusWhatsApp } from "../components/Site";
 
 type Icon = ComponentType<{ className?: string; strokeWidth?: number }>;
 
@@ -53,12 +54,12 @@ const WELCOME_VIDEO = "";
 
 const CONSULTING_TEXT = "Hola, quiero agendar una consultoría con Focus Agency.";
 
-const LINKS = [
-  { id: "servicios", label: "Servicios" },
-  { id: "casos", label: "Casos de éxito" },
-  { id: "nosotros", label: "Nosotros" },
-  { id: "contacto", label: "Contacto" },
-] as const;
+const SECTIONS = [
+  { hash: "servicios", label: "Servicios" },
+  { hash: "casos", label: "Casos de éxito" },
+  { hash: "nosotros", label: "Nosotros" },
+  { hash: "contacto", label: "Contacto" },
+];
 
 const TESTIMONIALS: Testimonial[] = [
   { name: "Nombre del cliente", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del cliente, lo que cambió en su negocio con Focus." },
@@ -143,10 +144,10 @@ const FRAME = "flex flex-col rounded-[28px] p-5 md:p-6 lg:h-[540px]";
 function FrameHeader({ label, badge }: { label: string; badge?: string }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <p className="text-xs font-bold tracking-[0.18em] text-aqua uppercase">{label}</p>
+      <p className="text-xs font-bold tracking-[0.18em] text-accent-ink uppercase">{label}</p>
       {badge && (
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-mint/12 px-2.5 py-1 text-[11px] font-bold text-mint">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-mint" />
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-lime/15 px-2.5 py-1 text-[11px] font-bold text-lime-ink">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lime" />
           {badge}
         </span>
       )}
@@ -181,7 +182,7 @@ const FUNNEL = [
     art: (
       <div className="relative grid h-14 w-20 place-items-center overflow-hidden rounded-xl bg-gradient-to-br from-[#1d3a4a] via-[#0b1d2a] to-[#123247]">
         <ImageIcon className="h-6 w-6 text-white/80" strokeWidth={1.6} />
-        <span className="absolute right-1.5 bottom-1.5 grid h-5 w-5 place-items-center rounded-full bg-aqua text-abyss">
+        <span className="absolute right-1.5 bottom-1.5 grid h-5 w-5 place-items-center rounded-full bg-focus text-navy">
           <Play className="h-3 w-3" fill="currentColor" />
         </span>
       </div>
@@ -196,30 +197,31 @@ const FUNNEL = [
       </span>
     ),
   },
-  { title: "CRM", text: "Organizamos y hacemos seguimiento", art: <Database className="h-12 w-12 text-sky" strokeWidth={1.6} /> },
-  { title: "Ventas", text: "Convertimos en clientes", art: <ChartNoAxesCombined className="h-12 w-12 text-mint" strokeWidth={1.8} /> },
+  { title: "CRM", text: "Organizamos y hacemos seguimiento", art: <Database className="h-12 w-12 text-[#19b7e6]" strokeWidth={1.6} /> },
+  { title: "Ventas", text: "Convertimos en clientes", art: <ChartNoAxesCombined className="h-12 w-12 text-lime-ink" strokeWidth={1.8} /> },
 ];
 
 function FunnelHero() {
   const active = useCycle(FUNNEL.length, 1500);
+  const dark = useBrandDark();
   return (
     <section className="relative overflow-hidden">
-      <div className="pointer-events-none absolute top-10 right-0 h-[32rem] w-[40rem] rounded-full bg-[#0b3a46]/60 blur-3xl" />
+      <div className="pointer-events-none absolute top-10 right-0 h-[32rem] w-[40rem] rounded-full bg-focus/10 blur-3xl" />
       <HeroWave />
-      <div className="relative mx-auto grid max-w-[1400px] items-center gap-10 px-5 pt-16 pb-14 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:pt-20 lg:pb-20">
+      <div className="relative mx-auto grid max-w-[1380px] items-center gap-10 px-5 pt-10 pb-14 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:pt-14 lg:pb-20">
         <Reveal from="blur">
           <Kicker>Publicidad + Tecnología + Estrategia</Kicker>
-          <h2 className="mt-6 text-5xl leading-[1.02] font-bold tracking-tight md:text-6xl xl:text-7xl">
+          <h2 className="mt-6 text-5xl leading-[1.02] font-extrabold tracking-tight md:text-6xl xl:text-7xl">
             No solo hacemos anuncios.
-            <span className="block bg-gradient-to-r from-aqua via-[#5ef0e6] to-sky bg-clip-text text-transparent">Construimos un embudo de ventas.</span>
+            <span className="block text-accent-ink">Construimos un embudo de ventas.</span>
           </h2>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/85 md:text-xl">
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-fg/85 md:text-xl">
             Desde los creativos y las campañas, hasta el cierre en tu CRM. Un solo sistema, todo conectado.
           </p>
           <button
             type="button"
             onClick={() => openFocusWhatsApp(CONSULTING_TEXT)}
-            className="mt-9 inline-flex items-center gap-3 rounded-full bg-aqua px-8 py-4 text-lg font-medium text-abyss shadow-[0_0_40px_rgb(78_242_228/0.35)] transition hover:-translate-y-0.5"
+            className="mt-9 inline-flex items-center gap-3 rounded-full bg-focus px-8 py-4 text-lg font-extrabold text-navy shadow-[0_0_28px_rgb(43_189_239/0.4)] transition hover:-translate-y-0.5"
           >
             Agendar una consultoría
             <ArrowRight className="h-5 w-5" />
@@ -228,14 +230,18 @@ function FunnelHero() {
         </Reveal>
 
         <Reveal from="blur" delay={150} className="relative min-w-0">
-          <img
-            src="/agency/hero-equipo.jpg"
-            alt="Equipo de Focus Agency"
-            width={792}
-            height={320}
-            className="mx-auto w-full max-w-3xl [mask-image:radial-gradient(ellipse_at_center,#000_55%,transparent_78%)] object-cover"
-          />
-          <ol className="snap-rail relative z-10 -mt-8 flex items-stretch overflow-x-auto pb-2 lg:-mt-20 lg:overflow-visible">
+          {dark ? (
+            <img
+              src="/agency/hero-equipo.jpg"
+              alt="Equipo de Focus Agency"
+              width={792}
+              height={320}
+              className="mx-auto w-full max-w-3xl [mask-image:radial-gradient(ellipse_at_center,#000_55%,transparent_78%)] object-cover"
+            />
+          ) : (
+            <PageMascot pose="senala" kicker="Así se arma" text="Tu embudo, paso a paso" className="w-[190px] sm:w-[220px]" bubbleSide="right" />
+          )}
+          <ol className={`snap-rail relative z-10 flex items-stretch overflow-x-auto pt-4 pb-2 lg:overflow-visible ${dark ? "-mt-8 lg:-mt-20" : "mt-6"}`}>
             {FUNNEL.map((card, index) => (
               <li key={card.title} className="flex shrink-0 items-center lg:min-w-0 lg:flex-1 lg:last:flex-none lg:last:basis-[calc((100%-4*1.25rem)/5)]">
                 <GlowCard
@@ -245,7 +251,7 @@ function FunnelHero() {
                 >
                   <div className="live-icon grid h-16 w-full place-items-center">{card.art}</div>
                   <p className="mt-3 text-[17px] font-bold">{card.title}</p>
-                  <p className="mt-1 text-[13px] leading-snug text-white/70">{card.text}</p>
+                  <p className="mt-1 text-[13px] leading-snug text-fg/70">{card.text}</p>
                 </GlowCard>
                 {index < FUNNEL.length - 1 && <FlowLink className="w-4 shrink-0 lg:w-5" delay={index * 0.3} />}
               </li>
@@ -259,47 +265,55 @@ function FunnelHero() {
 
 function Welcome() {
   const bubbles = [
-    { node: <GmailMark className="h-8 w-8" />, place: "left-[-1.5rem] top-[52%] md:left-[-4.5rem]", delay: "0s" },
-    { node: <GoogleG className="h-8 w-8" />, place: "right-[-1.5rem] top-[44%] md:right-[-4.5rem]", delay: "-1.6s" },
-    { node: <InstagramMark className="h-8 w-8" />, place: "left-[6%] -bottom-6 md:-left-10 md:bottom-[8%]", delay: "-3s" },
-    { node: <MetaMark className="h-8 w-8" />, place: "right-[6%] -top-6 md:-right-8 md:top-[6%]", delay: "-2.2s" },
+    { node: <GmailMark className="h-7 w-7" />, place: "-left-5 top-[55%] md:-left-8", delay: "0s" },
+    { node: <GoogleG className="h-7 w-7" />, place: "-right-5 top-[40%] md:-right-8", delay: "-1.6s" },
+    { node: <InstagramMark className="h-7 w-7" />, place: "left-[8%] -bottom-6", delay: "-3s" },
+    { node: <MetaMark className="h-7 w-7" />, place: "right-[8%] -top-6", delay: "-2.2s" },
   ];
   return (
-    <section id="inicio" className="relative overflow-hidden">
-      <div className="paper-grid pointer-events-none absolute inset-0 opacity-[0.07] invert" />
-      <div className="pointer-events-none absolute -top-24 left-1/4 h-72 w-72 rounded-full bg-aqua/10 blur-3xl" />
-      <div className="pointer-events-none absolute top-40 -right-10 h-80 w-80 rounded-full bg-sky/10 blur-3xl" />
-      <div className="relative mx-auto max-w-6xl px-5 pt-14 pb-24 text-center md:pt-20 md:pb-28">
+    <section id="inicio" className="relative">
+      <div className="relative mx-auto max-w-5xl px-4 pt-8 text-center md:pt-12">
         <Reveal from="blur">
-          <h1 className="mx-auto max-w-4xl text-4xl leading-[1.05] font-bold tracking-tight md:text-6xl">
-            Bienvenido a Focus: publicidad digital y sistemas de ventas que{" "}
-            <span className="bg-gradient-to-r from-aqua to-sky bg-clip-text text-transparent">hacen crecer tu negocio</span>
+          <h1 className="mx-auto max-w-4xl text-[1.85rem] leading-[1.08] font-extrabold tracking-tight sm:text-5xl lg:text-[3.15rem]">
+            <span className="text-lime-ink">Bienvenido a Focus:</span>
+            <span className="mt-1 block">publicidad digital y sistemas de ventas que hacen crecer tu negocio.</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-xl text-lg text-white/75">
+          <p className="mx-auto mt-4 max-w-xl text-base text-fg/75 md:text-lg">
             Te ayudamos a atraer clientes, convertir oportunidades y organizar todo tu proceso comercial en un solo sistema.
           </p>
         </Reveal>
-        <Reveal from="blur" delay={150}>
-          <div className="relative mx-auto mt-10 max-w-4xl">
-            <VideoSlot
-              src={WELCOME_VIDEO || undefined}
-              title="Aquí irá nuestro video de bienvenida"
-              note="Estamos preparando un video que muestra cómo trabajamos. Lo publicaremos en este espacio muy pronto."
-              className="aspect-video"
-            />
-            {bubbles.map((bubble, index) => (
-              <span
-                key={index}
-                className={`float absolute z-10 grid h-14 w-14 place-items-center rounded-full bg-white shadow-[0_14px_40px_rgb(0_0_0/0.35)] md:h-16 md:w-16 ${bubble.place}`}
-                style={{ animationDelay: bubble.delay }}
-                aria-hidden="true"
-              >
-                {bubble.node}
-              </span>
-            ))}
-          </div>
-        </Reveal>
       </div>
+      <div className="relative mx-auto mt-8 w-full max-w-[1500px] px-4 pb-10 sm:px-8 lg:mt-10">
+        <div className="relative">
+          <Reveal from="blur" delay={150}>
+            <div className="relative mx-auto w-full max-w-[720px]">
+              <VideoSlot
+                src={WELCOME_VIDEO || undefined}
+                title="Aquí irá nuestro video de bienvenida"
+                note="Estamos preparando un video que muestra cómo trabajamos. Lo publicaremos en este espacio muy pronto."
+                className="aspect-video"
+              />
+              {bubbles.map((bubble, index) => (
+                <span
+                  key={index}
+                  className={`float absolute z-10 grid h-12 w-12 place-items-center rounded-full border-2 border-[#2bbdef] bg-white shadow-[0_0_18px_rgb(43_189_239/0.45)] md:h-14 md:w-14 ${bubble.place}`}
+                  style={{ animationDelay: bubble.delay }}
+                  aria-hidden="true"
+                >
+                  {bubble.node}
+                </span>
+              ))}
+            </div>
+          </Reveal>
+          <div className="absolute bottom-0 left-0 hidden xl:block">
+            <PageMascot pose="frente" kicker="Focus Agency" text="Publicidad, tecnología y estrategia" />
+          </div>
+        </div>
+        <div className="mt-10 xl:hidden">
+          <PageMascot pose="frente" kicker="Focus Agency" text="Publicidad, tecnología y estrategia" className="w-[170px]" />
+        </div>
+      </div>
+      <div aria-hidden="true" className="section-bridge relative" />
     </section>
   );
 }
@@ -314,7 +328,7 @@ function StrategyBoard() {
           {["LQ", "DG", "FA"].map((who, index) => (
             <span
               key={who}
-              className={`grid h-8 w-8 place-items-center rounded-full border-2 border-[#07141f] text-[11px] font-bold text-abyss ${["bg-aqua", "bg-mint", "bg-sky"][index]}`}
+              className={`grid h-8 w-8 place-items-center rounded-full border-2 border-card text-[11px] font-bold text-navy ${["bg-focus", "bg-lime", "bg-[#19b7e6]"][index]}`}
             >
               {who}
             </span>
@@ -328,21 +342,21 @@ function StrategyBoard() {
           return (
             <div
               key={item.label}
-              className={`rounded-2xl border p-3 transition duration-500 ${on ? "border-aqua/60 bg-aqua/10 shadow-[0_0_24px_rgb(78_242_228/0.2)]" : "border-white/10 bg-white/[0.03]"}`}
+              className={`rounded-2xl border p-3 transition duration-500 ${on ? "border-focus/60 bg-focus/10 shadow-[0_0_24px_rgb(43_189_239/0.2)]" : "border-fg/10 bg-fg/[0.03]"}`}
             >
               <div className="flex items-center justify-between">
-                <Glyph className={`h-5 w-5 transition duration-500 ${on ? "scale-125 text-aqua" : "text-sky"}`} strokeWidth={1.7} />
-                <span className="text-[10px] font-bold text-white/40">0{index + 1}</span>
+                <Glyph className={`h-5 w-5 transition duration-500 ${on ? "scale-125 text-accent-ink" : "text-[#19b7e6]"}`} strokeWidth={1.7} />
+                <span className="text-[10px] font-bold text-fg/40">0{index + 1}</span>
               </div>
               <p className="mt-2 text-sm font-bold">{item.label}</p>
             </div>
           );
         })}
       </div>
-      <div className="mt-4 flex min-h-0 flex-1 flex-col rounded-2xl bg-white/[0.03] px-3 pt-3">
+      <div className="mt-4 flex min-h-0 flex-1 flex-col rounded-2xl bg-fg/[0.03] px-3 pt-3">
         <div className="flex items-baseline justify-between px-1">
           <p className="text-sm font-bold">Leads calificados por mes</p>
-          <p className="text-[11px] text-white/45">Datos de ejemplo</p>
+          <p className="text-[11px] text-fg/45">Datos de ejemplo</p>
         </div>
         <GrowthChart height={215} />
       </div>
@@ -360,7 +374,7 @@ function AdsPanel() {
           <li key={label} className="flex min-w-0 flex-1 items-center last:flex-none">
             <span
               className={`rounded-full px-2.5 py-1.5 text-[11px] font-bold whitespace-nowrap transition duration-500 sm:px-3 sm:text-xs ${
-                index === step ? "bg-aqua text-abyss shadow-[0_0_20px_rgb(78_242_228/0.5)]" : "bg-white/[0.06] text-white/75"
+                index === step ? "bg-focus text-navy shadow-[0_0_20px_rgb(43_189_239/0.5)]" : "bg-fg/[0.06] text-fg/75"
               }`}
             >
               {label}
@@ -381,7 +395,7 @@ function AdsPanel() {
           </div>
           <div className="shimmer relative grid min-h-40 flex-1 place-items-center bg-gradient-to-br from-[#0b2a3a] via-[#0e3d52] to-[#1b5fd6] text-white">
             <div className="px-4 text-center">
-              <p className="text-[10px] tracking-[0.3em] text-aqua">TU OFERTA</p>
+              <p className="text-[10px] tracking-[0.3em] text-accent-ink">TU OFERTA</p>
               <p className="mt-2 text-lg leading-tight font-bold">El anuncio que detiene el scroll.</p>
             </div>
           </div>
@@ -392,10 +406,10 @@ function AdsPanel() {
             </span>
           </div>
         </div>
-        <div className="flex min-w-0 flex-col rounded-[20px] bg-white/[0.03] p-3">
+        <div className="flex min-w-0 flex-col rounded-[20px] bg-fg/[0.03] p-3">
           <div className="flex items-baseline justify-between px-1 pb-2">
             <p className="text-sm font-bold">Rendimiento por semana</p>
-            <p className="text-[11px] text-white/45">Datos de ejemplo</p>
+            <p className="text-[11px] text-fg/45">Datos de ejemplo</p>
           </div>
           <CampaignBars height={230} />
         </div>
@@ -427,12 +441,12 @@ function LeadFlow() {
               <div className="flex w-14 shrink-0 flex-col items-center gap-2 text-center sm:w-16">
                 <span
                   className={`grid h-12 w-12 place-items-center rounded-2xl border transition duration-500 ${
-                    item.icon === "wa" ? "border-[#25D366] bg-[#25D366] text-white" : "border-aqua/40 bg-abyss text-aqua"
-                  } ${on ? "scale-110 shadow-[0_0_28px_rgb(78_242_228/0.6)]" : ""}`}
+                    item.icon === "wa" ? "border-[#25D366] bg-[#25D366] text-white" : "border-focus/40 bg-page text-accent-ink"
+                  } ${on ? "scale-110 shadow-[0_0_28px_rgb(43_189_239/0.6)]" : ""}`}
                 >
                   {Glyph === "wa" ? <SocialGlyph name="WhatsApp" className="h-6 w-6" /> : <Glyph className="h-5 w-5" strokeWidth={1.8} />}
                 </span>
-                <span className={`text-[11px] font-bold transition sm:text-xs ${on ? "text-aqua" : ""}`}>{item.label}</span>
+                <span className={`text-[11px] font-bold transition sm:text-xs ${on ? "text-accent-ink" : ""}`}>{item.label}</span>
               </div>
               {index < LEAD_PATH.length - 1 && <FlowLink className="mt-6 min-w-2 flex-1" delay={index * 0.25} />}
             </li>
@@ -441,15 +455,15 @@ function LeadFlow() {
       </ol>
       <div className="mt-5 flex items-baseline justify-between">
         <p className="text-sm font-bold">Focus Chat · pipeline</p>
-        <p className="text-[11px] text-white/45">Camila avanza sola de etapa</p>
+        <p className="text-[11px] text-fg/45">Camila avanza sola de etapa</p>
       </div>
       <div className="mt-3 grid min-h-0 flex-1 grid-cols-2 gap-2 sm:grid-cols-4">
         {PIPELINE.map((column, index) => (
-          <div key={column} className={`flex flex-col rounded-2xl p-2.5 transition duration-500 ${index === stage ? "bg-aqua/10 ring-1 ring-aqua/40" : "bg-white/[0.04]"}`}>
-            <p className="text-[11px] font-bold text-white/60">{column}</p>
+          <div key={column} className={`flex flex-col rounded-2xl p-2.5 transition duration-500 ${index === stage ? "bg-focus/10 ring-1 ring-focus/40" : "bg-fg/[0.04]"}`}>
+            <p className="text-[11px] font-bold text-fg/60">{column}</p>
             <div className="mt-2 space-y-1.5">
               {index === stage && (
-                <div key={`camila-${stage}`} className="animate-in fade-in zoom-in-90 slide-in-from-left-6 flex items-center gap-2 rounded-xl bg-aqua px-2 py-1.5 text-abyss shadow-[0_0_20px_rgb(78_242_228/0.45)] duration-500">
+                <div key={`camila-${stage}`} className="animate-in fade-in zoom-in-90 slide-in-from-left-6 flex items-center gap-2 rounded-xl bg-focus px-2 py-1.5 text-navy shadow-[0_0_20px_rgb(43_189_239/0.45)] duration-500">
                   <span className="grid h-5 w-5 place-items-center rounded-full bg-[#25D366] text-white">
                     <SocialGlyph name="WhatsApp" className="h-3 w-3" />
                   </span>
@@ -512,7 +526,7 @@ function AutomationHub() {
             <circle cx="20" cy="50" r="0.9" fill="#5fe4fa" />
           </g>
         </svg>
-        <div className="ping-soft absolute top-1/2 left-1/2 grid h-24 w-24 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-gradient-to-br from-aqua to-sky text-abyss shadow-[0_0_60px_rgb(78_242_228/0.45)] sm:h-28 sm:w-28">
+        <div className="ping-soft absolute top-1/2 left-1/2 grid h-24 w-24 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-gradient-to-br from-[#2ad8ff] to-lime text-navy shadow-[0_0_60px_rgb(43_189_239/0.45)] sm:h-28 sm:w-28">
           <div className="text-center">
             <Bot className="mx-auto h-8 w-8" strokeWidth={1.8} />
             <p className="mt-1 text-xs font-bold">Focus IA</p>
@@ -525,10 +539,10 @@ function AutomationHub() {
             <div
               key={item.label}
               className={`absolute flex max-w-[46%] items-center gap-2 rounded-2xl border px-3 py-2 text-xs font-bold shadow-lg transition duration-500 sm:text-sm ${spots[index]} ${
-                on ? "border-aqua bg-aqua text-abyss shadow-[0_0_28px_rgb(78_242_228/0.55)]" : "border-white/10 bg-[#081723]"
+                on ? "border-focus bg-focus text-navy shadow-[0_0_28px_rgb(43_189_239/0.55)]" : "border-fg/10 bg-card"
               }`}
             >
-              <Glyph className={`h-4 w-4 shrink-0 ${on ? "" : "text-aqua"}`} strokeWidth={2} />
+              <Glyph className={`h-4 w-4 shrink-0 ${on ? "" : "text-accent-ink"}`} strokeWidth={2} />
               {item.label}
             </div>
           );
@@ -544,6 +558,7 @@ function ServiceRow({
   title,
   children,
   visual,
+  mascot,
   flip = false,
 }: {
   number: string;
@@ -551,17 +566,19 @@ function ServiceRow({
   title: string;
   children: ReactNode;
   visual: ReactNode;
+  mascot?: ReactNode;
   flip?: boolean;
 }) {
   return (
     <div className="grid items-center gap-10 py-14 md:py-20 lg:grid-cols-2 lg:gap-16">
       <Reveal from="blur" className={flip ? "lg:order-2" : ""}>
         <div className="flex items-baseline gap-4">
-          <span className="bg-gradient-to-b from-aqua to-sky/30 bg-clip-text text-6xl font-bold text-transparent md:text-7xl">{number}</span>
+          <span className="bg-gradient-to-b from-focus to-lime bg-clip-text text-6xl font-extrabold text-transparent md:text-7xl">{number}</span>
           <Kicker>{kicker}</Kicker>
         </div>
-        <h3 className="mt-4 text-3xl leading-tight font-bold tracking-tight md:text-5xl">{title}</h3>
-        <div className="mt-5 space-y-4 text-lg leading-relaxed text-white/75">{children}</div>
+        <h3 className="mt-4 text-3xl leading-tight font-extrabold tracking-tight md:text-5xl">{title}</h3>
+        <div className="mt-5 space-y-4 text-lg leading-relaxed text-fg/75">{children}</div>
+        {mascot && <div className="mt-8 hidden lg:block">{mascot}</div>}
       </Reveal>
       <Reveal from="blur" delay={150} className={`min-w-0 ${flip ? "lg:order-1" : ""}`}>
         {visual}
@@ -580,14 +597,14 @@ function Chain() {
         return (
           <li key={item} className="flex min-w-0 items-center lg:flex-1 lg:last:flex-none lg:last:basis-[calc((100%-5*2rem)/6)]">
             <span
-              className={`flex h-12 w-full min-w-0 items-center justify-center rounded-full border px-3 text-xs font-medium tracking-[0.14em] uppercase transition duration-500 ${
+              className={`flex h-12 w-full min-w-0 items-center justify-center rounded-full border px-3 text-xs font-bold tracking-[0.14em] uppercase transition duration-500 ${
                 last
                   ? on
-                    ? "border-mint bg-mint text-abyss shadow-[0_0_30px_rgb(82_250_164/0.55)]"
-                    : "border-mint/50 text-mint"
+                    ? "border-lime bg-lime text-navy shadow-[0_0_30px_rgb(30_250_93/0.55)]"
+                    : "border-lime/50 text-lime-ink"
                   : on
-                    ? "border-aqua bg-aqua/15 text-white shadow-[0_0_22px_rgb(78_242_228/0.3)]"
-                    : "border-white/15 text-white/70"
+                    ? "border-focus bg-focus/15 text-fg shadow-[0_0_22px_rgb(43_189_239/0.3)]"
+                    : "border-fg/15 text-fg/70"
               }`}
             >
               {item}
@@ -605,42 +622,48 @@ function Services() {
     <section id="servicios" className="relative">
       <div className="mx-auto max-w-[1400px] px-5 pt-20 md:px-8 md:pt-28">
         <Reveal from="blur" className="text-center">
-          <h2 className="mx-auto max-w-4xl text-4xl font-bold tracking-tight md:text-6xl">Construimos cada parte de tu embudo de ventas</h2>
+          <h2 className="mx-auto max-w-4xl text-4xl font-extrabold tracking-tight md:text-6xl">Construimos cada parte de tu embudo de ventas</h2>
           <Chain />
-          <p className="mt-8 text-xl text-white/80 md:text-2xl">Todo conectado. Un solo objetivo: crecer.</p>
+          <p className="mt-8 text-xl text-fg/80 md:text-2xl">Todo conectado. Un solo objetivo: crecer.</p>
         </Reveal>
 
-        <div className="divide-y divide-white/10">
-          <ServiceRow number="01" kicker="Estrategia" title="Primero entendemos el negocio." visual={<StrategyBoard />}>
+        <div className="divide-y divide-fg/10">
+          <ServiceRow number="01" kicker="Estrategia" title="Primero entendemos el negocio."
+            visual={<StrategyBoard />}
+            mascot={<PageMascot pose="perfil-cerebro" kicker="Antes de invertir" text="Primero pensamos" className="ml-0 w-[150px]" />}
+          >
             <p>Antes de invertir en publicidad analizamos:</p>
             <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {STRATEGY.map((item) => (
-                <li key={item.label} className="rounded-full border border-white/15 bg-white/[0.04] px-3.5 py-1.5 text-center text-sm font-bold text-white">
+                <li key={item.label} className="rounded-full border border-fg/15 bg-fg/[0.04] px-3.5 py-1.5 text-center text-sm font-bold text-fg">
                   {item.label}
                 </li>
               ))}
             </ul>
-            <p className="border-l-2 border-aqua pl-4 font-bold text-white">Porque hacer publicidad sin estrategia solo acelera el gasto.</p>
+            <p className="border-l-2 border-focus pl-4 font-bold text-fg">Porque hacer publicidad sin estrategia solo acelera el gasto.</p>
           </ServiceRow>
 
           <ServiceRow number="02" kicker="Creatividad + Meta Ads" title="Creamos anuncios que generan atención." visual={<AdsPanel />} flip>
-            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 font-bold text-white">
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 font-bold text-fg">
               {ADS_STEPS.map((label, index) => (
                 <span key={label} className="flex items-center gap-2">
                   {label}
-                  {index < ADS_STEPS.length - 1 && <ArrowRight className="h-4 w-4 text-aqua" />}
+                  {index < ADS_STEPS.length - 1 && <ArrowRight className="h-4 w-4 text-accent-ink" />}
                 </span>
               ))}
             </p>
             <p>Diseñamos y gestionamos campañas de Meta Ads pensadas para atraer personas con potencial de convertirse en clientes.</p>
           </ServiceRow>
 
-          <ServiceRow number="03" kicker="WhatsApp + CRM" title="Convertimos los leads en oportunidades reales." visual={<LeadFlow />}>
+          <ServiceRow number="03" kicker="WhatsApp + CRM" title="Convertimos los leads en oportunidades reales."
+            visual={<LeadFlow />}
+            mascot={<PageMascot pose="chat" kicker="Así responde FOCU" text="Cada lead, en su etapa" className="ml-0 w-[170px]" />}
+          >
             <p>
-              Aquí entra <strong className="text-aqua">Focus Chat</strong>. No basta con generar conversaciones: hay que organizarlas, darles seguimiento y saber en qué
+              Aquí entra <strong className="text-accent-ink">Focus Chat</strong>. No basta con generar conversaciones: hay que organizarlas, darles seguimiento y saber en qué
               etapa está cada prospecto.
             </p>
-            <Link to="/" className="inline-flex items-center gap-2 font-bold text-aqua hover:underline">
+            <Link to="/" className="inline-flex items-center gap-2 font-bold text-accent-ink hover:underline">
               Conoce Focus Chat
               <ArrowRight className="h-4 w-4" />
             </Link>
@@ -649,15 +672,15 @@ function Services() {
           <ServiceRow number="04" kicker="Automatización + IA" title="Automatizamos lo que no debería depender de una persona." visual={<AutomationHub />} flip>
             <ul className="grid grid-cols-2 gap-2">
               {AUTOMATION.map((item) => (
-                <li key={item.label} className="flex items-center gap-2 text-base text-white">
-                  <Zap className="h-4 w-4 shrink-0 text-aqua" />
+                <li key={item.label} className="flex items-center gap-2 text-base text-fg">
+                  <Zap className="h-4 w-4 shrink-0 text-accent-ink" />
                   {item.label}
                 </li>
               ))}
             </ul>
-            <p className="text-2xl leading-snug font-bold text-white">
+            <p className="text-2xl leading-snug font-bold text-fg">
               Tu equipo se enfoca en vender.{" "}
-              <span className="bg-gradient-to-r from-aqua to-sky bg-clip-text text-transparent">La tecnología se encarga de lo repetitivo.</span>
+              <span className="text-accent-ink">La tecnología se encarga de lo repetitivo.</span>
             </p>
           </ServiceRow>
         </div>
@@ -669,11 +692,11 @@ function Services() {
 function Results() {
   return (
     <section id="casos" className="relative overflow-hidden">
-      <div className="pointer-events-none absolute top-24 left-1/2 h-80 w-[50rem] max-w-full -translate-x-1/2 rounded-full bg-[#0b3a46]/45 blur-3xl" />
+      <div className="pointer-events-none absolute top-24 left-1/2 h-80 w-[50rem] max-w-full -translate-x-1/2 rounded-full bg-focus/10 blur-3xl" />
       <div className="relative mx-auto max-w-[1400px] px-5 py-20 md:px-8 md:py-28">
         <Reveal from="blur" className="text-center">
           <h2 className="inline-flex flex-wrap items-center justify-center gap-4 text-4xl font-extrabold tracking-tight uppercase md:text-6xl">
-            <TrendingUp className="h-10 w-10 text-mint md:h-14 md:w-14" strokeWidth={2.4} />
+            <TrendingUp className="h-10 w-10 text-lime-ink md:h-14 md:w-14" strokeWidth={2.4} />
             Resultados que hablan por sí solos
           </h2>
         </Reveal>
@@ -682,9 +705,9 @@ function Results() {
             <Reveal key={item.id} from="blur" delay={index * 150} className="h-full">
               <GlowCard className="grid h-full rounded-[28px] sm:grid-cols-2" style={{ animationDelay: `${index * -3}s` }}>
                 <div className="flex flex-col p-6 md:p-8">
-                  <p className="text-xs font-bold tracking-[0.2em] text-aqua">CASO {item.id}</p>
-                  <h3 className="mt-2 text-2xl font-bold">{item.client}</h3>
-                  <p className="mt-1 text-sm text-white/60">Campaña: {item.campaign}</p>
+                  <p className="text-xs font-bold tracking-[0.2em] text-accent-ink">CASO {item.id}</p>
+                  <h3 className="mt-2 text-2xl font-extrabold">{item.client}</h3>
+                  <p className="mt-1 text-sm text-fg/60">Campaña: {item.campaign}</p>
                   <dl className="mt-6 grid flex-1 grid-cols-2 gap-2">
                     {[
                       ["Inversión", item.investment],
@@ -692,12 +715,12 @@ function Results() {
                       ["Costo por lead", item.cpl],
                       ["Ventas", item.sales],
                     ].map(([label, value]) => (
-                      <div key={label} className="rounded-2xl bg-white/[0.05] p-3">
-                        <dt className="text-[10px] font-bold tracking-[0.14em] text-white/50 uppercase">{label}</dt>
+                      <div key={label} className="rounded-2xl bg-fg/[0.05] p-3">
+                        <dt className="text-[10px] font-bold tracking-[0.14em] text-fg/50 uppercase">{label}</dt>
                         <dd className="mt-1 text-xl font-bold">{value}</dd>
                       </div>
                     ))}
-                    <div className="col-span-2 flex items-center justify-between rounded-2xl bg-gradient-to-r from-aqua to-sky p-3 text-abyss">
+                    <div className="col-span-2 flex items-center justify-between rounded-2xl bg-gradient-to-r from-[#2ad8ff] to-lime p-3 text-navy">
                       <dt className="text-xs font-bold tracking-[0.14em] uppercase">ROAS</dt>
                       <dd className="text-2xl font-extrabold">{item.roas}</dd>
                     </div>
@@ -706,10 +729,10 @@ function Results() {
                 {item.image ? (
                   <img src={item.image} alt={`Captura del caso ${item.id}`} className="h-full w-full rounded-r-[28px] object-cover" />
                 ) : (
-                  <div className="m-4 grid min-h-56 place-items-center rounded-[20px] border-2 border-dashed border-white/15 text-center text-sm text-white/45 sm:ml-0">
+                  <div className="m-4 grid min-h-56 place-items-center rounded-[20px] border-2 border-dashed border-fg/15 text-center text-sm text-fg/45 sm:ml-0">
                     <div className="px-4">
                       <ImageIcon className="mx-auto h-8 w-8" strokeWidth={1.5} />
-                      <p className="mt-2 font-bold text-white/70">Captura real de la campaña</p>
+                      <p className="mt-2 font-bold text-fg/70">Captura real de la campaña</p>
                       <p className="mt-1 text-xs">La publicaremos aquí cuando el caso esté listo.</p>
                     </div>
                   </div>
@@ -728,19 +751,19 @@ function Audience() {
     <section id="nosotros" className="relative">
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-28">
         <Reveal from="blur" className="text-center">
-          <p className="inline-flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-aqua uppercase">
+          <p className="inline-flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-accent-ink uppercase">
             <Users className="h-5 w-5" />
             ¿Para quién es Focus?
           </p>
-          <h2 className="mx-auto mt-4 max-w-3xl text-4xl font-bold tracking-tight md:text-6xl">Focus es para negocios que quieren dejar de improvisar.</h2>
-          <p className="mt-5 text-lg text-white/70">Especialmente empresas que:</p>
+          <h2 className="mx-auto mt-4 max-w-3xl text-4xl font-extrabold tracking-tight md:text-6xl">Focus es para negocios que quieren dejar de improvisar.</h2>
+          <p className="mt-5 text-lg text-fg/70">Especialmente empresas que:</p>
         </Reveal>
         <ul className="mx-auto mt-10 grid max-w-5xl auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {AUDIENCE.map((item, index) => (
             <Reveal key={item} from="blur" delay={index * 90} className="h-full">
               <li className="h-full">
                 <GlowCard className="flex h-full min-h-28 items-center gap-4 rounded-2xl px-5 py-5 text-lg font-bold" style={{ animationDelay: `${index * -1.1}s` }}>
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-mint text-abyss shadow-[0_0_20px_rgb(82_250_164/0.45)]">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-lime text-navy shadow-[0_0_20px_rgb(30_250_93/0.45)]">
                     <Check className="h-5 w-5" strokeWidth={3} />
                   </span>
                   {item}
@@ -749,10 +772,11 @@ function Audience() {
             </Reveal>
           ))}
         </ul>
-        <Reveal from="blur" className="mt-14 text-center">
-          <p className="mx-auto max-w-3xl text-2xl leading-snug font-bold md:text-3xl">
+        <Reveal from="blur" className="mt-14 flex flex-col items-center gap-6 text-center md:flex-row md:justify-center md:text-left">
+          <PageMascot pose="cafe" className="m-0 w-[140px] shrink-0" />
+          <p className="max-w-3xl text-2xl leading-snug font-extrabold md:text-3xl">
             Si tu negocio ya está generando oportunidades, pero sabes que podrías convertir muchas más,{" "}
-            <span className="text-aqua">hablemos.</span>
+            <span className="text-accent-ink">hablemos.</span>
           </p>
         </Reveal>
       </div>
@@ -763,24 +787,22 @@ function Audience() {
 function FinalCta() {
   return (
     <section className="relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-x-0 top-1/2 h-72 -translate-y-1/2 bg-gradient-to-r from-aqua/0 via-aqua/15 to-sky/0 blur-3xl" />
+      <div className="pointer-events-none absolute inset-x-0 top-1/2 h-72 -translate-y-1/2 bg-gradient-to-r from-focus/0 via-focus/15 to-lime/0 blur-3xl" />
       <div className="relative mx-auto max-w-5xl px-5 py-24 text-center md:py-32">
         <Reveal from="blur">
-          <span className="ping-soft relative mx-auto grid h-16 w-16 place-items-center rounded-full border border-aqua/50 text-aqua">
-            <Crosshair className="h-8 w-8" strokeWidth={1.6} />
-          </span>
-          <h2 className="mt-6 text-4xl leading-tight font-bold tracking-tight md:text-7xl">Tu próxima venta puede empezar con un anuncio.</h2>
+          <PageMascot pose="senala" kicker="Hablemos" text="Agenda tu cita" className="w-[170px]" />
+          <h2 className="mt-6 text-4xl leading-tight font-extrabold tracking-tight md:text-7xl">Tu próxima venta puede empezar con un anuncio.</h2>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <a
               href="#contacto"
-              className="inline-flex items-center gap-2 rounded-full border border-white/25 px-8 py-4 text-lg font-medium transition hover:-translate-y-0.5 hover:bg-white hover:text-abyss"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-[#2bbdef] bg-white px-8 py-4 text-lg font-extrabold text-[#14245c] transition hover:-translate-y-0.5"
             >
               Contactarnos
             </a>
             <button
               type="button"
               onClick={() => openFocusWhatsApp(CONSULTING_TEXT)}
-              className="inline-flex items-center gap-2 rounded-full bg-aqua px-8 py-4 text-lg font-medium text-abyss shadow-[0_0_40px_rgb(78_242_228/0.35)] transition hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 rounded-full bg-focus px-8 py-4 text-lg font-extrabold text-navy shadow-[0_0_40px_rgb(43_189_239/0.35)] transition hover:-translate-y-0.5"
             >
               <CalendarCheck className="h-5 w-5" />
               Agendar cita
@@ -797,18 +819,9 @@ export function Agency() {
   const openWhatsApp = useCallback(() => setWhatsappOpen(true), []);
   const closeWhatsApp = useCallback(() => setWhatsappOpen(false), []);
 
-  useEffect(() => {
-    document.title = "Focus Agency · Publicidad digital y sistemas de ventas";
-    return () => {
-      document.title = "Focus Agency";
-    };
-  }, []);
-
   return (
-    <div className="min-h-screen bg-abyss text-white">
-      <SiteSwitcher tone="dark" />
-      <DarkHeader suffix="AGENCY" links={LINKS} cta="Agendar una consultoría" onCta={() => openFocusWhatsApp(CONSULTING_TEXT)} />
-      <main>
+    <BrandPage title="Focus Agency · Publicidad digital y sistemas de ventas" sections={SECTIONS}>
+      <main className="relative z-10">
         <Welcome />
         <FunnelHero />
         <Testimonials items={TESTIMONIALS} />
@@ -817,10 +830,10 @@ export function Agency() {
         <Audience />
         <FinalCta />
         <DarkFaq id="preguntas" subtitle="Preguntas o información sobre nuestros servicios" items={FAQ} />
-        <ContactForm tone="dark" />
+        <ContactForm tone="brand" />
       </main>
-      <SiteFooter band="aqua" onWhatsApp={openWhatsApp} />
+      <SiteFooter onWhatsApp={openWhatsApp} />
       <WhatsAppChat open={whatsappOpen} onOpen={openWhatsApp} onClose={closeWhatsApp} />
-    </div>
+    </BrandPage>
   );
 }
