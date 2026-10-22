@@ -2,6 +2,8 @@
 
 Sitio público y Hub de Focus Chat & Agency. Producción: [focuschat.co](https://focuschat.co).
 
+La carpeta [`negocios/`](negocios/README.md) es otro producto: la app de gestión para negocios (web y móvil). Tiene sus propias dependencias y no se publica con este sitio.
+
 ## Infraestructura
 
 ```mermaid

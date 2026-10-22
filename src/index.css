@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* La app de negocios (negocios/) tiene su propio Tailwind; no se mezcla con el sitio. */
+@source not "../negocios";
 @import "tw-animate-css";
 
 @theme {

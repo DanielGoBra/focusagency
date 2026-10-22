@@ -1,0 +1,17 @@
+{
+  "name": "negocios",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace @negocios/web",
+    "dev:mobile": "npm run start --workspace @negocios/mobile",
+    "build:web": "npm run build --workspace @negocios/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:db": "bash supabase/tests/run.sh"
+  }
+}

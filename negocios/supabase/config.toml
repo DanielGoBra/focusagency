@@ -1,0 +1,9 @@
+# Configuración local de Supabase (`npx supabase start`). Solo desarrollo.
+project_id = "negocios"
+
+[auth]
+site_url = "http://localhost:5174"
+additional_redirect_urls = ["http://localhost:5174"]
+
+[auth.email]
+enable_confirmations = false
