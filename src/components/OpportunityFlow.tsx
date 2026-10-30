@@ -168,6 +168,52 @@ function link(from: WirePoint, to: WirePoint) {
   };
 }
 
+function stackedWires(
+  comment: WirePoint,
+  triggerIn: WirePoint,
+  triggerOut: WirePoint,
+  actionRight: WirePoint,
+  actionLeft: WirePoint,
+  reply: WirePoint,
+): WireFigure {
+  const rightRail = Math.max(triggerOut.x, actionRight.x) + 26;
+  const leftRail = Math.min(triggerIn.x, actionLeft.x) - 18;
+  const bow = Math.min(16, Math.abs(actionRight.y - triggerOut.y) / 2);
+  const drop = Math.min(16, Math.abs(triggerOut.y - comment.y) / 2);
+  const intoTrigger = [
+    `M ${n(comment.x)} ${n(comment.y)}`,
+    `H ${n(rightRail - drop)}`,
+    `Q ${n(rightRail)} ${n(comment.y)} ${n(rightRail)} ${n(comment.y + drop)}`,
+    `V ${n(triggerOut.y - bow)}`,
+    `Q ${n(rightRail)} ${n(triggerOut.y)} ${n(rightRail - bow)} ${n(triggerOut.y)}`,
+    `H ${n(triggerOut.x)}`,
+  ].join(" ");
+  const bridge = [
+    `M ${n(triggerOut.x)} ${n(triggerOut.y)}`,
+    `H ${n(rightRail - bow)}`,
+    `Q ${n(rightRail)} ${n(triggerOut.y)} ${n(rightRail)} ${n(triggerOut.y + bow)}`,
+    `V ${n(actionRight.y - bow)}`,
+    `Q ${n(rightRail)} ${n(actionRight.y)} ${n(rightRail - bow)} ${n(actionRight.y)}`,
+    `H ${n(actionRight.x)}`,
+  ].join(" ");
+  const intoReply = [
+    `M ${n(actionLeft.x)} ${n(actionLeft.y)}`,
+    `H ${n(leftRail)}`,
+    `V ${n(reply.y)}`,
+    `H ${n(reply.x)}`,
+  ].join(" ");
+  return {
+    d: `${intoTrigger} ${bridge} ${intoReply}`,
+    dots: uniqueDots([
+      { x: rightRail, y: comment.y + drop },
+      { x: rightRail, y: triggerOut.y },
+      { x: rightRail, y: actionRight.y },
+      { x: leftRail, y: actionLeft.y },
+      { x: leftRail, y: reply.y },
+    ]),
+  };
+}
+
 function integratedWires(
   comment: WirePoint,
   triggerIn: WirePoint,
@@ -211,16 +257,19 @@ export function OpportunityFlow({ dark = true }: { dark?: boolean }) {
       const actionLeft = stage.querySelector(".n8n-card-b .n8n-port-in");
       const actionRight = stage.querySelector(".n8n-card-b .n8n-port-out");
       if (!comment || !reply || !triggerIn || !triggerOut || !actionLeft || !actionRight) return;
+      const commentRight = pointOf(root, comment, "right");
+      const replyRight = pointOf(root, reply, "right");
+      const replyLeft = pointOf(root, reply, "left");
+      const triggerInPoint = pointOf(root, triggerIn, "center");
+      const triggerOutPoint = pointOf(root, triggerOut, "center");
+      const actionRightPoint = pointOf(root, actionRight, "center");
+      const actionLeftPoint = pointOf(root, actionLeft, "center");
+      const stacked = triggerInPoint.y > replyRight.y + 80;
       setFrame({ w: root.width, h: root.height });
       setFigure(
-        integratedWires(
-          pointOf(root, comment, "right"),
-          pointOf(root, triggerIn, "center"),
-          pointOf(root, triggerOut, "center"),
-          pointOf(root, actionRight, "center"),
-          pointOf(root, actionLeft, "center"),
-          pointOf(root, reply, "right"),
-        ),
+        stacked
+          ? stackedWires(commentRight, triggerInPoint, triggerOutPoint, actionRightPoint, actionLeftPoint, replyLeft)
+          : integratedWires(commentRight, triggerInPoint, triggerOutPoint, actionRightPoint, actionLeftPoint, replyRight),
       );
     };
     measure();
@@ -235,9 +284,9 @@ export function OpportunityFlow({ dark = true }: { dark?: boolean }) {
 
   return (
     <section id="sistema" data-tone={dark ? "navy" : "light"} className="template-sheet relative z-10">
-      <img src="/brand/mascot/serio.png?v=6" alt="FOCU triste" className="opportunity-sad" />
-      <img src="/brand/mascot/frente.png" alt="FOCU con las manos abiertas" className="opportunity-open" />
-      <div className="mx-auto max-w-6xl px-5 py-16 md:py-20">
+      <img src="/brand/mascot/serio.png?v=8" alt="FOCU triste" className="opportunity-sad" />
+      <img src="/brand/mascot/frente.png?v=8" alt="FOCU con las manos abiertas" className="opportunity-open" />
+      <div className="mx-auto max-w-6xl px-5 py-10 md:py-14">
         <div className="flex justify-center">
           <h2 className="opportunity-title sheet-title text-center text-3xl font-extrabold tracking-tight text-[#14245c] md:text-5xl">
             No vuelvas a perder una oportunidad

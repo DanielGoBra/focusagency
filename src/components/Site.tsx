@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { motion, useReducedMotion } from "motion/react";
 import { BrandLogo } from "./Logo";
-import { TurnstileField, turnstileSiteKey } from "./TurnstileField";
 
 const WHATSAPP_PHONE = "573106309679";
 const WHATSAPP_DRAFT = "Hola, estoy interesado.";
@@ -13,7 +13,7 @@ export function focusWhatsAppHref(text: string) {
 const WHATSAPP_URL = focusWhatsAppHref(WHATSAPP_DRAFT);
 
 const SOCIALS = [
-  { name: "Instagram", href: "https://www.instagram.com/focuschat.agency/" },
+  { name: "Instagram", href: "https://www.instagram.com/focuschat.co?obrf=ajh2bWxxM2Nscmds" },
   { name: "Facebook", href: "https://www.facebook.com/share/1DCGzULDUb/?mibextid=wwXIfr" },
   { name: "YouTube", href: "https://www.youtube.com/watch?v=ERUiJeoRlX4" },
   { name: "TikTok", href: "https://www.tiktok.com/@focuschat.agency" },
@@ -68,44 +68,25 @@ export function Reveal({
   delay?: number;
   from?: "up" | "left" | "right" | "zoom" | "blur";
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [shown, setShown] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setShown(true);
-      return;
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return;
-        setShown(true);
-        observer.disconnect();
-      },
-      { threshold: 0.18, rootMargin: "0px 0px -6% 0px" },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const motion = {
-    up: "slide-in-from-bottom-8",
-    left: "slide-in-from-left-10",
-    right: "slide-in-from-right-10",
-    zoom: "zoom-in-95 slide-in-from-bottom-6",
-    blur: "",
+  const reduce = useReducedMotion();
+  if (reduce) return <div className={className}>{children}</div>;
+  const start = {
+    up: { y: 28 },
+    left: { x: -36 },
+    right: { x: 36 },
+    zoom: { scale: 0.96, y: 18 },
+    blur: { y: 16 },
   }[from];
-
   return (
-    <div
-      ref={ref}
-      className={`reveal ${className} ${shown ? (from === "blur" ? "blur-rise" : `animate-in fade-in ${motion} duration-700 fill-mode-both`) : "opacity-0"}`}
-      style={{ animationDelay: shown ? `${delay}ms` : undefined }}
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, x: 0, y: 0, scale: 1, ...start }}
+      whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.7, delay: delay / 1000, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }
 
@@ -244,174 +225,27 @@ export function WhatsAppChat({ open, onOpen, onClose }: { open: boolean; onOpen:
   );
 }
 
-export function ContactForm({ tone = "light" }: { tone?: "light" | "brand" }) {
-  const brand = tone === "brand";
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [company, setCompany] = useState("");
-  const [message, setMessage] = useState("");
-  const [fax, setFax] = useState("");
-  const [token, setToken] = useState("");
-  const [captchaKey, setCaptchaKey] = useState(0);
-  const [error, setError] = useState("");
-  const [pending, setPending] = useState(false);
-  const [sent, setSent] = useState(false);
-  const captchaReady = Boolean(turnstileSiteKey());
-  const rememberToken = useCallback((value: string) => setToken(value), []);
-
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    const cleanName = name.trim();
-    const cleanEmail = email.trim();
-    const cleanMessage = message.trim();
-    if (cleanName.length < 2) {
-      setError("Escribe tu nombre.");
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-      setError("Revisa el correo.");
-      return;
-    }
-    if (cleanMessage.length < 8) {
-      setError("Cuéntanos un poco más, aunque sea una frase.");
-      return;
-    }
-    if (!token) {
-      setError("Confirma que no eres un robot.");
-      return;
-    }
-    setPending(true);
-    setError("");
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ name: cleanName, email: cleanEmail, company: company.trim(), message: cleanMessage, token, fax }),
-      });
-      const data = (await response.json()) as { error?: string };
-      if (!response.ok) {
-        setError(data.error || "No pudimos enviar el mensaje.");
-        setToken("");
-        setCaptchaKey((value) => value + 1);
-        return;
-      }
-      setSent(true);
-    } catch {
-      setError("No pudimos enviar el mensaje. Revisa tu conexión.");
-    } finally {
-      setPending(false);
-    }
-  }
-
-  const field = "mt-1 w-full rounded-2xl border border-navy/10 bg-white/75 px-4 py-3 text-navy outline-none backdrop-blur transition focus:border-focus focus:ring-4 focus:ring-focus/20";
-
-  return (
-    <section id="contacto" data-tone="light" className="relative">
-      {!brand && <div className="absolute inset-0 z-0 bg-[#f4f7fb]" />}
-      <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-5 py-20 md:grid-cols-[0.85fr_1.15fr]">
-        <Reveal from="left">
-          <p className={`text-xs font-bold tracking-[0.18em] ${brand ? "text-accent-ink" : "text-focus"}`}>CONTACTO</p>
-          <h2 className="mt-2 text-4xl font-extrabold tracking-tight md:text-6xl">Contáctanos.</h2>
-          <p className={`mt-4 max-w-md text-lg ${brand ? "text-fg/75" : "font-light text-navy/75"}`}>
-            Cuéntanos qué canal te está trayendo ruido. El mensaje llega al equipo de Focus.
-          </p>
-        </Reveal>
-        <Reveal from="right" delay={120}>
-          <form onSubmit={submit} className={`${brand ? "rounded-[22px] border-2 border-[#2bbdef] bg-white shadow-[0_0_24px_rgb(43_189_239/0.25)]" : "glass-card rounded-[28px]"} p-6 text-navy md:p-8`} noValidate>
-            {sent ? (
-              <div>
-                <p className="text-xs font-bold tracking-[0.18em] text-focus">MENSAJE REGISTRADO</p>
-                <h3 className="mt-2 text-3xl font-extrabold tracking-tight">Gracias, {name.trim()}.</h3>
-                <p className="mt-3 text-navy/75">El equipo de Focus recibió tu mensaje y te responde a {email.trim()}.</p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSent(false);
-                    setMessage("");
-                  }}
-                  className="mt-6 text-sm font-bold text-focus"
-                >
-                  Enviar otro mensaje
-                </button>
-              </div>
-            ) : (
-              <div className="relative grid gap-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="block">
-                    <span className="text-[11px] font-bold tracking-[0.14em] text-navy/55">NOMBRE</span>
-                    <input className={field} value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" />
-                  </label>
-                  <label className="block">
-                    <span className="text-[11px] font-bold tracking-[0.14em] text-navy/55">CORREO</span>
-                    <input className={field} type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" />
-                  </label>
-                </div>
-                <label className="block">
-                  <span className="text-[11px] font-bold tracking-[0.14em] text-navy/55">EMPRESA</span>
-                  <input className={field} value={company} onChange={(event) => setCompany(event.target.value)} autoComplete="organization" />
-                </label>
-                <label className="block">
-                  <span className="text-[11px] font-bold tracking-[0.14em] text-navy/55">MENSAJE</span>
-                  <textarea className={`${field} min-h-32 resize-y`} value={message} onChange={(event) => setMessage(event.target.value)} maxLength={2000} />
-                </label>
-                <label className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
-                  Fax
-                  <input tabIndex={-1} autoComplete="off" value={fax} onChange={(event) => setFax(event.target.value)} />
-                </label>
-                <TurnstileField key={captchaKey} onToken={rememberToken} />
-                {error && (
-                  <p role="alert" className="text-sm font-bold text-navy">
-                    {error}
-                  </p>
-                )}
-                <button
-                  type="submit"
-                  disabled={pending || !captchaReady}
-                  className="mt-1 w-fit rounded-full bg-navy px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {pending ? "Enviando…" : "Enviar mensaje"}
-                </button>
-              </div>
-            )}
-          </form>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
 export function SiteFooter({ onWhatsApp }: { onWhatsApp?: () => void }) {
   return (
-    <>
-      <section data-tone="focus" className="relative text-navy">
-        <div className="absolute inset-0 z-0 bg-focus" />
-        <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-5 py-16 md:flex-row md:items-center">
+    <footer data-tone="navy" className="relative text-white">
+      <div className="absolute inset-0 z-0 bg-navy" />
+      <div className="relative z-10 mx-auto max-w-6xl px-5 py-10">
+        <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div>
-            <h2 className="text-4xl font-extrabold tracking-tight md:text-5xl">Entra y mueve el negocio de prueba.</h2>
-            <p className="mt-3 max-w-xl">Bandeja, pipeline, pauta, flujos e integraciones ya responden en este navegador.</p>
+            <BrandLogo variant="white" className="h-12 w-auto" />
+            <p className="mt-4 max-w-xs text-sm text-white/70">Chatbots, automatizaciones y Meta Ads en una sola lectura del cliente.</p>
           </div>
-          <Link to="/hub" className="rounded-full bg-navy px-5 py-3 text-sm font-bold text-white">
-            Entrar al Hub
-          </Link>
-        </div>
-      </section>
-
-      <footer data-tone="navy" className="relative text-white">
-        <div className="absolute inset-0 z-0 bg-navy" />
-        <div className="relative z-10 mx-auto max-w-6xl px-5 py-12">
-          <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
-            <div>
-              <BrandLogo variant="white" className="h-12 w-auto" />
-              <p className="mt-4 max-w-xs text-sm text-white/70">Chatbots, automatizaciones y Meta Ads en una sola lectura del cliente.</p>
-            </div>
-            <div className="flex flex-col items-start gap-4 md:items-end">
-              <SocialLinks tone="white" onWhatsApp={onWhatsApp} />
-              <a className="text-sm font-bold" href="https://www.instagram.com/focuschat.agency/">@focuschat.agency</a>
-            </div>
+          <div className="flex flex-col items-start gap-4 md:items-end">
+            <SocialLinks tone="white" onWhatsApp={onWhatsApp} />
+            <a className="text-sm font-bold" href="https://www.instagram.com/focuschat.co?obrf=ajh2bWxxM2Nscmds">@focuschat.co</a>
           </div>
-          <p className="mt-10 border-t border-white/15 pt-6 text-sm text-white/70">© 2026 Focus Agency. Todos los derechos reservados.</p>
         </div>
-      </footer>
-    </>
+        <p className="mt-8 flex flex-wrap gap-x-4 gap-y-2 border-t border-white/15 pt-6 text-sm text-white/70">
+          <span>© 2026 Focus. Todos los derechos reservados.</span>
+          <Link to="/terminos#condiciones" className="font-bold text-white">Términos y condiciones</Link>
+          <Link to="/terminos#privacidad" className="font-bold text-white">Política de privacidad</Link>
+        </p>
+      </div>
+    </footer>
   );
 }

@@ -25,7 +25,6 @@ export function NeuralField() {
     if (!ctx) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let frame = 0;
     let raf = 0;
     const sections: { top: number; bottom: number; tone: NeuralTone }[] = [];
     const nodes: { x: number; y: number; angle: number; spin: number; speed: number; lime: boolean }[] = [];
@@ -33,7 +32,7 @@ export function NeuralField() {
     const seed = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      const count = Math.max(36, Math.min(58, Math.round((width * height) / 28000)));
+      const count = Math.max(14, Math.min(20, Math.round((width * height) / 110000)));
       nodes.length = 0;
       const band = sideBand(width);
       for (let i = 0; i < count; i += 1) {
@@ -42,8 +41,8 @@ export function NeuralField() {
           x: slot,
           y: unit(i + 2) * height,
           angle: unit(i + 11) * Math.PI * 2,
-          spin: (unit(i + 17) - 0.5) * 0.004,
-          speed: 0.22 + unit(i + 4) * 0.28,
+          spin: (unit(i + 17) - 0.5) * 0.0016,
+          speed: 0.06 + unit(i + 4) * 0.08,
           lime: i % 5 === 0,
         });
       }
@@ -83,13 +82,9 @@ export function NeuralField() {
       }
       const scroll = window.scrollY;
       ctx.clearRect(0, 0, width, height);
-      if (width < 960) {
-        frame += 1;
-        if (!reduce) raf = window.requestAnimationFrame(draw);
-        return;
-      }
+      if (width < 960) return;
       if (nodes.length === 0) seed();
-      const reach = Math.min(120, sideBand(width).left * 0.85);
+      const reach = Math.min(72, sideBand(width).left * 0.48);
 
       const band = sideBand(width);
       for (const node of nodes) {
@@ -118,28 +113,19 @@ export function NeuralField() {
           if (dist <= reach) near.push({ index: j, dist });
         }
         near.sort((left, right) => left.dist - right.dist);
-        for (const link of near.slice(0, 3)) {
+        const link = near[0];
+        if (link) {
           const b = nodes[link.index];
           const sameSide = (a.x < band.left && b.x < band.left) || (a.x > band.right && b.x > band.right);
-          if (!sameSide) continue;
-          const fade = 1 - link.dist / reach;
-          const organic = a.lime || b.lime;
-          const rgb = organic ? tone.a : tone.b;
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = `rgba(${rgb}, ${0.05 + fade * 0.08})`;
-          ctx.lineWidth = 2.6;
-          ctx.stroke();
-          ctx.strokeStyle = `rgba(${rgb}, ${0.28 + fade * 0.34})`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
-          if (!reduce && (i + link.index) % 5 === 0) {
-            const travel = ((frame * 0.004) + i * 0.08) % 1;
-            ctx.fillStyle = organic ? tone.lime : `rgb(${tone.a})`;
+          if (sameSide) {
+            const fade = 1 - link.dist / reach;
+            const rgb = a.lime || b.lime ? tone.a : tone.b;
             ctx.beginPath();
-            ctx.arc(a.x + (b.x - a.x) * travel, a.y + (b.y - a.y) * travel, 1.8, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = `rgba(${rgb}, ${0.2 + fade * 0.16})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
           }
         }
       }
@@ -148,18 +134,17 @@ export function NeuralField() {
         if (band && node.x > band.left && node.x < band.right) continue;
         const tone = NEURAL[toneAt(scroll + node.y)];
         ctx.fillStyle = node.lime ? tone.lime : tone.node;
-        ctx.globalAlpha = 0.35;
+        ctx.globalAlpha = 0.34;
         ctx.beginPath();
-        ctx.arc(node.x, node.y, 7, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, 4.2, 0, Math.PI * 2);
         ctx.fill();
-        ctx.globalAlpha = 0.8;
+        ctx.globalAlpha = 0.72;
         ctx.beginPath();
-        ctx.arc(node.x, node.y, node.lime ? 3.2 : 2.6, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, node.lime ? 2.2 : 1.8, 0, Math.PI * 2);
         ctx.fill();
         ctx.globalAlpha = 1;
       }
 
-      frame += 1;
       if (!reduce) raf = window.requestAnimationFrame(draw);
     };
 
@@ -182,7 +167,7 @@ export function NeuralField() {
     };
   }, []);
 
-  return <canvas ref={ref} className="neural-sides pointer-events-none fixed inset-0 z-[1] h-full w-full opacity-70" aria-hidden="true" />;
+  return <canvas ref={ref} className="neural-sides pointer-events-none fixed inset-0 z-[1] h-full w-full opacity-80" aria-hidden="true" />;
 }
 
 function sideBand(width: number) {

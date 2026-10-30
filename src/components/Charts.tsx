@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { areaY, barX, barY, crosshair, defineChart, dot, lineY } from "@tanstack/charts";
+import { areaY, barY, crosshair, defineChart, dot, lineY } from "@tanstack/charts";
 import { d3Curve } from "@tanstack/charts/d3/shape";
 import { motion } from "@tanstack/charts/motion";
 import { Chart } from "@tanstack/charts/react/core";
@@ -13,9 +13,6 @@ import { useBrandDark } from "./brandTheme";
 // Colores validados con el verificador de paletas (banda de luminosidad, contraste y daltonismo).
 // BRAND_MARK pasa en fondo blanco y en la tarjeta navy; el cian de marca solo pinta el brillo.
 const BRAND_MARK = "#1a9fd0";
-const LIGHT_A = "#2b7fc0";
-const LIGHT_B = "#4f9a26";
-
 function brandPaint(dark: boolean) {
   return {
     glow: dark ? "#3ef3ff" : "#2bbdef",
@@ -31,17 +28,8 @@ function brandPaint(dark: boolean) {
   };
 }
 
-const LIGHT_THEME = {
-  foreground: "#202246",
-  muted: "rgb(32 34 70 / 0.6)",
-  grid: "rgb(32 34 70 / 0.08)",
-  background: "transparent",
-  palette: [LIGHT_A, LIGHT_B],
-};
-
 const compact = new Intl.NumberFormat("es-CO", { notation: "compact", maximumFractionDigits: 1 });
 const whole = new Intl.NumberFormat("es-CO");
-const pesos = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", notation: "compact", maximumFractionDigits: 1 });
 
 const curve = d3Curve(curveMonotoneX);
 
@@ -212,91 +200,5 @@ export function CampaignBars({ height = 210 }: { height?: number }) {
         <Chart key={dark ? "dark" : "light"} definition={definition} renderer={renderer} height={height} idPrefix="campaign" ariaLabel={`${current.label} por semana, datos de ejemplo`} />
       </ChartStage>
     </div>
-  );
-}
-
-type WeekRow = { day: string; chats: number; qualified: number };
-
-/** Hub · conversaciones de la semana (barras) y calificados (línea), en la misma escala. */
-export function WeeklyChatsChart({ rows, height = 260 }: { rows: readonly WeekRow[]; height?: number }) {
-  const renderer = useMotion();
-  const definition = useMemo(
-    () =>
-      defineChart({
-        marks: [
-          crosshair({ x: { band: { fill: "#202246", fillOpacity: 0.06, radius: 10, inset: -4 } }, y: false }),
-          barY(rows, { x: "day", y: "chats", key: "day", fill: LIGHT_A, radius: { end: 4 }, maxThickness: 24 }),
-          lineY(rows, { x: "day", y: "qualified", key: "day", stroke: LIGHT_B, strokeWidth: 2, curve }),
-          dot(rows, { x: "day", y: "qualified", key: "day", r: 4, fill: LIGHT_B, stroke: "#ffffff", strokeWidth: 2 }),
-        ],
-        scales: {
-          x: { scale: () => scaleBand().padding(0.3) },
-          y: { scale: scaleLinear, nice: true, grid: true, axis: { ticks: { count: 4 } } },
-        },
-        theme: LIGHT_THEME,
-        focus: "group-x",
-        maxFocusDistance: Number.POSITIVE_INFINITY,
-        tooltip: {
-          use: tooltip,
-          formatGroup(points) {
-            const datum = points[0]?.datum as WeekRow | undefined;
-            if (!datum) return "";
-            return `${datum.day}\n${datum.chats} conversaciones\n${datum.qualified} calificados`;
-          },
-        },
-      }),
-    [rows],
-  );
-  return (
-    <div>
-      <ul className="flex flex-wrap gap-4 text-xs font-bold text-navy/70">
-        <li className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded-[3px]" style={{ background: LIGHT_A }} />
-          Conversaciones
-        </li>
-        <li className="flex items-center gap-2">
-          <span className="h-0.5 w-4 rounded-full" style={{ background: LIGHT_B }} />
-          Calificados
-        </li>
-      </ul>
-      <ChartStage height={height} tone="light">
-        <Chart definition={definition} renderer={renderer} height={height} idPrefix="weekly" ariaLabel="Conversaciones y leads calificados por día" />
-      </ChartStage>
-    </div>
-  );
-}
-
-type ChannelRow = { channel: string; count: number; value: number };
-
-/** Hub · valor del pipeline por canal en barras horizontales, ordenadas de mayor a menor. */
-export function ChannelValueChart({ rows, height = 220 }: { rows: readonly ChannelRow[]; height?: number }) {
-  const renderer = useMotion();
-  const sorted = useMemo(() => [...rows].sort((a, b) => b.value - a.value), [rows]);
-  const definition = useMemo(
-    () =>
-      defineChart({
-        marks: [
-          crosshair({ y: { band: { fill: "#202246", fillOpacity: 0.06, radius: 10, inset: -4 } }, x: false }),
-          barX(sorted, { y: "channel", x: "value", key: "channel", fill: LIGHT_A, radius: { end: 4 }, maxThickness: 24 }),
-        ],
-        scales: {
-          y: { scale: () => scaleBand().padding(0.35) },
-          x: { scale: scaleLinear, nice: true, grid: true, axis: { ticks: { count: 4, format: (value: number) => pesos.format(value) } } },
-        },
-        theme: LIGHT_THEME,
-        tooltip: {
-          use: tooltip,
-          format(point) {
-            const datum = point.datum as ChannelRow;
-            return `${datum.channel}\n${pesos.format(datum.value)} · ${datum.count} ${datum.count === 1 ? "lead" : "leads"}`;
-          },
-        },
-      }),
-    [sorted],
-  );
-  return (
-    <ChartStage height={height} tone="light">
-      <Chart definition={definition} renderer={renderer} height={height} idPrefix="channels" ariaLabel="Valor del pipeline por canal" />
-    </ChartStage>
   );
 }

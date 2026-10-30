@@ -92,7 +92,7 @@ export function ChannelReel() {
           return (
             <span key={offset} className="grid shrink-0 place-items-center" style={{ width: SLOT, height: SLOT }}>
               <span
-                className="grid place-items-center"
+                className={`grid place-items-center ${item.name === "TikTok" ? "reel-tiktok" : ""}`}
                 style={{
                   color: item.color,
                   opacity: 0.22 + emphasis * 0.78,

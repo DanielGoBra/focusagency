@@ -44,8 +44,10 @@ import {
   type Testimonial,
 } from "../components/Dark";
 import { useBrandDark } from "../components/brandTheme";
-import { CampaignBars, GrowthChart } from "../components/Charts";
-import { ContactForm, Reveal, SiteFooter, SocialGlyph, WhatsAppChat, openFocusWhatsApp } from "../components/Site";
+import { CampaignBars } from "../components/Charts";
+import { AudienceSelect } from "../components/AudienceSelect";
+import { ParticleMorph } from "../components/ParticleMorph";
+import { Reveal, SiteFooter, SocialGlyph, WhatsAppChat, openFocusWhatsApp } from "../components/Site";
 
 type Icon = ComponentType<{ className?: string; strokeWidth?: number }>;
 
@@ -57,8 +59,6 @@ const CONSULTING_TEXT = "Hola, quiero agendar una consultoría con Focus Agency.
 const SECTIONS = [
   { hash: "servicios", label: "Servicios" },
   { hash: "casos", label: "Casos de éxito" },
-  { hash: "nosotros", label: "Nosotros" },
-  { hash: "contacto", label: "Contacto" },
 ];
 
 const TESTIMONIALS: Testimonial[] = [
@@ -231,17 +231,15 @@ function FunnelHero() {
 
         <Reveal from="blur" delay={150} className="relative min-w-0">
           {dark ? (
-            <img
-              src="/agency/hero-equipo.jpg"
-              alt="Equipo de Focus Agency"
-              width={792}
-              height={320}
-              className="mx-auto w-full max-w-3xl [mask-image:radial-gradient(ellipse_at_center,#000_55%,transparent_78%)] object-cover"
+            <ParticleMorph
+              src="/brand/logo-chat-v-white.png"
+              label="Logo de Focus"
+              className="mx-auto h-[280px] w-full max-w-3xl sm:h-[340px]"
             />
           ) : (
-            <PageMascot pose="senala" kicker="Así se arma" text="Tu embudo, paso a paso" className="w-[190px] sm:w-[220px]" bubbleSide="right" />
+            <PageMascot pose="senala" className="w-[190px] sm:w-[220px]" />
           )}
-          <ol className={`snap-rail relative z-10 flex items-stretch overflow-x-auto pt-4 pb-2 lg:overflow-visible ${dark ? "-mt-8 lg:-mt-20" : "mt-6"}`}>
+          <ol className="snap-rail relative z-10 mt-6 flex items-stretch overflow-x-auto pt-4 pb-2 lg:overflow-visible">
             {FUNNEL.map((card, index) => (
               <li key={card.title} className="flex shrink-0 items-center lg:min-w-0 lg:flex-1 lg:last:flex-none lg:last:basis-[calc((100%-4*1.25rem)/5)]">
                 <GlowCard
@@ -313,54 +311,8 @@ function Welcome() {
           <PageMascot pose="frente" kicker="Focus Agency" text="Publicidad, tecnología y estrategia" className="w-[170px]" />
         </div>
       </div>
-      <div aria-hidden="true" className="section-bridge relative" />
+      <HeroWave seam />
     </section>
-  );
-}
-
-function StrategyBoard() {
-  const active = useCycle(STRATEGY.length, 1300);
-  return (
-    <GlowCard className={FRAME}>
-      <div className="flex items-center justify-between gap-3">
-        <FrameHeader label="Tablero estratégico" />
-        <div className="flex -space-x-2" aria-label="Equipo Focus">
-          {["LQ", "DG", "FA"].map((who, index) => (
-            <span
-              key={who}
-              className={`grid h-8 w-8 place-items-center rounded-full border-2 border-card text-[11px] font-bold text-navy ${["bg-focus", "bg-lime", "bg-[#19b7e6]"][index]}`}
-            >
-              {who}
-            </span>
-          ))}
-        </div>
-      </div>
-      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {STRATEGY.map((item, index) => {
-          const Glyph = item.icon;
-          const on = index === active;
-          return (
-            <div
-              key={item.label}
-              className={`rounded-2xl border p-3 transition duration-500 ${on ? "border-focus/60 bg-focus/10 shadow-[0_0_24px_rgb(43_189_239/0.2)]" : "border-fg/10 bg-fg/[0.03]"}`}
-            >
-              <div className="flex items-center justify-between">
-                <Glyph className={`h-5 w-5 transition duration-500 ${on ? "scale-125 text-accent-ink" : "text-[#19b7e6]"}`} strokeWidth={1.7} />
-                <span className="text-[10px] font-bold text-fg/40">0{index + 1}</span>
-              </div>
-              <p className="mt-2 text-sm font-bold">{item.label}</p>
-            </div>
-          );
-        })}
-      </div>
-      <div className="mt-4 flex min-h-0 flex-1 flex-col rounded-2xl bg-fg/[0.03] px-3 pt-3">
-        <div className="flex items-baseline justify-between px-1">
-          <p className="text-sm font-bold">Leads calificados por mes</p>
-          <p className="text-[11px] text-fg/45">Datos de ejemplo</p>
-        </div>
-        <GrowthChart height={215} />
-      </div>
-    </GlowCard>
   );
 }
 
@@ -570,7 +522,7 @@ function ServiceRow({
   flip?: boolean;
 }) {
   return (
-    <div className="grid items-center gap-10 py-14 md:py-20 lg:grid-cols-2 lg:gap-16">
+    <div className="grid items-center gap-8 py-8 md:py-10 lg:grid-cols-2 lg:gap-12">
       <Reveal from="blur" className={flip ? "lg:order-2" : ""}>
         <div className="flex items-baseline gap-4">
           <span className="bg-gradient-to-b from-focus to-lime bg-clip-text text-6xl font-extrabold text-transparent md:text-7xl">{number}</span>
@@ -620,7 +572,7 @@ function Chain() {
 function Services() {
   return (
     <section id="servicios" className="relative">
-      <div className="mx-auto max-w-[1400px] px-5 pt-20 md:px-8 md:pt-28">
+      <div className="mx-auto max-w-[1400px] px-5 pt-12 md:px-8 md:pt-16">
         <Reveal from="blur" className="text-center">
           <h2 className="mx-auto max-w-4xl text-4xl font-extrabold tracking-tight md:text-6xl">Construimos cada parte de tu embudo de ventas</h2>
           <Chain />
@@ -628,10 +580,7 @@ function Services() {
         </Reveal>
 
         <div className="divide-y divide-fg/10">
-          <ServiceRow number="01" kicker="Estrategia" title="Primero entendemos el negocio."
-            visual={<StrategyBoard />}
-            mascot={<PageMascot pose="perfil-cerebro" kicker="Antes de invertir" text="Primero pensamos" className="ml-0 w-[150px]" />}
-          >
+          <ServiceRow number="01" kicker="Estrategia" title="Primero entendemos el negocio." visual={<AudienceSelect />}>
             <p>Antes de invertir en publicidad analizamos:</p>
             <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {STRATEGY.map((item) => (
@@ -693,7 +642,7 @@ function Results() {
   return (
     <section id="casos" className="relative overflow-hidden">
       <div className="pointer-events-none absolute top-24 left-1/2 h-80 w-[50rem] max-w-full -translate-x-1/2 rounded-full bg-focus/10 blur-3xl" />
-      <div className="relative mx-auto max-w-[1400px] px-5 py-20 md:px-8 md:py-28">
+      <div className="relative mx-auto max-w-[1400px] px-5 py-12 md:px-8 md:py-16">
         <Reveal from="blur" className="text-center">
           <h2 className="inline-flex flex-wrap items-center justify-center gap-4 text-4xl font-extrabold tracking-tight uppercase md:text-6xl">
             <TrendingUp className="h-10 w-10 text-lime-ink md:h-14 md:w-14" strokeWidth={2.4} />
@@ -749,7 +698,7 @@ function Results() {
 function Audience() {
   return (
     <section id="nosotros" className="relative">
-      <div className="mx-auto max-w-6xl px-5 py-20 md:py-28">
+      <div className="mx-auto max-w-6xl px-5 py-12 md:py-16">
         <Reveal from="blur" className="text-center">
           <p className="inline-flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-accent-ink uppercase">
             <Users className="h-5 w-5" />
@@ -788,24 +737,18 @@ function FinalCta() {
   return (
     <section className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-x-0 top-1/2 h-72 -translate-y-1/2 bg-gradient-to-r from-focus/0 via-focus/15 to-lime/0 blur-3xl" />
-      <div className="relative mx-auto max-w-5xl px-5 py-24 text-center md:py-32">
+      <div className="relative mx-auto max-w-5xl px-5 py-14 text-center md:py-16">
         <Reveal from="blur">
           <PageMascot pose="senala" kicker="Hablemos" text="Agenda tu cita" className="w-[170px]" />
           <h2 className="mt-6 text-4xl leading-tight font-extrabold tracking-tight md:text-7xl">Tu próxima venta puede empezar con un anuncio.</h2>
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <a
-              href="#contacto"
-              className="inline-flex items-center gap-2 rounded-full border-2 border-[#2bbdef] bg-white px-8 py-4 text-lg font-extrabold text-[#14245c] transition hover:-translate-y-0.5"
-            >
-              Contactarnos
-            </a>
+          <div className="mt-8 flex justify-center">
             <button
               type="button"
               onClick={() => openFocusWhatsApp(CONSULTING_TEXT)}
               className="inline-flex items-center gap-2 rounded-full bg-focus px-8 py-4 text-lg font-extrabold text-navy shadow-[0_0_40px_rgb(43_189_239/0.35)] transition hover:-translate-y-0.5"
             >
               <CalendarCheck className="h-5 w-5" />
-              Agendar cita
+              Agenda tu cita
             </button>
           </div>
         </Reveal>
@@ -830,7 +773,6 @@ export function Agency() {
         <Audience />
         <FinalCta />
         <DarkFaq id="preguntas" subtitle="Preguntas o información sobre nuestros servicios" items={FAQ} />
-        <ContactForm tone="brand" />
       </main>
       <SiteFooter onWhatsApp={openWhatsApp} />
       <WhatsAppChat open={whatsappOpen} onOpen={openWhatsApp} onClose={closeWhatsApp} />

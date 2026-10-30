@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { stagger } from "motion";
+import { motion, useReducedMotion } from "motion/react";
 import type { IconType } from "react-icons";
 import {
   SiAirtable,
@@ -71,28 +72,40 @@ function SiSlackMark(props: { className?: string; color?: string; title?: string
 }
 
 export function IntegrationsBand({ dark = true }: { dark?: boolean }) {
+  const reduce = useReducedMotion();
   return (
     <section data-tone={dark ? "navy" : "light"} className="template-sheet relative z-10">
-      <div className="mx-auto max-w-6xl px-5 py-16 text-center md:py-24">
+      <div className="mx-auto max-w-6xl px-5 py-10 text-center md:py-14">
         <h2 className="sheet-title text-4xl font-extrabold tracking-tight text-[#14245c] md:text-6xl">
           Diseñado para adaptarse con sus soluciones tecnológicas
         </h2>
         <p className="sheet-lead mx-auto mt-4 max-w-2xl text-base text-[#14245c]/70 md:text-lg">
           Cree conexiones en tiempo real que envíen y reciban datos entre herramientas externas sin código.
         </p>
-        <ul className="mx-auto mt-12 grid max-w-5xl grid-cols-4 gap-x-4 gap-y-8 sm:grid-cols-6 lg:grid-cols-9">
-          {TOOLS.map(({ Icon, color, name }) => (
-            <li key={name} className={`grid place-items-center ${color === "currentColor" ? "integ-ink" : ""}`} title={name}>
-              <Icon className="h-9 w-9" color={color} aria-label={name} />
-            </li>
-          ))}
-        </ul>
-        <Link
-          to="/hub/integraciones"
-          className="mt-12 inline-flex rounded-full bg-[#3ef3ff] px-6 py-3 text-sm font-extrabold text-[#071428] shadow-[0_10px_24px_rgb(62_243_255_/_0.28)]"
+        <motion.ul
+          className="mx-auto mt-12 grid max-w-5xl grid-cols-4 gap-x-4 gap-y-8 sm:grid-cols-6 lg:grid-cols-9"
+          initial={reduce ? "show" : "hidden"}
+          whileInView="show"
+          viewport={{ once: true, amount: 0.35 }}
+          variants={{
+            hidden: {},
+            show: { transition: { delayChildren: stagger(0.035) } },
+          }}
         >
-          Explora todas las integraciones
-        </Link>
+          {TOOLS.map(({ Icon, color, name }) => (
+            <motion.li
+              key={name}
+              title={name}
+              className={`grid place-items-center ${color === "currentColor" ? "integ-ink" : ""}`}
+              variants={{
+                hidden: { opacity: 0, y: 8 },
+                show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+              }}
+            >
+              <Icon className="h-9 w-9" color={color} aria-label={name} />
+            </motion.li>
+          ))}
+        </motion.ul>
       </div>
     </section>
   );

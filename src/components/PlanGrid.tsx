@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom";
+import { stagger } from "motion";
+import { motion, useReducedMotion } from "motion/react";
 import { PLANS, choosePlan, type Plan } from "../content/plans";
 
 function Check({ light = false, neon = false }: { light?: boolean; neon?: boolean }) {
@@ -29,7 +32,7 @@ function PlanTitle({ name, light = false }: { name: string; light?: boolean }) {
   );
 }
 
-function PlanCard({ plan, index }: { plan: Plan; index: number }) {
+function PlanCard({ plan }: { plan: Plan }) {
   const featured = plan.tone === "featured";
   const light = featured;
   const trial = plan.trial;
@@ -37,7 +40,6 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
   return (
     <article
       className={`plan-card ${trial ? "plan-card-trial" : featured ? "plan-card-featured" : "plan-card-glass"} ${plan.tone === "gold" ? "plan-card-gold" : ""}`}
-      style={{ animationDelay: `${index * 90}ms` }}
     >
       {plan.recommended && (
         <div className="recommended-tab">
@@ -98,7 +100,19 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
   );
 }
 
+const planList = {
+  hidden: {},
+  show: { transition: { delayChildren: stagger(0.07) } },
+};
+
+const planItem = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const } },
+  hover: { y: -6, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const } },
+};
+
 export function PlanGrid() {
+  const reduce = useReducedMotion();
   return (
     <section id="planes" aria-labelledby="planes-titulo" className="plan-stage relative z-10 px-4 py-14 text-[#14245c] sm:px-6 md:py-16 lg:px-10">
       <div className="relative mx-auto w-full">
@@ -111,21 +125,45 @@ export function PlanGrid() {
           <div className="text-center">
             <h2 id="planes-titulo" className="text-4xl leading-tight font-extrabold tracking-tight sm:text-5xl">
               Planes que crecen contigo
-              <span className="mt-1 block text-[#19b7e6]">y tu marca</span>
             </h2>
+            <p className="plan-academy mt-3 text-lg font-semibold text-[#14245c]">
+              Todos los planes incluyen{" "}
+              <Link
+                to="/academy"
+                className="inline-flex rounded-full border-2 border-[#d4a017] bg-white px-4 py-1.5 font-extrabold text-[#14245c] shadow-[0_0_18px_rgb(212_160_23_/_0.35)]"
+              >
+                Focus Academy
+              </Link>{" "}
+              gratis
+            </p>
           </div>
           <span className="plan-wa-sticker">
             <WhatsAppMark />
           </span>
         </div>
         <p className="plan-kicker mt-3 text-center text-lg text-[#14245c]/70">Elige el plan ideal para tu negocio</p>
-        <div className="mt-8 grid items-stretch gap-3 md:grid-cols-2 xl:grid-cols-5">
-          {PLANS.map((plan, index) => (
-            <div key={plan.id} className="plan-gold-slot">
-              <PlanCard plan={plan} index={index} />
-            </div>
+        <motion.div
+          className="mt-8 grid items-stretch gap-3 md:grid-cols-2 xl:grid-cols-5"
+          initial={reduce ? "show" : "hidden"}
+          whileInView="show"
+          viewport={{ once: true, amount: 0.25 }}
+          variants={planList}
+        >
+          {PLANS.map((plan) => (
+            <motion.div key={plan.id} className="plan-gold-slot" variants={planItem} whileHover={reduce ? undefined : "hover"}>
+              <PlanCard plan={plan} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
+        <p className="plan-kicker mt-8 text-center text-sm">
+          <Link to="/terminos#condiciones" className="font-extrabold underline decoration-[#d4a017] underline-offset-4">
+            Términos y condiciones
+          </Link>
+          <span aria-hidden="true"> · </span>
+          <Link to="/terminos#privacidad" className="font-extrabold underline decoration-[#d4a017] underline-offset-4">
+            Política de privacidad
+          </Link>
+        </p>
       </div>
     </section>
   );

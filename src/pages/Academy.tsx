@@ -2,7 +2,6 @@ import { useCallback, useState, type ComponentType } from "react";
 import {
   ArrowRight,
   ChartNoAxesCombined,
-  Clapperboard,
   DatabaseZap,
   FilePenLine,
   FileVideo,
@@ -10,7 +9,9 @@ import {
   Lightbulb,
   Megaphone,
 } from "lucide-react";
+import { useBrandDark } from "../components/brandTheme";
 import { BrandPage, DarkFaq, FlowLink, GlowCard, HeroWave, Kicker, PageMascot, Testimonials, ToolPills, VideoSlot, useCycle, type Testimonial } from "../components/Dark";
+import { ParticleMorph } from "../components/ParticleMorph";
 import { Reveal, SiteFooter, WhatsAppChat, openFocusWhatsApp } from "../components/Site";
 
 type Icon = ComponentType<{ className?: string; strokeWidth?: number }>;
@@ -31,7 +32,6 @@ const STEPS: { title: string; text: string; icon: Icon; paid?: boolean }[] = [
   { title: "Aprende estrategias", text: "Clases prácticas y directas al grano.", icon: Lightbulb },
   { title: "Crea copys", text: "Escribe mensajes que convierten.", icon: FilePenLine },
   { title: "Guiones para videos", text: "Ideas que conectan con tu audiencia.", icon: FileVideo },
-  { title: "Edición de videos", text: "Haz contenido atractivo y profesional.", icon: Clapperboard },
   { title: "Campañas Meta Ads", text: "Aprende a segmentar, crear y optimizar.", icon: Megaphone },
   { title: "Escalamiento", text: "Lleva tus resultados al siguiente nivel.", icon: ChartNoAxesCombined },
   { title: "CRM", text: "Organiza, automatiza y convierte.", icon: DatabaseZap, paid: true },
@@ -48,7 +48,7 @@ const FAQ = [
   ["Entonces, ¿qué pago?", "Solo tu suscripción a Focus Chat, la plataforma (CRM) para organizar, automatizar y convertir tus leads."],
   [
     "¿Qué voy a aprender?",
-    "Estrategia, copys, guiones y edición de videos, campañas de Meta Ads y escalamiento. Todo lo que necesitas para atraer, gestionar y vender más.",
+    "Estrategia, copys, guiones para videos, campañas de Meta Ads y escalamiento. Todo lo que necesitas para atraer, gestionar y vender más.",
   ],
   ["¿Necesito experiencia previa?", "No. Son clases prácticas y directas al grano, desde la creación de copys hasta la automatización en el CRM."],
   ["¿Por qué aprender a llenar mi WhatsApp de leads?", "Porque de nada te sirve automatizar tus leads si no tienes leads que gestionar. Primero los atraes; después el CRM los organiza."],
@@ -84,10 +84,10 @@ function Hero() {
       <div className="pointer-events-none absolute top-0 right-0 h-[34rem] w-[44rem] rounded-full bg-focus/10 blur-3xl" />
       <HeroWave className="h-[18%]! opacity-60" />
       <div className="relative mx-auto max-w-[1400px] px-5 pt-14 md:px-8 lg:pt-20">
-        <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
-          <Reveal from="blur">
+        <div className="grid min-w-0 items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
+          <Reveal from="blur" className="min-w-0">
             <Kicker>Aprende · Aplica · Haz crecer tu negocio</Kicker>
-            <h1 className="mt-6 text-5xl leading-[1.04] font-extrabold tracking-tight md:text-6xl xl:text-[4.25rem]">
+            <h1 className="mt-6 max-w-full text-[clamp(1.55rem,7.2vw,3rem)] leading-[1.08] font-extrabold tracking-tight md:text-6xl xl:text-[4.25rem]">
               <span className="block lg:whitespace-nowrap">Suscríbete a un CRM.</span>
               <span className="block text-accent-ink lg:whitespace-nowrap">Accede a una academia.</span>
               <span className="block lg:whitespace-nowrap">Impulsa tus ventas.</span>
@@ -113,7 +113,7 @@ function Hero() {
               </a>
             </div>
           </Reveal>
-          <Reveal from="blur" delay={150}>
+          <Reveal from="blur" delay={150} className="min-w-0">
             <VideoSlot
               src={ACADEMY_VIDEO || undefined}
               title="Aquí irá el video de Focus Academy"
@@ -126,7 +126,7 @@ function Hero() {
         <div id="clases" className="mt-16 pt-4 lg:mt-20">
           <ol className="snap-rail flex items-center overflow-x-auto pt-5 pb-2 lg:overflow-visible">
             {STEPS.map((step, index) => (
-              <li key={step.title} className="flex shrink-0 items-center lg:min-w-0 lg:flex-1 lg:last:flex-none lg:last:basis-[calc((100%-6*1.25rem)/7)]">
+              <li key={step.title} className="flex shrink-0 items-center lg:min-w-0 lg:flex-1 lg:last:flex-none lg:last:basis-[calc((100%-5*1.25rem)/6)]">
                 <Reveal from="blur" delay={index * 90} className="lg:w-full">
                   <StepCard step={step} live={index === active} />
                 </Reveal>
@@ -134,12 +134,12 @@ function Hero() {
               </li>
             ))}
           </ol>
-          <p className="mt-2 text-center text-xs text-fg/45 lg:hidden">Desliza para ver las 7 clases →</p>
+          <p className="mt-2 text-center text-xs text-fg/45 lg:hidden">Desliza para ver las 6 clases →</p>
         </div>
 
         <Reveal from="blur" className="mt-14 pb-16 lg:mt-16 lg:pb-20 xl:grid xl:grid-cols-[230px_1fr_230px] xl:items-end">
           <div className="hidden xl:block">
-            <PageMascot pose="senala" kicker="Sin costo" text="Las 6 clases son gratis" className="ml-0 w-[210px]" />
+            <PageMascot pose="senala" kicker="Sin costo" text="Las 5 clases son gratis" className="ml-0 w-[210px]" />
           </div>
           <div className="relative text-center">
             <svg viewBox="0 0 1200 60" className="absolute inset-x-0 top-6 mx-auto h-10 w-full" preserveAspectRatio="none" aria-hidden="true">
@@ -162,10 +162,11 @@ function Hero() {
 }
 
 function Resources() {
+  const dark = useBrandDark();
   return (
     <section id="recursos" className="relative overflow-hidden">
-      <div className="relative mx-auto grid max-w-[1400px] items-center gap-12 px-5 py-20 md:px-8 md:py-28 lg:grid-cols-[0.9fr_1.1fr]">
-        <Reveal from="blur">
+      <div className="relative mx-auto grid min-w-0 max-w-[1400px] items-center gap-10 px-5 py-12 md:px-8 md:py-16 lg:grid-cols-[0.9fr_1.1fr]">
+        <Reveal from="blur" className="min-w-0">
           <Kicker>Aprende · Aplica · Haz crecer tu negocio</Kicker>
           <h2 className="mt-6 text-4xl leading-[1.05] font-extrabold tracking-tight md:text-6xl">
             En Focus Academy{" "}
@@ -184,16 +185,14 @@ function Resources() {
           </a>
           <ToolPills className="mt-12" />
         </Reveal>
-        <Reveal from="blur" delay={150}>
+        <Reveal from="blur" delay={150} className="min-w-0">
           <div className="relative">
             <div className="pointer-events-none absolute -inset-6 rounded-[40px] bg-gradient-to-br from-focus/20 via-focus/5 to-lime/15 blur-2xl" />
-            <img
-              src="/academy/hero-estudio.jpg"
-              alt="Estudiante tomando una clase de Focus Academy"
-              width={902}
-              height={377}
-              loading="lazy"
-              className="relative w-full rounded-[28px] border border-fg/10 object-cover"
+            <ParticleMorph
+              src="/brand/logo-chat-v-white.png"
+              label="Logo de Focus"
+              ink={dark ? "light" : "ink"}
+              className="relative h-[280px] w-full sm:h-[360px]"
             />
           </div>
         </Reveal>
@@ -212,7 +211,15 @@ export function Academy() {
       <main className="relative z-10">
         <Hero />
         <Resources />
-        <Testimonials items={TESTIMONIALS} />
+        <Testimonials
+          items={TESTIMONIALS}
+          title={
+            <>
+              Casos de éxito de <span className="text-accent-ink">estudiantes</span>
+            </>
+          }
+          note="Aquí subiremos el video de este estudiante más adelante."
+        />
         <DarkFaq
           id="soporte"
           subtitle="Preguntas o información sobre la academia y tu suscripción"

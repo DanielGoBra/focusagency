@@ -1,4 +1,5 @@
 import { useRef, useState, type ReactNode } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { SiFacebook, SiInstagram, SiWhatsapp } from "react-icons/si";
 
 type Channel = "whatsapp" | "instagram" | "facebook";
@@ -59,17 +60,24 @@ function BrandText({ text }: { text: string }) {
 
 export function ChannelPhone() {
   const [channel, setChannel] = useState<Channel>("whatsapp");
+  const reduce = useReducedMotion();
   const current = CHANNELS.find((item) => item.id === channel) ?? CHANNELS[0];
 
   return (
-    <section data-tone="light" className="channel-stage bg-white px-4 py-16 text-navy md:py-24">
+    <section data-tone="light" className="channel-stage overflow-visible bg-white px-4 py-10 text-navy md:py-14">
       <div className="mx-auto max-w-3xl text-center">
-        <h2 className="text-3xl font-extrabold tracking-tight text-balance sm:text-4xl">
+        <motion.h2
+          className="text-3xl font-extrabold tracking-tight text-balance sm:text-4xl"
+          initial={reduce ? false : { opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
           Conecta todos tus canales y deja que un solo agente de IA responda a tus clientes.
-        </h2>
+        </motion.h2>
       </div>
-      <div className="relative mx-auto mt-14 grid max-w-6xl items-center gap-12 lg:grid-cols-[minmax(0,1.15fr)_auto]">
-        <aside key={current.id} className="mx-auto flex max-w-xl items-start gap-4 lg:mx-0">
+      <div className="relative mx-auto mt-10 grid w-full min-w-0 max-w-6xl items-center gap-8 lg:grid-cols-[minmax(0,1.15fr)_auto]">
+        <aside key={current.id} className="mx-auto flex w-full min-w-0 max-w-xl items-start gap-4 lg:mx-0">
           <div className="min-w-0 pt-6">
             <h3 className="text-3xl font-extrabold tracking-tight text-balance">
               <BrandText text={current.title} />
@@ -92,16 +100,15 @@ export function ChannelPhone() {
             style={{ filter: `drop-shadow(0 12px 16px ${current.color}55) drop-shadow(0 0 22px ${current.color})` }}
           />
         </aside>
-        <div className="relative flex flex-col items-center">
+        <div className="relative flex w-full min-w-0 flex-col items-center">
           <div className="relative">
             <IPhone channel={channel}>
               {channel === "whatsapp" && <WhatsAppChat />}
               {channel === "instagram" && <InstagramChat />}
               {channel === "facebook" && <MessengerChat />}
             </IPhone>
-            <img src="/brand/mascot/chat.png?v=5" alt="" className="pointer-events-none absolute bottom-0 left-[calc(100%+0.75rem)] hidden w-56 object-contain xl:block" />
           </div>
-          <div className="mt-6 flex w-full flex-row flex-nowrap justify-center gap-2 overflow-x-auto" role="tablist" aria-label="Canal de la conversación">
+          <div className="snap-rail mt-6 flex w-full min-w-0 flex-row flex-nowrap justify-start gap-2 overflow-x-auto px-1 pb-1 lg:justify-center" role="tablist" aria-label="Canal de la conversación">
         {CHANNELS.map((item) => {
           const active = channel === item.id;
           return (
@@ -148,13 +155,13 @@ function IPhone({ children, channel }: { children: ReactNode; channel: string })
         ref={ref}
         onMouseMove={move}
         onMouseLeave={() => setPose({ x: 0, y: 0, on: false })}
-        className={`phone-tilt relative w-[292px] sm:w-[340px] ${pose.on ? "is-hot" : ""}`}
+        className={`phone-tilt relative w-[min(100%,292px)] sm:w-[340px] ${pose.on ? "is-hot" : ""}`}
         style={{ transform: `rotateX(${pose.x}deg) rotateY(${pose.y}deg) translateY(${lift}px)` }}
       >
         <div
           key={channel}
           className="absolute overflow-hidden bg-black"
-          style={{ left: "4.37%", top: "1.75%", width: "91.52%", height: "96.5%", borderRadius: "12.4% / 5.7%" }}
+          style={{ left: "6%", top: "2.6%", width: "88%", height: "94.2%", borderRadius: "13% / 6%" }}
         >
           {children}
         </div>
@@ -198,7 +205,7 @@ function DotsIcon({ ink = "white" }: { ink?: string }) {
 }
 
 function FocuFace({ className = "h-8 w-8" }: { className?: string }) {
-  return <img src="/brand/mascot/focu-avatar.png?v=5" alt="" className={`rounded-full bg-[#071018] object-cover ${className}`} />;
+  return <img src="/brand/mascot/focu-avatar.png?v=8" alt="" className={`rounded-full bg-[#071018] object-cover ${className}`} />;
 }
 
 function Status({ light = false }: { light?: boolean }) {
@@ -281,8 +288,8 @@ function InstagramChat() {
         <Bubble ig>Quiero ver los productos.</Bubble>
         <BotBubble soft>Estos son los favoritos 🔥</BotBubble>
         <div className="ml-9 grid grid-cols-2 gap-2">
-          <Product name="Plan Essential" price="USD 62" />
-          <Product name="Business Lite" price="USD 125" />
+          <Product name="Plan Essential" price="USD 79" />
+          <Product name="Business Lite" price="USD 159" />
         </div>
         <VideoNote src="/brand/videos/instagram.mp4" title="focu" shape="reel" />
         <Reactions />

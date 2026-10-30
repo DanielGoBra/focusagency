@@ -1,5 +1,10 @@
+import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
+import { motion, useReducedMotion, useScroll, useSpring } from "motion/react";
+import { preloadBrand } from "../brandPreload";
 import { BrandLogo } from "./Logo";
+import { MetaInfinity } from "./MetaPartner";
+import { jumpTo } from "./ScrollToTop";
 
 const BRANDS = [
   { to: "/", label: "Focuschat", end: true, cue: "chat" },
@@ -59,13 +64,42 @@ export function SiteHeader({
   const { pathname } = useLocation();
   const local = sections !== SECTIONS || pathname === "/";
   const dark = theme === "dark";
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 70, damping: 28, restDelta: 0.001 });
+  const [compact, setCompact] = useState(false);
+
+  useEffect(() => {
+    let frame = 0;
+    let holdUntil = 0;
+    const apply = () => {
+      frame = 0;
+      if (performance.now() < holdUntil) return;
+      const y = window.scrollY;
+      setCompact((current) => {
+        const next = !current && y > 120 ? true : current && y < 4 ? false : current;
+        if (next !== current) holdUntil = performance.now() + 420;
+        return next;
+      });
+    };
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(apply);
+    };
+    apply();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
 
   return (
-    <header className="sticky top-3 z-40 px-3 sm:top-4 sm:px-5">
-      <div className="mx-auto max-w-[1380px] rounded-[32px] border border-white/40 bg-[#e6e9ee]/72 px-4 py-2.5 shadow-[0_12px_32px_rgb(32_34_70_/_0.05)] backdrop-blur-md sm:px-5">
+    <header className={`sticky z-40 overflow-anchor-none px-3 transition-[top] duration-300 sm:px-5 ${compact ? "top-2" : "top-3 sm:top-4"}`}>
+      <div className={`relative mx-auto max-w-[1380px] rounded-[32px] border border-white/40 bg-[#e6e9ee]/72 shadow-[0_12px_32px_rgb(32_34_70_/_0.05)] backdrop-blur-md transition-all duration-300 ${compact ? "px-3 py-1.5" : "px-4 py-2.5 sm:px-5"}`}>
       <nav
         aria-label="Marcas"
-        className="grid w-full grid-cols-3 gap-1 rounded-full bg-[#d7e6fb]/80 p-1.5 text-sm leading-tight font-extrabold sm:gap-3 sm:p-2 sm:text-lg lg:text-2xl"
+        className={`grid w-full grid-cols-3 gap-1 rounded-full bg-[#d7e6fb]/80 font-extrabold transition-all duration-300 ${compact ? "p-1 text-[11px] leading-none sm:text-sm" : "p-1.5 text-sm leading-tight sm:gap-3 sm:p-2 sm:text-lg lg:text-2xl"}`}
       >
         {BRANDS.map((brand) => (
           <NavLink
@@ -73,22 +107,36 @@ export function SiteHeader({
             to={brand.to}
             end={brand.end}
             data-cue={brand.cue}
+            onMouseEnter={() => preloadBrand(brand.to)}
+            onFocus={() => preloadBrand(brand.to)}
+            onClick={() => {
+              preloadBrand(brand.to);
+              if (pathname === brand.to) jumpTo(0);
+            }}
             className={({ isActive }) =>
-              `rounded-full border-2 border-[#2bbdef] px-2 py-2 text-center text-navy transition sm:px-6 sm:py-3 ${isActive ? "bg-white" : "hover:bg-white/50"}`
+              `whitespace-nowrap rounded-full border-2 border-[#2bbdef] text-center text-navy transition ${compact ? "px-1.5 py-1.5 sm:px-3" : "px-2 py-2 sm:px-6 sm:py-3"} ${isActive ? "bg-white" : "hover:bg-white/50"}`
             }
           >
             <BrandWord label={brand.label} />
           </NavLink>
         ))}
       </nav>
-      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-          <Link to="/" className="shrink-0" aria-label="Focuschat, inicio">
-            <BrandLogo variant={dark ? "white" : "navy"} className="h-12 w-auto sm:h-14 lg:h-16" />
-          </Link>
-        </div>
-        <div className="ml-auto flex min-w-0 items-center gap-3 sm:gap-5">
-          <nav aria-label="Secciones" className="flex gap-4 overflow-x-auto text-sm font-bold sm:gap-6 sm:text-base">
+      <div className={`header-bar flex flex-wrap items-center gap-x-3 gap-y-2 ${compact ? "mt-1" : "mt-2"}`}>
+        <Link to="/" className="shrink-0" aria-label="Focuschat, inicio" onClick={() => pathname === "/" && jumpTo(0)}>
+          <BrandLogo variant={dark ? "white" : "navy"} className={compact ? "h-8 w-auto sm:h-9" : "h-12 w-auto sm:h-14 lg:h-16"} />
+        </Link>
+        <a href={pathname === "/" ? "#servicios" : "/#servicios"} className="header-partner gold-seal">
+          <span className="gold-seal-inner header-partner-face">
+            <span className="header-partner-kicker">Somos</span>
+            <MetaInfinity className="h-3.5 w-6 shrink-0 text-[#0081FB]" />
+            <span className="header-partner-copy">
+              Meta
+              <small>Business Partner</small>
+            </span>
+          </span>
+        </a>
+        <div className="header-tools ml-auto flex min-w-0 items-center gap-3 sm:gap-5">
+          <nav aria-label="Secciones" className="flex min-w-0 flex-1 flex-wrap gap-x-4 gap-y-1 text-sm font-bold sm:flex-nowrap sm:gap-6 sm:overflow-x-auto sm:text-base">
             {sections.map((item) => (
               <a
                 key={item.hash}
@@ -102,7 +150,10 @@ export function SiteHeader({
           </nav>
           {onThemeChange ? <ThemeSwitch dark={dark} onToggle={onThemeChange} /> : null}
         </div>
-      </div>
+        </div>
+        {reduce ? null : (
+          <motion.div aria-hidden className="pointer-events-none absolute inset-x-8 bottom-1.5 h-px origin-left bg-[#3ef3ff]" style={{ scaleX }} />
+        )}
       </div>
     </header>
   );

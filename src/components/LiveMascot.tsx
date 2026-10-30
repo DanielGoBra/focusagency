@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
+import { FocuMotion } from "./FocuMotion";
 import { MetaInfinity } from "./MetaPartner";
 
 const CYCLE = ["partner", "frase", "video", "agency", "academy", "servicios", "sistema", "contacto"] as const;
@@ -17,8 +19,8 @@ const COPY: Record<string, { kicker: string; text: string; partner?: boolean }> 
 };
 
 const POSES = {
-  frente: "/brand/mascot/frente.png?v=5",
-  senala: "/brand/mascot/senala.png?v=5",
+  frente: "/brand/mascot/frente.png?v=8",
+  senala: "/brand/mascot/senala.png?v=8",
 } as const;
 
 type Pose = keyof typeof POSES;
@@ -37,13 +39,12 @@ const POSE_FOR: Record<string, Pose> = {
 };
 
 export function LiveMascot() {
-  const tiltRef = useRef<HTMLDivElement>(null);
-  const shadowRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState(0);
   const [hover, setHover] = useState<string | null>(null);
   const cue = hover ?? CYCLE[step] ?? "partner";
   const line = COPY[cue] ?? COPY.partner;
   const pose = POSE_FOR[cue] ?? "senala";
+  const reduce = useReducedMotion();
 
   useEffect(() => {
     if (hover) return;
@@ -74,30 +75,7 @@ export function LiveMascot() {
     };
     document.addEventListener("pointerover", onOver);
     document.addEventListener("pointerout", onOut);
-
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
-      return () => {
-        document.removeEventListener("pointerover", onOver);
-        document.removeEventListener("pointerout", onOut);
-      };
-    }
-
-    let frame = 0;
-    const tick = (now: number) => {
-      const tilt = tiltRef.current;
-      if (tilt) {
-        const bob = Math.sin(now / 1600) * 6;
-        tilt.style.transform = `translateY(${bob}px)`;
-      }
-      if (shadowRef.current) {
-        shadowRef.current.style.transform = `scaleX(${1 - Math.sin(now / 1600) * 0.06})`;
-      }
-      frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
     return () => {
-      cancelAnimationFrame(frame);
       document.removeEventListener("pointerover", onOver);
       document.removeEventListener("pointerout", onOut);
     };
@@ -105,7 +83,16 @@ export function LiveMascot() {
 
   return (
     <div className="pointer-events-none relative mx-auto w-[220px] sm:w-[260px]">
-      <div className="focu-bubble relative z-10 mb-3 rounded-[22px] border-2 border-[#2BBDEF] bg-white px-3 py-2.5 text-[#202246] shadow-[0_0_16px_rgb(94_211_252_/_0.9),0_0_34px_rgb(43_189_239_/_0.6)]">
+      <motion.div
+        key={cue}
+        className={`relative z-10 mb-3 ${line?.partner ? "gold-seal" : ""}`}
+        initial={reduce ? false : { opacity: 0, y: 8, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: "spring", stiffness: 320, damping: 24 }}
+      >
+      <div
+        className={`focu-bubble relative rounded-[22px] px-3 py-2.5 text-[#202246] ${line?.partner ? "gold-seal-inner" : "border-2 border-[#2BBDEF] bg-white shadow-[0_0_16px_rgb(94_211_252_/_0.9),0_0_34px_rgb(43_189_239_/_0.6)]"}`}
+      >
         {line?.partner ? (
           <p className="flex items-center gap-2">
             <span className="text-[10px] font-bold tracking-[0.16em] text-[#202246]/55 uppercase">Somos</span>
@@ -121,10 +108,11 @@ export function LiveMascot() {
             <span className="mt-0.5 block text-sm leading-snug font-extrabold text-[#202246]">{line?.text}</span>
           </p>
         )}
-        <span className="absolute -bottom-2 left-9 h-4 w-4 rotate-45 border-2 border-[#2BBDEF] bg-[#2BBDEF]" />
+        <span className={`absolute -bottom-2 left-9 h-4 w-4 rotate-45 border-2 ${line?.partner ? "border-[#e2b657] bg-[#e2b657]" : "border-[#2BBDEF] bg-[#2BBDEF]"}`} />
         <span className="absolute -bottom-[5px] left-[38px] h-3.5 w-3.5 rotate-45 bg-white" />
       </div>
-      <div ref={tiltRef} className="relative h-64 sm:h-72">
+      </motion.div>
+      <FocuMotion className="relative h-64 sm:h-72">
         {(Object.keys(POSES) as Pose[]).map((name) => (
           <img
             key={name}
@@ -134,8 +122,12 @@ export function LiveMascot() {
             className={`absolute inset-0 h-full w-full object-contain object-bottom select-none transition-opacity duration-700 ${name === pose ? "opacity-100" : "opacity-0"}`}
           />
         ))}
-      </div>
-      <div ref={shadowRef} className="mx-auto mt-1 h-3 w-28 rounded-full bg-navy/15 blur-sm" />
+      </FocuMotion>
+      <motion.div
+        className="mx-auto mt-1 h-3 w-28 origin-center rounded-full bg-navy/15 blur-sm"
+        animate={reduce ? undefined : { scaleX: [1, 0.84, 1] }}
+        transition={{ duration: 5.4, repeat: Infinity, ease: "easeInOut" }}
+      />
     </div>
   );
 }

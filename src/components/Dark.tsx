@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef, useState, type ComponentType, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import { ChevronDown, Clapperboard, Cpu, Database, Infinity as InfinityIcon, ScanLine } from "lucide-react";
 import { BrandDarkContext } from "./brandTheme";
+import { FocuMotion } from "./FocuMotion";
+import { motion, useReducedMotion } from "motion/react";
 import { NeuralField } from "./NeuralField";
 import { SiteHeader } from "./SiteHeader";
 import { Reveal, SocialGlyph } from "./Site";
@@ -38,13 +40,13 @@ export function BrandPage({
 }
 
 const POSES = {
-  frente: "/brand/mascot/frente.png?v=5",
-  senala: "/brand/mascot/senala.png?v=5",
-  chat: "/brand/mascot/chat.png",
-  cafe: "/brand/mascot/cafe.png",
-  serio: "/brand/mascot/serio.png",
-  "perfil-azul": "/brand/mascot/perfil-azul.png",
-  "perfil-cerebro": "/brand/mascot/perfil-cerebro.png",
+  frente: "/brand/mascot/frente.png?v=8",
+  senala: "/brand/mascot/senala.png?v=8",
+  chat: "/brand/mascot/chat.png?v=8",
+  cafe: "/brand/mascot/cafe.png?v=8",
+  serio: "/brand/mascot/serio.png?v=8",
+  "perfil-azul": "/brand/mascot/perfil-azul.png?v=8",
+  "perfil-cerebro": "/brand/mascot/perfil-cerebro.png?v=8",
 } as const;
 
 export type Pose = keyof typeof POSES;
@@ -63,18 +65,27 @@ export function PageMascot({
   className?: string;
   bubbleSide?: "left" | "right";
 }) {
+  const reduce = useReducedMotion();
   return (
     <div className={`pointer-events-none relative mx-auto ${className}`}>
       {text ? (
-        <div className="focu-bubble relative z-10 mb-3 rounded-[22px] border-2 border-[#2BBDEF] bg-white px-3 py-2.5 text-[#202246] shadow-[0_0_16px_rgb(94_211_252_/_0.9),0_0_34px_rgb(43_189_239_/_0.6)]">
+        <motion.div
+          className="focu-bubble relative z-10 mb-3 rounded-[22px] border-2 border-[#2BBDEF] bg-white px-3 py-2.5 text-[#202246] shadow-[0_0_16px_rgb(94_211_252_/_0.9),0_0_34px_rgb(43_189_239_/_0.6)]"
+          initial={reduce ? false : { opacity: 0, y: 10, scale: 0.96 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ type: "spring", stiffness: 280, damping: 22 }}
+        >
           {kicker && <span className="block text-[10px] font-bold tracking-[0.16em] uppercase">{kicker}</span>}
           <span className="mt-0.5 block text-sm leading-snug font-extrabold">{text}</span>
           <span className={`absolute -bottom-2 h-4 w-4 rotate-45 border-2 border-[#2BBDEF] bg-[#2BBDEF] ${bubbleSide === "left" ? "left-9" : "right-9"}`} />
           <span className={`absolute -bottom-[5px] h-3.5 w-3.5 rotate-45 bg-white ${bubbleSide === "left" ? "left-[38px]" : "right-[38px]"}`} />
-        </div>
+        </motion.div>
       ) : null}
-      <img src={POSES[pose]} alt="" draggable={false} className="float w-full object-contain object-bottom select-none" />
-      <div className="mx-auto mt-1 h-3 w-1/2 rounded-full bg-navy/20 blur-sm" />
+      <FocuMotion>
+        <img src={POSES[pose]} alt="" draggable={false} className="w-full object-contain object-bottom select-none" />
+        <div className="mx-auto mt-1 h-3 w-1/2 rounded-full bg-navy/20 blur-sm" />
+      </FocuMotion>
     </div>
   );
 }
@@ -92,7 +103,7 @@ export function VideoSlot({
   className?: string;
   compact?: boolean;
 }) {
-  const frame = `hero-video relative ${compact ? "border-4! rounded-[1.1rem]!" : "w-full min-h-[250px] sm:min-h-0"} ${className}`;
+  const frame = `hero-video relative max-w-full min-w-0 ${compact ? "border-4! rounded-[1.1rem]!" : "w-full"} ${className}`;
   if (src) {
     return (
       <div className={frame}>
@@ -154,48 +165,73 @@ export function ToolPills({ className = "" }: { className?: string }) {
   );
 }
 
-export function HeroWave({ className = "" }: { className?: string }) {
+export function HeroWave({ className = "", seam = false }: { className?: string; seam?: boolean }) {
   const id = useId();
+  const curve = "M0 320C420 320 780 285 1060 180 1240 112 1350 46 1440 0";
   return (
     <svg
-      className={`pointer-events-none absolute inset-x-0 bottom-0 h-[42%] w-full ${className}`}
+      className={
+        seam
+          ? `pointer-events-none relative z-10 block h-36 w-full sm:h-44 ${className}`
+          : `pointer-events-none absolute inset-x-0 bottom-0 h-[42%] w-full ${className}`
+      }
       viewBox="0 0 1440 320"
       preserveAspectRatio="none"
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id={`${id}-w`} x1="0" y1="1" x2="1" y2="0">
+        <linearGradient id={`${id}-glass`} x1="0" y1="1" x2="1" y2="0">
           <stop offset="0" stopColor="#2bbdef" stopOpacity="0" />
-          <stop offset="0.5" stopColor="#2bbdef" stopOpacity="0.18" />
-          <stop offset="1" stopColor="#1efa5d" stopOpacity="0.22" />
+          <stop offset="0.38" stopColor="#2bbdef" stopOpacity="0.2" />
+          <stop offset="0.68" stopColor="#3ef3ff" stopOpacity="0.34" />
+          <stop offset="1" stopColor="#1efa5d" stopOpacity="0.4" />
+        </linearGradient>
+        <linearGradient id={`${id}-line`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#d7fbff" stopOpacity="0.45" />
+          <stop offset="0.5" stopColor="#f4fdff" stopOpacity="0.95" />
+          <stop offset="1" stopColor="#d9ffe8" stopOpacity="0.85" />
         </linearGradient>
       </defs>
-      <path d="M0 320C420 320 780 285 1060 180 1240 112 1350 46 1440 0V320Z" fill={`url(#${id}-w)`} />
-      <path d="M0 320C420 320 780 285 1060 180 1240 112 1350 46 1440 0" fill="none" stroke="#2bbdef" strokeOpacity="0.55" strokeWidth="1.5" />
+      <path d={`${curve}V320Z`} fill={`url(#${id}-glass)`} />
+      <path className="hero-wave-stroke" d={curve} fill="none" stroke={`url(#${id}-line)`} strokeWidth="1.6" />
     </svg>
   );
 }
 
 export type Testimonial = { name: string; business: string; quote: string; video?: string };
 
-export function Testimonials({ items, id = "testimonios" }: { items: readonly Testimonial[]; id?: string }) {
+export function Testimonials({
+  items,
+  id = "testimonios",
+  kicker = "Lo que dicen de Focus",
+  title = (
+    <>
+      Clientes que ya <span className="text-accent-ink">venden con Focus</span>
+    </>
+  ),
+  note = "Aquí subiremos el video de este cliente más adelante.",
+}: {
+  items: readonly Testimonial[];
+  id?: string;
+  kicker?: string;
+  title?: ReactNode;
+  note?: string;
+}) {
   return (
-    <section id={id} className="relative mx-auto max-w-[1400px] px-5 py-20 md:px-8 md:py-28">
+    <section id={id} className="relative mx-auto max-w-[1100px] px-5 py-12 md:px-8 md:py-16">
       <Reveal from="blur" className="text-center">
-        <Kicker>Lo que dicen de Focus</Kicker>
-        <h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
-          Clientes que ya <span className="text-accent-ink">venden con Focus</span>
-        </h2>
+        <Kicker>{kicker}</Kicker>
+        <h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">{title}</h2>
       </Reveal>
-      <div className="mt-12 grid auto-rows-fr gap-6 md:grid-cols-3">
+      <div className="mt-8 grid auto-rows-fr gap-5 md:grid-cols-3">
         {items.map((item, index) => (
           <Reveal key={index} from="blur" delay={index * 140} className="h-full">
             <GlowCard className="flex h-full flex-col rounded-[28px] p-3" style={{ animationDelay: `${index * -2.3}s` }}>
               <VideoSlot
                 src={item.video}
                 title="Testimonio en video"
-                note="Aquí subiremos el video de este cliente más adelante."
-                className="aspect-video"
+                note={note}
+                className="aspect-[9/16] max-h-[460px]"
                 compact
               />
               <div className="flex flex-1 flex-col px-3 pt-5 pb-3 text-center">
@@ -227,7 +263,7 @@ export function DarkFaq({
     <section id={id} className="relative overflow-hidden">
       <div className="pointer-events-none absolute top-1/3 left-1/3 h-80 w-[36rem] max-w-full rounded-full bg-lime/10 blur-3xl" />
       <div className="pointer-events-none absolute top-1/2 right-1/4 h-80 w-[30rem] max-w-full rounded-full bg-focus/10 blur-3xl" />
-      <div className="relative mx-auto max-w-4xl px-5 py-20 md:py-24">
+      <div className="relative mx-auto max-w-4xl px-5 py-12 md:py-16">
         <Reveal className="flex items-end justify-between gap-6">
           <div>
             <h2 className="text-4xl font-extrabold tracking-tight md:text-5xl">
@@ -253,7 +289,14 @@ export function DarkFaq({
                     <ChevronDown className={`h-4 w-4 transition-transform ${shown ? "rotate-180" : ""}`} strokeWidth={3} />
                   </span>
                 </button>
-                {shown && <p className="animate-in fade-in slide-in-from-top-1 max-w-4xl pb-6 leading-relaxed text-fg/75 duration-300">{answer}</p>}
+                <motion.div
+                  initial={false}
+                  animate={{ height: shown ? "auto" : 0, opacity: shown ? 1 : 0 }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  className="overflow-hidden"
+                >
+                  <p className="max-w-4xl pb-6 leading-relaxed text-fg/75">{answer}</p>
+                </motion.div>
               </div>
             );
           })}
@@ -327,7 +370,7 @@ export function MetaMark({ className = "h-6 w-6" }: { className?: string }) {
 export function TikTokMark({ className = "h-6 w-6" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <circle cx="12" cy="12" r="12" fill="#010101" />
+      <circle cx="12" cy="12" r="11.15" fill="#010101" stroke="#ffffff" strokeWidth="1.7" />
       <path
         transform="translate(4.2 4) scale(0.66)"
         fill="#25F4EE"
