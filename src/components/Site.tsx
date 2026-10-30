@@ -123,8 +123,14 @@ export function SocialLinks({ tone = "navy", onWhatsApp }: { tone?: "navy" | "wh
   );
 }
 
+/** Comunidad de WhatsApp de Focus Academy; los botones de WhatsApp de Academy llevan aquí. */
+export const FOCUS_COMMUNITY_URL = "https://chat.whatsapp.com/IywJF7wHCEnLipPmcZLK8U";
+
 export function openFocusWhatsApp(text: string) {
-  const href = focusWhatsAppHref(text);
+  openExternal(focusWhatsAppHref(text));
+}
+
+export function openExternal(href: string) {
   const link = document.createElement("a");
   link.href = href;
   link.target = "_blank";
@@ -134,10 +140,38 @@ export function openFocusWhatsApp(text: string) {
   link.remove();
 }
 
-export function WhatsAppChat({ open, onOpen, onClose }: { open: boolean; onOpen: () => void; onClose: () => void }) {
+export function WhatsAppChat({
+  open,
+  onOpen,
+  onClose,
+  community = false,
+}: {
+  open: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+  /** En Academy el botón abre directo la comunidad de WhatsApp, sin el chat previo. */
+  community?: boolean;
+}) {
   const [draft, setDraft] = useState(WHATSAPP_DRAFT);
   const [sentText, setSentText] = useState<string | null>(null);
   const fieldRef = useRef<HTMLTextAreaElement>(null);
+  const [cueHidden, setCueHidden] = useState(false);
+
+  // En pantallas angostas la etiqueta se recoge mientras la persona hace scroll, para no tapar el contenido.
+  useEffect(() => {
+    if (window.matchMedia("(min-width: 768px)").matches) return;
+    let timer = 0;
+    const onScroll = () => {
+      setCueHidden(true);
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setCueHidden(false), 1400);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.clearTimeout(timer);
+    };
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -181,7 +215,7 @@ export function WhatsAppChat({ open, onOpen, onClose }: { open: boolean; onOpen:
           </header>
           <div className="flex max-h-80 flex-col gap-3 overflow-y-auto bg-[#e7f6ef] px-3 py-4">
             <p className="max-w-[85%] rounded-2xl rounded-tl-sm bg-white px-3 py-2 text-sm text-navy shadow-sm">
-              Hola. Soy Focus. Escribe tu mensaje y te abrimos el chat de Focus Agency en WhatsApp.
+              Hola. Soy Focus. ¿Quieres agendar una cita o contarnos qué necesitas? Escríbelo y te abrimos el chat de Focus Agency en WhatsApp.
             </p>
             {sentText ? (
               <p className="ml-auto max-w-[85%] rounded-2xl rounded-tr-sm bg-[#d9fdd3] px-3 py-2 text-sm text-navy shadow-sm">{sentText}</p>
@@ -212,15 +246,29 @@ export function WhatsAppChat({ open, onOpen, onClose }: { open: boolean; onOpen:
           </form>
         </section>
       ) : null}
-      <button
-        type="button"
-        onClick={open ? onClose : onOpen}
-        aria-expanded={open}
-        aria-label={open ? "Cerrar chat de WhatsApp" : "Abrir chat de WhatsApp"}
-        className="grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_10px_30px_rgba(37,211,102,0.45)] transition hover:-translate-y-0.5 hover:bg-[#1ebe5d]"
-      >
-        <SocialGlyph name="WhatsApp" className="h-8 w-8" />
-      </button>
+      <div className="flex items-center gap-2.5">
+        {open ? null : (
+          <button
+            type="button"
+            onClick={community ? () => openExternal(FOCUS_COMMUNITY_URL) : onOpen}
+            className={`wa-cue rounded-2xl border-2 border-[#25D366] bg-white px-3 py-1.5 text-left text-navy shadow-[0_10px_30px_rgba(37,211,102,0.3)] transition duration-300 hover:-translate-y-0.5 ${
+              cueHidden ? "pointer-events-none translate-x-4 opacity-0" : ""
+            }`}
+          >
+            <span className="block text-[13px] leading-tight font-extrabold">{community ? "Únete a la comunidad" : "Agenda tu cita"}</span>
+            <span className="block text-[11px] leading-tight font-bold text-navy/65">{community ? "Clases gratis por WhatsApp" : "o contáctanos por WhatsApp"}</span>
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={community ? () => openExternal(FOCUS_COMMUNITY_URL) : open ? onClose : onOpen}
+          aria-expanded={community ? undefined : open}
+          aria-label={community ? "Unirme a la comunidad de WhatsApp" : open ? "Cerrar chat de WhatsApp" : "Agendar cita o contactarnos por WhatsApp"}
+          className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_10px_30px_rgba(37,211,102,0.45)] transition hover:-translate-y-0.5 hover:bg-[#1ebe5d]"
+        >
+          <SocialGlyph name="WhatsApp" className="h-8 w-8" />
+        </button>
+      </div>
     </div>
   );
 }

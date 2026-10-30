@@ -317,6 +317,42 @@ body {
   }
 }
 
+.brand-badge {
+  position: absolute;
+  top: -0.7rem;
+  right: 0.9rem;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.brand-badge-face {
+  display: block;
+  white-space: nowrap;
+  border-radius: 999px;
+  padding: 0.12rem 0.55rem;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a6424;
+  background: linear-gradient(180deg, #fffdf4, #fff1c4);
+}
+
+@media (max-width: 639px) {
+  .brand-badge {
+    top: -0.72rem;
+    right: 50%;
+    transform: translateX(50%);
+  }
+
+  .brand-badge-face {
+    padding: 0.06rem 0.35rem;
+    font-size: 7.5px;
+    letter-spacing: 0.02em;
+  }
+}
+
 .gold-seal-inner {
   border-radius: calc(1.15rem - 2px);
   background: white;

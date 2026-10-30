@@ -19,6 +19,7 @@ import {
   Swords,
   Tags,
   Target,
+  Telescope,
   TrendingUp,
   Users,
   Workflow,
@@ -67,11 +68,12 @@ const TESTIMONIALS: Testimonial[] = [
   { name: "Nombre del cliente", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del cliente, lo que cambió en su negocio con Focus." },
 ];
 
-const CHAIN = ["Estrategia", "Creativos", "Meta Ads", "CRM", "Automatización", "Venta"];
+const CHAIN = ["Investigación", "Estrategia", "Creativos", "Meta Ads", "CRM", "Automatización", "Venta"];
 
 const STRATEGY: { label: string; icon: Icon }[] = [
   { label: "Oferta", icon: Tags },
   { label: "Público", icon: Users },
+  { label: "Tendencias", icon: TrendingUp },
   { label: "Competencia", icon: Swords },
   { label: "Objetivos", icon: Goal },
   { label: "Embudo", icon: Filter },
@@ -127,7 +129,7 @@ const FAQ = [
   ],
   [
     "¿Cuánto debo invertir en publicidad?",
-    "Depende de tu oferta, tu público y tus objetivos. Lo definimos en la etapa de estrategia, antes de invertir, porque hacer publicidad sin estrategia solo acelera el gasto.",
+    "La inversión inicial mínima es de 1.000 USD. A partir de ahí, el monto depende de tu oferta, tu público y tus objetivos; lo definimos en la etapa de estrategia, antes de invertir, porque hacer publicidad sin estrategia solo acelera el gasto.",
   ],
   [
     "¿Qué tareas se automatizan?",
@@ -157,6 +159,27 @@ function FrameHeader({ label, badge }: { label: string; badge?: string }) {
 
 const FUNNEL = [
   {
+    title: "Investigación",
+    text: "Tendencias y competencia del mercado",
+    art: (
+      <span className="grid h-14 w-14 place-items-center rounded-2xl border border-focus/40 bg-focus/10 text-accent-ink">
+        <Telescope className="h-8 w-8" strokeWidth={1.6} />
+      </span>
+    ),
+  },
+  {
+    title: "Creativos",
+    text: "Captamos su atención",
+    art: (
+      <div className="relative grid h-14 w-20 place-items-center overflow-hidden rounded-xl bg-gradient-to-br from-[#1d3a4a] via-[#0b1d2a] to-[#123247]">
+        <ImageIcon className="h-6 w-6 text-white/80" strokeWidth={1.6} />
+        <span className="absolute right-1.5 bottom-1.5 grid h-5 w-5 place-items-center rounded-full bg-focus text-navy">
+          <Play className="h-3 w-3" fill="currentColor" />
+        </span>
+      </div>
+    ),
+  },
+  {
     title: "Anuncios",
     text: "Atraemos tu audiencia",
     art: (
@@ -172,18 +195,6 @@ const FUNNEL = [
         </span>
         <span className="absolute top-7 left-6 grid h-7 w-7 place-items-center rounded-full shadow">
           <TikTokMark className="h-7 w-7" />
-        </span>
-      </div>
-    ),
-  },
-  {
-    title: "Creativos",
-    text: "Captamos su atención",
-    art: (
-      <div className="relative grid h-14 w-20 place-items-center overflow-hidden rounded-xl bg-gradient-to-br from-[#1d3a4a] via-[#0b1d2a] to-[#123247]">
-        <ImageIcon className="h-6 w-6 text-white/80" strokeWidth={1.6} />
-        <span className="absolute right-1.5 bottom-1.5 grid h-5 w-5 place-items-center rounded-full bg-focus text-navy">
-          <Play className="h-3 w-3" fill="currentColor" />
         </span>
       </div>
     ),
@@ -239,9 +250,11 @@ function FunnelHero() {
           ) : (
             <PageMascot pose="senala" className="w-[190px] sm:w-[220px]" />
           )}
-          <ol className="snap-rail relative z-10 mt-6 flex items-stretch overflow-x-auto pt-4 pb-2 lg:overflow-visible">
+        </Reveal>
+        <Reveal from="blur" delay={250} className="min-w-0 lg:col-span-2">
+          <ol className="snap-rail relative z-10 flex items-stretch overflow-x-auto pt-4 pb-2 lg:overflow-visible">
             {FUNNEL.map((card, index) => (
-              <li key={card.title} className="flex shrink-0 items-center lg:min-w-0 lg:flex-1 lg:last:flex-none lg:last:basis-[calc((100%-4*1.25rem)/5)]">
+              <li key={card.title} className="flex shrink-0 items-center lg:min-w-0 lg:flex-1 lg:last:flex-none lg:last:basis-[calc((100%-5*1.25rem)/6)]">
                 <GlowCard
                   live={index === active}
                   className="flex h-[196px] w-[150px] flex-col items-center rounded-2xl px-3 py-4 text-center lg:w-full"
@@ -255,6 +268,7 @@ function FunnelHero() {
               </li>
             ))}
           </ol>
+          <p className="mt-2 text-center text-xs text-fg/50 lg:hidden">Desliza para ver el embudo completo →</p>
         </Reveal>
       </div>
     </section>
@@ -547,9 +561,9 @@ function Chain() {
         const last = index === CHAIN.length - 1;
         const on = index <= active;
         return (
-          <li key={item} className="flex min-w-0 items-center lg:flex-1 lg:last:flex-none lg:last:basis-[calc((100%-5*2rem)/6)]">
+          <li key={item} className="flex min-w-0 items-center last:col-span-2 last:mx-auto last:w-1/2 sm:last:col-span-1 sm:last:w-full lg:flex-1 lg:last:flex-none lg:last:basis-[calc((100%-6*2rem)/7)]">
             <span
-              className={`flex h-12 w-full min-w-0 items-center justify-center rounded-full border px-3 text-xs font-bold tracking-[0.14em] uppercase transition duration-500 ${
+              className={`flex h-12 w-full min-w-0 items-center justify-center rounded-full border px-2 text-xs font-bold tracking-[0.14em] uppercase transition duration-500 lg:text-[11px] lg:tracking-[0.08em] xl:text-xs xl:tracking-[0.12em] ${
                 last
                   ? on
                     ? "border-lime bg-lime text-navy shadow-[0_0_30px_rgb(30_250_93/0.55)]"
@@ -582,9 +596,9 @@ function Services() {
         <div className="divide-y divide-fg/10">
           <ServiceRow number="01" kicker="Estrategia" title="Primero entendemos el negocio." visual={<AudienceSelect />}>
             <p>Antes de invertir en publicidad analizamos:</p>
-            <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <ul className="flex flex-wrap gap-2">
               {STRATEGY.map((item) => (
-                <li key={item.label} className="rounded-full border border-fg/15 bg-fg/[0.04] px-3.5 py-1.5 text-center text-sm font-bold text-fg">
+                <li key={item.label} className="rounded-full border border-fg/15 bg-fg/[0.04] px-4 py-1.5 text-center text-sm font-bold text-fg">
                   {item.label}
                 </li>
               ))}

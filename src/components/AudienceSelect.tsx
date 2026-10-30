@@ -33,7 +33,7 @@ function Card({ label, keep, live }: { label: string; keep: boolean; live: boole
   );
 }
 
-/** Focu en el centro elige públicos en verde y descarta otros en rojo. */
+/** Focu en el centro elige públicos en verde y descarta otros en rojo; en móvil queda arriba y señala hacia la lista. */
 export function AudienceSelect() {
   const reduce = useReducedMotion();
   const [cursor, setCursor] = useState(reduce ? PUBLICS.length : -1);
@@ -61,7 +61,7 @@ export function AudienceSelect() {
       </div>
       <div className="mt-4 flex flex-col items-center gap-3 md:hidden">
         <FocuMotion className="w-36">
-          <img src="/brand/mascot/senala.png?v=8" alt="" className="w-full object-contain" />
+          <img src="/brand/mascot/senala-abajo.png" alt="" className="w-full object-contain" />
         </FocuMotion>
         <ul className="grid w-full gap-2">
           {PUBLICS.map((item, index) => (

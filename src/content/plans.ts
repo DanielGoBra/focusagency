@@ -53,7 +53,7 @@ export const PLANS: Plan[] = [
     id: "business-lite",
     name: "Business Lite",
     tone: "featured",
-    price: "$159",
+    price: "$145",
     period: "USD / mes",
     recommended: true,
     features: ["1 bot incluido", "10.000 usuarios", "5 miembros incluidos", "10.000 chats", "Conversaciones ilimitadas", "CRM integrado", "Funciones PRO", "Focus Academy", "Soporte por WhatsApp"],

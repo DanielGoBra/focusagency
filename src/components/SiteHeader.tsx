@@ -9,7 +9,7 @@ import { jumpTo } from "./ScrollToTop";
 const BRANDS = [
   { to: "/", label: "Focuschat", end: true, cue: "chat" },
   { to: "/agency", label: "Focus Agency", end: false, cue: "agency" },
-  { to: "/academy", label: "Focus Academy", end: false, cue: "academy" },
+  { to: "/academy", label: "Focus Academy", end: false, cue: "academy", badge: "Clases gratis" },
 ] as const;
 
 type Section = { hash: string; label: string; cue?: string };
@@ -21,8 +21,17 @@ const SECTIONS: readonly Section[] = [
   { hash: "contacto", label: "Contacto", cue: "contacto" },
 ];
 
-function BrandWord({ label }: { label: string }) {
-  return <span>{label}</span>;
+function BrandWord({ label, badge }: { label: string; badge?: string }) {
+  return (
+    <>
+      <span>{label}</span>
+      {badge ? (
+        <span className="brand-badge gold-seal" aria-label={badge}>
+          <span className="gold-seal-inner brand-badge-face">{badge}</span>
+        </span>
+      ) : null}
+    </>
+  );
 }
 
 function ThemeSwitch({ dark, onToggle }: { dark: boolean; onToggle: (dark: boolean) => void }) {
@@ -114,10 +123,10 @@ export function SiteHeader({
               if (pathname === brand.to) jumpTo(0);
             }}
             className={({ isActive }) =>
-              `whitespace-nowrap rounded-full border-2 border-[#2bbdef] text-center text-navy transition ${compact ? "px-1.5 py-1.5 sm:px-3" : "px-2 py-2 sm:px-6 sm:py-3"} ${isActive ? "bg-white" : "hover:bg-white/50"}`
+              `relative whitespace-nowrap rounded-full border-2 border-[#2bbdef] text-center text-navy transition ${compact ? "px-1.5 py-1.5 sm:px-3" : "px-2 py-2 sm:px-6 sm:py-3"} ${isActive ? "bg-white" : "hover:bg-white/50"}`
             }
           >
-            <BrandWord label={brand.label} />
+            <BrandWord label={brand.label} badge={"badge" in brand ? brand.badge : undefined} />
           </NavLink>
         ))}
       </nav>

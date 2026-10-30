@@ -1,25 +1,23 @@
 import { useCallback, useState, type ComponentType } from "react";
 import {
   ArrowRight,
-  ChartNoAxesCombined,
   DatabaseZap,
   FilePenLine,
   FileVideo,
   GraduationCap,
   Lightbulb,
   Megaphone,
+  Workflow,
 } from "lucide-react";
 import { useBrandDark } from "../components/brandTheme";
 import { BrandPage, DarkFaq, FlowLink, GlowCard, HeroWave, Kicker, PageMascot, Testimonials, ToolPills, VideoSlot, useCycle, type Testimonial } from "../components/Dark";
 import { ParticleMorph } from "../components/ParticleMorph";
-import { Reveal, SiteFooter, WhatsAppChat, openFocusWhatsApp } from "../components/Site";
+import { FOCUS_COMMUNITY_URL, Reveal, SiteFooter, WhatsAppChat, openExternal } from "../components/Site";
 
 type Icon = ComponentType<{ className?: string; strokeWidth?: number }>;
 
 // Cuando el cliente entregue el video de presentación de la academia, va aquí como URL de embed.
 const ACADEMY_VIDEO = "";
-
-const ACCESS_TEXT = "Hola, quiero acceder a Focus Academy.";
 
 const SECTIONS = [
   { hash: "clases", label: "Clases gratis" },
@@ -28,14 +26,19 @@ const SECTIONS = [
   { hash: "soporte", label: "Soporte" },
 ];
 
-const STEPS: { title: string; text: string; icon: Icon; paid?: boolean }[] = [
-  { title: "Aprende estrategias", text: "Clases prácticas y directas al grano.", icon: Lightbulb },
-  { title: "Crea copys", text: "Escribe mensajes que convierten.", icon: FilePenLine },
-  { title: "Guiones para videos", text: "Ideas que conectan con tu audiencia.", icon: FileVideo },
-  { title: "Campañas Meta Ads", text: "Aprende a segmentar, crear y optimizar.", icon: Megaphone },
-  { title: "Escalamiento", text: "Lleva tus resultados al siguiente nivel.", icon: ChartNoAxesCombined },
+// value: lo que cuesta cada curso por fuera, en USD. Se muestra tachado encima de GRATIS.
+const STEPS: { title: string; text: string; icon: Icon; value?: number; paid?: boolean }[] = [
+  { title: "Aprende estrategias", text: "Clases prácticas y directas al grano.", icon: Lightbulb, value: 570 },
+  { title: "Crea copys", text: "Escribe mensajes que convierten.", icon: FilePenLine, value: 90 },
+  { title: "Guiones para videos", text: "Ideas que conectan con tu audiencia.", icon: FileVideo, value: 800 },
+  { title: "Campañas Meta Ads", text: "Aprende a segmentar, crear y optimizar.", icon: Megaphone, value: 300 },
+  { title: "Curso de automatizaciones", text: "Pon tu WhatsApp y tu CRM a trabajar solos.", icon: Workflow, value: 1200 },
   { title: "CRM", text: "Organiza, automatiza y convierte.", icon: DatabaseZap, paid: true },
 ];
+
+const usd = new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 });
+const FREE_VALUE = STEPS.reduce((sum, step) => sum + (step.value ?? 0), 0);
+const FREE_COUNT = STEPS.filter((step) => !step.paid).length;
 
 const TESTIMONIALS: Testimonial[] = [
   { name: "Nombre del estudiante", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del estudiante, qué aprendió y cómo lo aplicó en su negocio." },
@@ -48,11 +51,11 @@ const FAQ = [
   ["Entonces, ¿qué pago?", "Solo tu suscripción a Focus Chat, la plataforma (CRM) para organizar, automatizar y convertir tus leads."],
   [
     "¿Qué voy a aprender?",
-    "Estrategia, copys, guiones para videos, campañas de Meta Ads y escalamiento. Todo lo que necesitas para atraer, gestionar y vender más.",
+    "Estrategia, copys, guiones para videos, campañas de Meta Ads y automatizaciones. Todo lo que necesitas para atraer, gestionar y vender más.",
   ],
   ["¿Necesito experiencia previa?", "No. Son clases prácticas y directas al grano, desde la creación de copys hasta la automatización en el CRM."],
   ["¿Por qué aprender a llenar mi WhatsApp de leads?", "Porque de nada te sirve automatizar tus leads si no tienes leads que gestionar. Primero los atraes; después el CRM los organiza."],
-  ["¿Cómo accedo a la academia?", "Con tu suscripción a Focus Chat. Si aún no la tienes, escríbenos por WhatsApp y te ayudamos a empezar."],
+  ["¿Cómo accedo a la academia?", "Con tu suscripción a Focus Chat. Si aún no la tienes, únete a la comunidad de Focus Academy en WhatsApp y te ayudamos a empezar."],
 ] as const;
 
 function StepCard({ step, live }: { step: (typeof STEPS)[number]; live: boolean }) {
@@ -63,6 +66,11 @@ function StepCard({ step, live }: { step: (typeof STEPS)[number]; live: boolean 
       tone={step.paid ? "sky" : "aqua"}
       className="flex h-[214px] w-[164px] flex-col items-center rounded-2xl px-3 pt-9 pb-5 text-center lg:w-full"
     >
+      {step.value ? (
+        <span className="absolute -top-11 left-1/2 -translate-x-1/2 text-[15px] font-extrabold whitespace-nowrap text-fg/75 line-through decoration-[#ff5a6a] decoration-2">
+          ${usd.format(step.value)} USD
+        </span>
+      ) : null}
       <span
         className={`absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-lg px-2.5 py-1 text-[10px] font-bold whitespace-nowrap xl:text-[11px] ${
           step.paid ? "bg-gradient-to-r from-[#2ad8ff] to-lime text-navy shadow-[0_0_18px_rgb(43_189_239/0.5)]" : "bg-lime text-navy shadow-[0_0_18px_rgb(30_250_93/0.5)]"
@@ -87,9 +95,11 @@ function Hero() {
         <div className="grid min-w-0 items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
           <Reveal from="blur" className="min-w-0">
             <Kicker>Aprende · Aplica · Haz crecer tu negocio</Kicker>
-            <h1 className="mt-6 max-w-full text-[clamp(1.55rem,7.2vw,3rem)] leading-[1.08] font-extrabold tracking-tight md:text-6xl xl:text-[4.25rem]">
+            <h1 className="mt-6 max-w-full text-[clamp(1.55rem,7.2vw,3rem)] leading-[1.1] font-extrabold tracking-tight md:text-6xl lg:text-[3.4rem] xl:text-[3.9rem]">
               <span className="block lg:whitespace-nowrap">Suscríbete a un CRM.</span>
-              <span className="block text-accent-ink lg:whitespace-nowrap">Accede a una academia.</span>
+              <span className="block text-accent-ink">
+                Accede a una academia <span className="inline-block rounded-2xl bg-lime px-2 text-navy">gratis</span>.
+              </span>
               <span className="block lg:whitespace-nowrap">Impulsa tus ventas.</span>
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-fg/85 md:text-xl">
@@ -99,7 +109,7 @@ function Hero() {
             <div className="mt-8 flex flex-wrap gap-3">
               <button
                 type="button"
-                onClick={() => openFocusWhatsApp(ACCESS_TEXT)}
+                onClick={() => openExternal(FOCUS_COMMUNITY_URL)}
                 className="inline-flex items-center gap-2 rounded-full bg-focus px-6 py-3.5 text-base font-extrabold text-navy shadow-[0_0_28px_rgb(43_189_239/0.4)] transition hover:-translate-y-0.5"
               >
                 Acceder a la academia
@@ -124,7 +134,7 @@ function Hero() {
         </div>
 
         <div id="clases" className="mt-16 pt-4 lg:mt-20">
-          <ol className="snap-rail flex items-center overflow-x-auto pt-5 pb-2 lg:overflow-visible">
+          <ol className="snap-rail flex items-center overflow-x-auto pt-12 pb-2 lg:overflow-visible">
             {STEPS.map((step, index) => (
               <li key={step.title} className="flex shrink-0 items-center lg:min-w-0 lg:flex-1 lg:last:flex-none lg:last:basis-[calc((100%-5*1.25rem)/6)]">
                 <Reveal from="blur" delay={index * 90} className="lg:w-full">
@@ -139,7 +149,7 @@ function Hero() {
 
         <Reveal from="blur" className="mt-14 pb-16 lg:mt-16 lg:pb-20 xl:grid xl:grid-cols-[230px_1fr_230px] xl:items-end">
           <div className="hidden xl:block">
-            <PageMascot pose="senala" kicker="Sin costo" text="Las 5 clases son gratis" className="ml-0 w-[210px]" />
+            <PageMascot pose="senala" kicker="Sin costo" text={`Las ${FREE_COUNT} clases son gratis`} className="ml-0 w-[210px]" />
           </div>
           <div className="relative text-center">
             <svg viewBox="0 0 1200 60" className="absolute inset-x-0 top-6 mx-auto h-10 w-full" preserveAspectRatio="none" aria-hidden="true">
@@ -148,7 +158,11 @@ function Hero() {
             <span className="ping-soft relative mx-auto grid h-14 w-14 place-items-center rounded-full border border-focus/50 bg-page text-accent-ink shadow-[0_0_30px_rgb(43_189_239/0.3)]">
               <GraduationCap className="h-7 w-7" strokeWidth={1.7} />
             </span>
-            <p className="mt-5 text-4xl font-extrabold tracking-tight md:text-5xl">
+            <p className="relative mt-5 text-base font-extrabold text-fg/70 md:text-lg">
+              Valor de las {FREE_COUNT} clases:{" "}
+              <span className="text-fg/75 line-through decoration-[#ff5a6a] decoration-2">${usd.format(FREE_VALUE)} USD</span>
+            </p>
+            <p className="mt-2 text-4xl font-extrabold tracking-tight md:text-5xl">
               Todo esto es <span className="rounded-2xl bg-lime px-3 text-navy">GRATIS.</span>
             </p>
             <p className="mt-4 text-sm font-bold tracking-[0.2em] text-fg/85 uppercase md:text-base">
@@ -205,6 +219,7 @@ export function Academy() {
   const [whatsappOpen, setWhatsappOpen] = useState(false);
   const openWhatsApp = useCallback(() => setWhatsappOpen(true), []);
   const closeWhatsApp = useCallback(() => setWhatsappOpen(false), []);
+  const openCommunity = useCallback(() => openExternal(FOCUS_COMMUNITY_URL), []);
 
   return (
     <BrandPage title="Focus Academy · Aprende, aplica y haz crecer tu negocio" sections={SECTIONS}>
@@ -227,8 +242,8 @@ export function Academy() {
           mascot={<PageMascot pose="perfil-azul" kicker="¿Dudas?" text="Aquí te respondo" className="w-[150px]" />}
         />
       </main>
-      <SiteFooter onWhatsApp={openWhatsApp} />
-      <WhatsAppChat open={whatsappOpen} onOpen={openWhatsApp} onClose={closeWhatsApp} />
+      <SiteFooter onWhatsApp={openCommunity} />
+      <WhatsAppChat open={whatsappOpen} onOpen={openWhatsApp} onClose={closeWhatsApp} community />
     </BrandPage>
   );
 }

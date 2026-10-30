@@ -289,7 +289,7 @@ function InstagramChat() {
         <BotBubble soft>Estos son los favoritos 🔥</BotBubble>
         <div className="ml-9 grid grid-cols-2 gap-2">
           <Product name="Plan Essential" price="USD 79" />
-          <Product name="Business Lite" price="USD 159" />
+          <Product name="Business Lite" price="USD 145" />
         </div>
         <VideoNote src="/brand/videos/instagram.mp4" title="focu" shape="reel" />
         <Reactions />

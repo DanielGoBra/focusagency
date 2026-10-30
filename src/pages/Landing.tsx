@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChannelPhone } from "../components/ChannelPhone";
 import { PlanGrid } from "../components/PlanGrid";
@@ -11,7 +11,7 @@ import { MetaPartner } from "../components/MetaPartner";
 import { NeuralField } from "../components/NeuralField";
 import { OpportunityFlow } from "../components/OpportunityFlow";
 import { SiteHeader } from "../components/SiteHeader";
-import { Reveal } from "../components/Site";
+import { Reveal, WhatsAppChat } from "../components/Site";
 import { HeroWave } from "../components/Dark";
 import { motion, useReducedMotion } from "motion/react";
 
@@ -105,108 +105,6 @@ function SocialLinks({ tone = "navy", onWhatsApp }: { tone?: "navy" | "white"; o
           <SocialGlyph name={item.name} className={icon} />
         </a>
       ))}
-    </div>
-  );
-}
-
-function openFocusWhatsApp(text: string) {
-  const href = focusWhatsAppHref(text);
-  const link = document.createElement("a");
-  link.href = href;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-}
-
-function WhatsAppChat({ open, onOpen, onClose }: { open: boolean; onOpen: () => void; onClose: () => void }) {
-  const [draft, setDraft] = useState(WHATSAPP_DRAFT);
-  const [sentText, setSentText] = useState<string | null>(null);
-  const fieldRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    fieldRef.current?.focus();
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
-  function send(event: FormEvent) {
-    event.preventDefault();
-    const text = draft.trim() || WHATSAPP_DRAFT;
-    setSentText(text);
-    setDraft(WHATSAPP_DRAFT);
-    openFocusWhatsApp(text);
-  }
-
-  return (
-    <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-3 sm:bottom-8 sm:right-8">
-      {open ? (
-        <section
-          role="dialog"
-          aria-label="Chat de WhatsApp"
-          className="flex w-[min(100vw-2.5rem,22rem)] flex-col overflow-hidden rounded-3xl bg-white shadow-[0_18px_50px_rgba(32,34,70,0.28)]"
-        >
-          <header className="flex items-center gap-3 bg-[#075E54] px-4 py-3 text-white">
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-[#25D366]">
-              <SocialGlyph name="WhatsApp" className="h-6 w-6" />
-            </span>
-            <span className="min-w-0">
-              <span className="block text-sm font-bold">Focus Agency</span>
-              <span className="block text-xs text-white/75">WhatsApp</span>
-            </span>
-            <button type="button" onClick={onClose} aria-label="Cerrar chat" className="ml-auto grid h-8 w-8 place-items-center rounded-full hover:bg-white/10">
-              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
-                <path d="M6 6l12 12M18 6L6 18" />
-              </svg>
-            </button>
-          </header>
-          <div className="flex max-h-80 flex-col gap-3 overflow-y-auto bg-[#e7f6ef] px-3 py-4">
-            <p className="max-w-[85%] rounded-2xl rounded-tl-sm bg-white px-3 py-2 text-sm text-navy shadow-sm">
-              Hola. Soy Focus. Escribe tu mensaje y te abrimos el chat de Focus Agency en WhatsApp.
-            </p>
-            {sentText ? (
-              <p className="ml-auto max-w-[85%] rounded-2xl rounded-tr-sm bg-[#d9fdd3] px-3 py-2 text-sm text-navy shadow-sm">{sentText}</p>
-            ) : null}
-          </div>
-          <form onSubmit={send} className="flex items-end gap-2 border-t border-navy/10 bg-white px-3 py-3">
-            <label className="sr-only" htmlFor="whatsapp-draft">Mensaje</label>
-            <textarea
-              id="whatsapp-draft"
-              ref={fieldRef}
-              rows={1}
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && !event.shiftKey) {
-                  event.preventDefault();
-                  event.currentTarget.form?.requestSubmit();
-                }
-              }}
-              placeholder="Escribe un mensaje"
-              className="max-h-24 min-h-10 flex-1 resize-none rounded-2xl bg-paper px-3 py-2 text-sm text-navy outline-none"
-            />
-            <button type="submit" aria-label="Enviar por WhatsApp" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#25D366] text-white">
-              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden>
-                <path d="M3.4 11.2 20 4.2c.7-.3 1.4.4 1.1 1.1l-7 16.6c-.3.8-1.4.8-1.7 0l-2.6-6.1-6.1-2.6c-.8-.3-.8-1.4 0-1.7z" />
-              </svg>
-            </button>
-          </form>
-        </section>
-      ) : null}
-      <button
-        type="button"
-        onClick={open ? onClose : onOpen}
-        aria-expanded={open}
-        aria-label={open ? "Cerrar chat de WhatsApp" : "Abrir chat de WhatsApp"}
-        className="grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_10px_30px_rgba(37,211,102,0.45)] transition hover:-translate-y-0.5 hover:bg-[#1ebe5d]"
-      >
-        <SocialGlyph name="WhatsApp" className="h-8 w-8" />
-      </button>
     </div>
   );
 }
