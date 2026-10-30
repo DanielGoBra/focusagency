@@ -11,7 +11,9 @@ import {
 } from "lucide-react";
 import { useBrandDark } from "../components/brandTheme";
 import { BrandPage, DarkFaq, FlowLink, GlowCard, HeroWave, Kicker, PageMascot, Testimonials, ToolPills, VideoSlot, useCycle, type Testimonial } from "../components/Dark";
+import { PriceStrike, SavingsCalculator } from "../components/AcademyValue";
 import { ParticleMorph } from "../components/ParticleMorph";
+import { PLANS } from "../content/plans";
 import { FOCUS_COMMUNITY_URL, Reveal, SiteFooter, WhatsAppChat, openExternal } from "../components/Site";
 
 type Icon = ComponentType<{ className?: string; strokeWidth?: number }>;
@@ -39,6 +41,8 @@ const STEPS: { title: string; text: string; icon: Icon; value?: number; paid?: b
 const usd = new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 });
 const FREE_VALUE = STEPS.reduce((sum, step) => sum + (step.value ?? 0), 0);
 const FREE_COUNT = STEPS.filter((step) => !step.paid).length;
+const SAVINGS = STEPS.flatMap((step) => (step.value ? [{ title: step.title, value: step.value }] : []));
+const PLAN_FROM = PLANS.find((plan) => plan.id === "essential")?.price ?? "$79";
 
 const TESTIMONIALS: Testimonial[] = [
   { name: "Nombre del estudiante", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del estudiante, qué aprendió y cómo lo aplicó en su negocio." },
@@ -58,29 +62,31 @@ const FAQ = [
   ["¿Cómo accedo a la academia?", "Con tu suscripción a Focus Chat. Si aún no la tienes, únete a la comunidad de Focus Academy en WhatsApp y te ayudamos a empezar."],
 ] as const;
 
-function StepCard({ step, live }: { step: (typeof STEPS)[number]; live: boolean }) {
+function StepCard({ step, live, order }: { step: (typeof STEPS)[number]; live: boolean; order: number }) {
   const Glyph = step.icon;
   return (
     <GlowCard
       live={live}
       tone={step.paid ? "sky" : "aqua"}
-      className="flex h-[214px] w-[164px] flex-col items-center rounded-2xl px-3 pt-9 pb-5 text-center lg:w-full"
+      className="flex h-[272px] w-[172px] flex-col items-center rounded-2xl px-3 pt-5 pb-4 text-center lg:w-full"
     >
       {step.value ? (
-        <span className="absolute -top-11 left-1/2 -translate-x-1/2 text-[15px] font-extrabold whitespace-nowrap text-fg/75 line-through decoration-[#ff5a6a] decoration-2">
-          ${usd.format(step.value)} USD
-        </span>
-      ) : null}
-      <span
-        className={`absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-lg px-2.5 py-1 text-[10px] font-bold whitespace-nowrap xl:text-[11px] ${
-          step.paid ? "bg-gradient-to-r from-[#2ad8ff] to-lime text-navy shadow-[0_0_18px_rgb(43_189_239/0.5)]" : "bg-lime text-navy shadow-[0_0_18px_rgb(30_250_93/0.5)]"
-        }`}
-      >
-        {step.paid ? "PAGAS TU SUSCRIPCIÓN" : "GRATIS"}
-      </span>
-      <Glyph className={`live-icon h-11 w-11 ${step.paid ? "text-[#19b7e6]" : "text-accent-ink"}`} strokeWidth={1.5} />
-      <p className="mt-3 text-[17px] leading-tight font-bold">{step.title}</p>
-      <p className="mt-2 text-[13px] leading-snug text-fg/70">{step.text}</p>
+        <PriceStrike value={step.value} order={order} />
+      ) : (
+        <div className="flex h-[88px] w-full flex-col items-center">
+          <p className="text-[11px] font-bold tracking-[0.16em] text-fg/55 uppercase">Tu suscripción</p>
+          <p className="mt-0.5 text-[1.8rem] leading-none font-extrabold tracking-tight xl:text-[2.05rem]">
+            {PLAN_FROM}
+            <span className="ml-1 text-xs font-bold">/mes</span>
+          </p>
+          <span className="mt-auto rounded-xl bg-gradient-to-r from-[#2ad8ff] to-lime px-2.5 py-1 text-[11px] font-black text-navy shadow-[0_0_18px_rgb(43_189_239/0.5)]">
+            DESDE · CRM
+          </span>
+        </div>
+      )}
+      <Glyph className={`live-icon mt-4 h-10 w-10 shrink-0 ${step.paid ? "text-[#19b7e6]" : "text-accent-ink"}`} strokeWidth={1.5} />
+      <p className="mt-2 text-[16px] leading-tight font-bold">{step.title}</p>
+      <p className="mt-1.5 text-[12.5px] leading-snug text-fg/70">{step.text}</p>
     </GlowCard>
   );
 }
@@ -134,11 +140,11 @@ function Hero() {
         </div>
 
         <div id="clases" className="mt-16 pt-4 lg:mt-20">
-          <ol className="snap-rail flex items-center overflow-x-auto pt-12 pb-2 lg:overflow-visible">
+          <ol className="snap-rail flex items-center overflow-x-auto pt-3 pb-2 lg:overflow-visible">
             {STEPS.map((step, index) => (
               <li key={step.title} className="flex shrink-0 items-center lg:min-w-0 lg:flex-1 lg:last:flex-none lg:last:basis-[calc((100%-5*1.25rem)/6)]">
                 <Reveal from="blur" delay={index * 90} className="lg:w-full">
-                  <StepCard step={step} live={index === active} />
+                  <StepCard step={step} live={index === active} order={index} />
                 </Reveal>
                 {index < STEPS.length - 1 && <FlowLink className="w-4 shrink-0 lg:w-5" delay={index * 0.25} />}
               </li>
@@ -147,29 +153,25 @@ function Hero() {
           <p className="mt-2 text-center text-xs text-fg/45 lg:hidden">Desliza para ver las 6 clases →</p>
         </div>
 
-        <Reveal from="blur" className="mt-14 pb-16 lg:mt-16 lg:pb-20 xl:grid xl:grid-cols-[230px_1fr_230px] xl:items-end">
-          <div className="hidden xl:block">
-            <PageMascot pose="senala" kicker="Sin costo" text={`Las ${FREE_COUNT} clases son gratis`} className="ml-0 w-[210px]" />
-          </div>
-          <div className="relative text-center">
-            <svg viewBox="0 0 1200 60" className="absolute inset-x-0 top-6 mx-auto h-10 w-full" preserveAspectRatio="none" aria-hidden="true">
-              <path d="M0 58C260 58 380 6 600 6S940 58 1200 58" fill="none" stroke="#2bbdef" strokeOpacity="0.5" strokeWidth="1.5" />
-            </svg>
+        <div className="mt-14 pb-16 lg:mt-16 lg:pb-20">
+          <Reveal from="blur" className="relative text-center">
             <span className="ping-soft relative mx-auto grid h-14 w-14 place-items-center rounded-full border border-focus/50 bg-page text-accent-ink shadow-[0_0_30px_rgb(43_189_239/0.3)]">
               <GraduationCap className="h-7 w-7" strokeWidth={1.7} />
             </span>
-            <p className="relative mt-5 text-base font-extrabold text-fg/70 md:text-lg">
-              Valor de las {FREE_COUNT} clases:{" "}
-              <span className="text-fg/75 line-through decoration-[#ff5a6a] decoration-2">${usd.format(FREE_VALUE)} USD</span>
+            <h2 className="mt-5 text-4xl font-extrabold tracking-tight md:text-5xl">
+              ${usd.format(FREE_VALUE)} USD en cursos. <span className="rounded-2xl bg-lime px-3 text-navy">Para ti, $0.</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-base font-bold text-fg/80 md:text-lg">
+              Las {FREE_COUNT} clases vienen incluidas en tu suscripción. Solo pagas la plataforma.
             </p>
-            <p className="mt-2 text-4xl font-extrabold tracking-tight md:text-5xl">
-              Todo esto es <span className="rounded-2xl bg-lime px-3 text-navy">GRATIS.</span>
-            </p>
-            <p className="mt-4 text-sm font-bold tracking-[0.2em] text-fg/85 uppercase md:text-base">
-              Y solo pagas tu <span className="text-accent-ink">suscripción</span> por utilizar la plataforma.
-            </p>
+          </Reveal>
+          <div className="mt-10 xl:grid xl:grid-cols-[200px_1fr] xl:items-end xl:gap-6">
+            <div className="hidden xl:block">
+              <PageMascot pose="senala" kicker="Sin costo" text={`Las ${FREE_COUNT} clases son gratis`} className="ml-0 w-[190px]" />
+            </div>
+            <SavingsCalculator items={SAVINGS} planFrom={PLAN_FROM} />
           </div>
-        </Reveal>
+        </div>
       </div>
     </section>
   );
