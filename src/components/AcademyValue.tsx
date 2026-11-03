@@ -162,7 +162,7 @@ export function SavingsCalculator({ items, planFrom }: { items: readonly Item[];
           </p>
           <div className="relative mt-2">
             <motion.p
-              className="text-[3.4rem] leading-none font-black tracking-tight sm:text-7xl"
+              className="text-[3.4rem] leading-none font-black tracking-tight tabular-nums sm:text-7xl"
               animate={settled ? { opacity: 0.7, scale: 0.86 } : { opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
             >
@@ -178,11 +178,13 @@ export function SavingsCalculator({ items, planFrom }: { items: readonly Item[];
             />
           </div>
 
+          {/* Ambos mensajes ocupan la misma celda y el alto queda reservado: el $0 aparece sin empujar la página. */}
+          <div className="mt-4 grid min-h-[var(--free-h)] w-full place-items-center [--free-h:148px] sm:[--free-h:164px]">
           <AnimatePresence>
             {settled ? (
               <motion.div
                 key="free"
-                className="mt-4"
+                className="col-start-1 row-start-1"
                 initial={{ opacity: 0, y: 24, scale: 0.6 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.25 }}
@@ -196,11 +198,12 @@ export function SavingsCalculator({ items, planFrom }: { items: readonly Item[];
                 </p>
               </motion.div>
             ) : (
-              <motion.p key="wait" className="mt-6 text-sm text-fg/55" exit={{ opacity: 0 }}>
+              <motion.p key="wait" className="col-start-1 row-start-1 text-sm text-fg/55" exit={{ opacity: 0 }}>
                 Sumando lo que vale aprender por tu cuenta…
               </motion.p>
             )}
           </AnimatePresence>
+          </div>
 
           <div className="mt-6 w-full rounded-2xl border border-fg/10 bg-fg/[0.04] p-4">
             <p className="text-sm text-fg/80">

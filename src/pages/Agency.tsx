@@ -427,7 +427,8 @@ function LeadFlow() {
         {PIPELINE.map((column, index) => (
           <div key={column} className={`flex flex-col rounded-2xl p-2.5 transition duration-500 ${index === stage ? "bg-focus/10 ring-1 ring-focus/40" : "bg-fg/[0.04]"}`}>
             <p className="text-[11px] font-bold text-fg/60">{column}</p>
-            <div className="mt-2 space-y-1.5">
+            {/* Reserva el alto de 4 tarjetas para que Camila no estire la fila al moverse. */}
+            <div className="mt-2 min-h-[146px] space-y-1.5">
               {index === stage && (
                 <div key={`camila-${stage}`} className="animate-in fade-in zoom-in-90 slide-in-from-left-6 flex items-center gap-2 rounded-xl bg-focus px-2 py-1.5 text-navy shadow-[0_0_20px_rgb(43_189_239/0.45)] duration-500">
                   <span className="grid h-5 w-5 place-items-center rounded-full bg-[#25D366] text-white">

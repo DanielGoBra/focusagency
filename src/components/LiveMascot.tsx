@@ -83,9 +83,11 @@ export function LiveMascot() {
 
   return (
     <div className="pointer-events-none relative mx-auto w-[220px] sm:w-[260px]">
+      {/* Alto fijo: cada frase mide distinto y, sin esto, la página salta en móvil a cada cambio. */}
+      <div className="relative z-10 mb-3 flex h-[92px] flex-col justify-end">
       <motion.div
         key={cue}
-        className={`relative z-10 mb-3 ${line?.partner ? "gold-seal" : ""}`}
+        className={`relative ${line?.partner ? "gold-seal" : ""}`}
         initial={reduce ? false : { opacity: 0, y: 8, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ type: "spring", stiffness: 320, damping: 24 }}
@@ -112,6 +114,7 @@ export function LiveMascot() {
         <span className="absolute -bottom-[5px] left-[38px] h-3.5 w-3.5 rotate-45 bg-white" />
       </div>
       </motion.div>
+      </div>
       <FocuMotion className="relative h-64 sm:h-72">
         {(Object.keys(POSES) as Pose[]).map((name) => (
           <img

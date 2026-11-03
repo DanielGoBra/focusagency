@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion, useReducedMotion, useScroll, useSpring } from "motion/react";
 import { preloadBrand } from "../brandPreload";
@@ -77,6 +77,29 @@ export function SiteHeader({
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 70, damping: 28, restDelta: 0.001 });
   const [compact, setCompact] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const compactRef = useRef(false);
+  compactRef.current = compact;
+
+  // El encabezado es sticky y ocupa lugar en la página: al compactarse, el contenido
+  // subía de golpe. Un margen inferior repone justo lo que encoge, así nada salta.
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+    let full = 0;
+    let width = 0;
+    const observer = new ResizeObserver(() => {
+      const height = header.offsetHeight;
+      if (header.offsetWidth !== width) {
+        width = header.offsetWidth;
+        full = 0;
+      }
+      if (!compactRef.current || !full) full = Math.max(full, height);
+      header.style.marginBottom = `${Math.max(0, full - height)}px`;
+    });
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     let frame = 0;
@@ -104,7 +127,7 @@ export function SiteHeader({
   }, []);
 
   return (
-    <header className={`sticky z-40 overflow-anchor-none px-3 transition-[top] duration-300 sm:px-5 ${compact ? "top-2" : "top-3 sm:top-4"}`}>
+    <header ref={headerRef} className={`sticky z-40 overflow-anchor-none px-3 transition-[top] duration-300 sm:px-5 ${compact ? "top-2" : "top-3 sm:top-4"}`}>
       <div className={`relative mx-auto max-w-[1380px] rounded-[32px] border border-white/40 bg-[#e6e9ee]/72 shadow-[0_12px_32px_rgb(32_34_70_/_0.05)] backdrop-blur-md transition-all duration-300 ${compact ? "px-3 py-1.5" : "px-4 py-2.5 sm:px-5"}`}>
       <nav
         aria-label="Marcas"
