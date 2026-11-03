@@ -6,3 +6,5 @@ dist
 .env*
 focusagency.pdf
 .claude/odoo-timesheet/
+# Videos originales del cliente (pesan >100 MB; los optimizados viven en public/videos)
+/*.mp4

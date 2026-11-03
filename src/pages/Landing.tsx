@@ -14,6 +14,7 @@ import { SiteHeader } from "../components/SiteHeader";
 import { Reveal, WhatsAppChat } from "../components/Site";
 import { HeroWave } from "../components/Dark";
 import { motion, useReducedMotion } from "motion/react";
+import { BrandVideo } from "../components/BrandVideo";
 
 const WHATSAPP_PHONE = "573106309679";
 const WHATSAPP_DRAFT = "Hola, estoy interesado.";
@@ -223,14 +224,7 @@ export function Landing() {
         <div className="relative z-10 mx-auto mt-6 w-full max-w-[1500px] px-4 pb-8 sm:px-8 lg:mt-8">
           <div className="relative">
             <div id="video-hero" data-cue="video" className="hero-video relative z-10 mx-auto w-full max-w-[720px]">
-              <iframe
-                className="aspect-video w-full"
-                src="https://www.youtube.com/embed/ERUiJeoRlX4?si=aEknFyAF9cXk55Lk"
-                title="Video de Focuschat"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-              />
+              <BrandVideo src="/videos/focuschat.mp4" poster="/videos/focuschat-poster.webp" title="Video de Focuschat" duration="1:57" priority />
             </div>
             <div className="pointer-events-none absolute bottom-0 left-0 z-20 hidden xl:block">
               <LiveMascot />

@@ -10,16 +10,16 @@ import {
   Workflow,
 } from "lucide-react";
 import { useBrandDark } from "../components/brandTheme";
-import { BrandPage, DarkFaq, FlowLink, GlowCard, HeroWave, Kicker, PageMascot, Testimonials, ToolPills, VideoSlot, useCycle, type Testimonial } from "../components/Dark";
+import { BrandPage, DarkFaq, FlowLink, GlowCard, HeroWave, Kicker, PageMascot, Testimonials, ToolPills, useCycle, type Testimonial } from "../components/Dark";
 import { PriceStrike, SavingsCalculator } from "../components/AcademyValue";
 import { ParticleMorph } from "../components/ParticleMorph";
 import { PLANS } from "../content/plans";
 import { FOCUS_COMMUNITY_URL, Reveal, SiteFooter, WhatsAppChat, openExternal } from "../components/Site";
+import { BrandVideo } from "../components/BrandVideo";
 
 type Icon = ComponentType<{ className?: string; strokeWidth?: number }>;
 
 // Cuando el cliente entregue el video de presentación de la academia, va aquí como URL de embed.
-const ACADEMY_VIDEO = "";
 
 const SECTIONS = [
   { hash: "clases", label: "Clases gratis" },
@@ -130,12 +130,9 @@ function Hero() {
             </div>
           </Reveal>
           <Reveal from="blur" delay={150} className="min-w-0">
-            <VideoSlot
-              src={ACADEMY_VIDEO || undefined}
-              title="Aquí irá el video de Focus Academy"
-              note="Pronto publicaremos en este espacio un recorrido por la academia y sus clases gratuitas."
-              className="aspect-video"
-            />
+            <div className="hero-video relative w-full max-w-full min-w-0">
+              <BrandVideo src="/videos/academy.mp4" poster="/videos/academy-poster.webp" title="Video de Focus Academy" duration="1:32" />
+            </div>
           </Reveal>
         </div>
 
