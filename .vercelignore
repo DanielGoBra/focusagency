@@ -5,3 +5,12 @@ InscripcionCuentas*.txt
 node_modules
 dist
 .DS_Store
+# Material del cliente y archivos personales de la carpeta local: no hacen parte del sitio
+/*.mp4
+/*.jpeg
+/*.jpg
+/*.png
+/*.txt
+/docs
+/scripts
+.claude
