@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { ChannelPhone } from "../components/ChannelPhone";
 import { PlanGrid } from "../components/PlanGrid";
 import { PLAN_EVENT } from "../content/plans";
+import { ContactForm, openContactForm } from "../components/ContactForm";
+import { Mail } from "lucide-react";
 import { ChannelReel } from "../components/ChannelHalo";
 import { LiveMascot } from "../components/LiveMascot";
 import { BrandLogo } from "../components/Logo";
@@ -178,15 +180,31 @@ function ContactBand() {
         <img src="/brand/mascot/senala.png?v=8" alt="" className="w-40 shrink-0 object-contain md:w-52" />
         <div>
           <h2 className="text-4xl font-extrabold tracking-tight text-navy md:text-6xl">¿Tienes todo claro? Contáctanos</h2>
-          <a
-            href={focusWhatsAppHref(text)}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#25D366] px-8 py-5 text-xl font-extrabold text-white shadow-[0_12px_40px_rgb(37_211_102/0.45)] transition hover:-translate-y-0.5"
-          >
-            Escríbenos por WhatsApp
-          </a>
+          <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row md:items-start">
+            <a
+              href={focusWhatsAppHref(text)}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-3 rounded-full bg-[#25D366] px-8 py-5 text-xl font-extrabold text-white shadow-[0_12px_40px_rgb(37_211_102/0.45)] transition hover:-translate-y-0.5"
+            >
+              Escríbenos por WhatsApp
+            </a>
+            <a
+              href="#formulario"
+              onClick={(event) => {
+                event.preventDefault();
+                openContactForm();
+              }}
+              className="inline-flex items-center gap-3 rounded-full border-2 border-[#2bbdef] bg-white px-8 py-[1.125rem] text-xl font-extrabold text-[#14245c] shadow-[0_12px_40px_rgb(43_189_239/0.35)] transition hover:-translate-y-0.5"
+            >
+              <Mail className="h-6 w-6" strokeWidth={2.2} />
+              Escríbenos al correo
+            </a>
+          </div>
         </div>
+      </div>
+      <div className="relative z-10 mx-auto max-w-3xl px-5 pb-14">
+        <ContactForm />
       </div>
     </section>
   );

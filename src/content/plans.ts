@@ -15,7 +15,12 @@ export type Plan = {
   note?: string;
   cta: string;
   href?: string;
+  /** Abre el formulario de correo con este mensaje en vez de ir a un enlace. */
+  contactMessage?: string;
 };
+
+/** Plataforma de Focus Chat: los planes con precio llevan al ingreso. */
+export const FOCUS_CHAT_LOGIN = "https://chat.focuschat.co/login";
 
 export const PLANS: Plan[] = [
   {
@@ -38,7 +43,7 @@ export const PLANS: Plan[] = [
       "Soporte vía email",
     ],
     cta: "Empieza gratis",
-    href: "https://chat.focuschat.co/register",
+    href: FOCUS_CHAT_LOGIN,
   },
   {
     id: "essential",
@@ -48,6 +53,7 @@ export const PLANS: Plan[] = [
     period: "USD / mes",
     features: ["1 bot incluido", "1.000 usuarios", "5 miembros incluidos", "1.000 chats", "Conversaciones ilimitadas", "CRM integrado", "Focus Academy", "Soporte por WhatsApp"],
     cta: "Empieza ahora",
+    href: FOCUS_CHAT_LOGIN,
   },
   {
     id: "business-lite",
@@ -58,7 +64,7 @@ export const PLANS: Plan[] = [
     recommended: true,
     features: ["1 bot incluido", "10.000 usuarios", "5 miembros incluidos", "10.000 chats", "Conversaciones ilimitadas", "CRM integrado", "Funciones PRO", "Focus Academy", "Soporte por WhatsApp"],
     cta: "Empieza ahora",
-    href: "https://chat.focuschat.co/register",
+    href: FOCUS_CHAT_LOGIN,
   },
   {
     id: "premium",
@@ -68,6 +74,7 @@ export const PLANS: Plan[] = [
     period: "USD / mes",
     features: ["5 bots incluidos", "11.000 usuarios", "5 miembros incluidos", "11.000 chats", "Conversaciones ilimitadas", "CRM integrado", "Funciones PRO", "Focus Academy", "Soporte por WhatsApp", "Llamada individual uno a uno"],
     cta: "Empieza ahora",
+    href: FOCUS_CHAT_LOGIN,
   },
   {
     id: "gold",
@@ -79,7 +86,7 @@ export const PLANS: Plan[] = [
     features: ["Bots y usuarios adaptados a tu operación", "Funcionalidades según tus necesidades", "Configuración completa por nuestro equipo", "Focus Academy"],
     note: "¿Prefieres dejarlo en nuestras manos? Podemos configurar tu agente de IA y dejarlo listo para atender a tus clientes.",
     cta: "Agenda tu asesoría",
-    href: "https://chat.focuschat.co/register",
+    contactMessage: "Hola, quiero agendar una asesoría para el plan Business GOLD.",
   },
 ];
 

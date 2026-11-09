@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { stagger } from "motion";
 import { motion, useReducedMotion } from "motion/react";
+import { Mail } from "lucide-react";
 import { PLANS, choosePlan, type Plan } from "../content/plans";
+import { openContactForm } from "./ContactForm";
 
 function Check({ light = false, neon = false }: { light?: boolean; neon?: boolean }) {
   const fill = neon ? "#1efa5d" : light ? "#3ef3ff" : "#2ecfff";
@@ -85,14 +87,25 @@ function PlanCard({ plan }: { plan: Plan }) {
       </ul>
       {plan.note && <p className="plan-note">{plan.note}</p>}
       <a
-        href={plan.href ?? "#contacto"}
-        onClick={plan.href ? undefined : () => choosePlan(plan)}
+        href={plan.contactMessage ? "#formulario" : (plan.href ?? "#contacto")}
+        onClick={
+          plan.contactMessage
+            ? (event) => {
+                event.preventDefault();
+                openContactForm(plan.contactMessage);
+              }
+            : plan.href
+              ? undefined
+              : () => choosePlan(plan)
+        }
         className={`plan-cta ${trial ? "plan-cta-trial" : featured || plan.tone === "gold" ? "plan-cta-solid" : "plan-cta-ghost"} ${plan.tone === "gold" ? "plan-cta-gold" : ""}`}
       >
         {plan.cta}
         {plan.tone === "gold" && (
           <span className="plan-wa-mini">
-            <WhatsAppMark />
+            <span className="grid h-full w-full place-items-center rounded-full border-2 border-white bg-[#2bbdef] text-[#071428] shadow-[0_0_18px_rgb(43_189_239/0.6)]">
+              <Mail className="h-6 w-6" strokeWidth={2.2} />
+            </span>
           </span>
         )}
       </a>
