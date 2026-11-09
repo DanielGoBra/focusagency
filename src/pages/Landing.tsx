@@ -12,7 +12,7 @@ import { NeuralField } from "../components/NeuralField";
 import { OpportunityFlow } from "../components/OpportunityFlow";
 import { SiteHeader } from "../components/SiteHeader";
 import { Reveal, WhatsAppChat } from "../components/Site";
-import { HeroWave } from "../components/Dark";
+import { ClientLogo, HeroWave } from "../components/Dark";
 import { motion, useReducedMotion } from "motion/react";
 import { BrandVideo } from "../components/BrandVideo";
 
@@ -119,6 +119,7 @@ const CHAT_TESTIMONIALS = [
     video: "/testimonios/mogollantas.mp4",
     poster: "/testimonios/mogollantas-poster.webp",
     duration: "0:19",
+    logo: { src: "/testimonios/mogollantas-logo.webp" },
   },
 ];
 
@@ -143,8 +144,13 @@ function ChatQuotes() {
               </div>
               <div className={`px-3 pb-4 text-center ${single ? "sm:px-0 sm:pr-4 sm:pb-0 sm:text-left" : ""}`}>
                 <p className={`leading-relaxed text-white/85 ${single ? "text-lg font-semibold md:text-2xl md:leading-snug" : "text-sm"}`}>“{item.quote}”</p>
-                <p className={`font-extrabold ${single ? "mt-6 text-xl" : "mt-4 text-sm"}`}>{item.name}</p>
-                <p className="text-xs font-bold tracking-[0.14em] text-[#3ef3ff] uppercase">{item.business}</p>
+                <div className={`flex items-center justify-center gap-3 ${single ? "mt-6 sm:justify-start" : "mt-4"}`}>
+                  <ClientLogo logo={item.logo} name={item.name} />
+                  <div className="text-left">
+                    <p className={`font-extrabold ${single ? "text-xl" : "text-sm"}`}>{item.name}</p>
+                    <p className="text-xs font-bold tracking-[0.14em] text-[#3ef3ff] uppercase">{item.business}</p>
+                  </div>
+                </div>
               </div>
             </article>
           </Reveal>

@@ -207,7 +207,24 @@ export type Testimonial = {
   video?: string;
   poster?: string;
   duration?: string;
+  /** Logo del negocio (WebP sobre fondo blanco); round para logos circulares. */
+  logo?: { src: string; round?: boolean };
 };
+
+/** Logo del cliente sobre una ficha blanca, para que se lea en tema claro y oscuro. */
+export function ClientLogo({ logo, name }: { logo: NonNullable<Testimonial["logo"]>; name: string }) {
+  return (
+    <span className={`flex shrink-0 items-center justify-center bg-white shadow-[0_0_18px_rgb(43_189_239/0.35)] ${logo.round ? "h-16 w-16 rounded-full p-0.5" : "h-14 rounded-2xl px-3"}`}>
+      <img
+        src={logo.src}
+        alt={`Logo de ${name}`}
+        loading="lazy"
+        decoding="async"
+        className={logo.round ? "h-[60px] w-[60px] rounded-full object-contain" : "h-11 w-auto max-w-[120px] object-contain"}
+      />
+    </span>
+  );
+}
 
 function TestimonialVideo({ item, note }: { item: Testimonial; note: string }) {
   if (item.video?.endsWith(".mp4") && item.poster) {
@@ -226,8 +243,13 @@ function TestimonialText({ item, large = false }: { item: Testimonial; large?: b
       {item.quote ? (
         <p className={`leading-relaxed text-fg/80 ${large ? "text-lg font-semibold md:text-2xl md:leading-snug" : "flex-1 text-[15px]"}`}>“{item.quote}”</p>
       ) : null}
-      <p className={`font-extrabold text-fg ${large ? "mt-6 text-xl" : "mt-4 text-sm"}`}>{item.name}</p>
-      {item.business ? <p className="text-xs font-bold tracking-[0.14em] text-accent-ink uppercase">{item.business}</p> : null}
+      <div className={`flex items-center gap-3 ${large ? "mt-6 justify-center sm:justify-start" : "mt-4 justify-center"}`}>
+        {item.logo ? <ClientLogo logo={item.logo} name={item.name} /> : null}
+        <div className={item.logo ? "text-left" : ""}>
+          <p className={`font-extrabold text-fg ${large ? "text-xl" : "text-sm"}`}>{item.name}</p>
+          {item.business ? <p className="text-xs font-bold tracking-[0.14em] text-accent-ink uppercase">{item.business}</p> : null}
+        </div>
+      </div>
     </>
   );
 }

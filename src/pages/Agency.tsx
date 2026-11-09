@@ -64,7 +64,16 @@ const SECTIONS = [
 
 // Testimonios reales de clientes. Para agregar uno: video comprimido y portada en /public/testimonios.
 const TESTIMONIALS: Testimonial[] = [
-  { name: "Cattleya", video: "/testimonios/cattleya.mp4", poster: "/testimonios/cattleya-poster.webp", duration: "0:58" },
+  {
+    name: "Floristería Cattleya",
+    business: "Irapuato, Guanajuato · México",
+    quote:
+      "En un inicio nos costaba vender: por más que subíamos cosas a Instagram y Facebook, no teníamos los resultados que queríamos. A partir de que empezamos a trabajar con Focus, nuestro pequeño negocio dio un cambio total y las ventas subieron demasiado. Ellos están en Colombia, pero eso no ha sido ningún impedimento para que estén al pendiente de nosotros.",
+    video: "/testimonios/cattleya.mp4",
+    poster: "/testimonios/cattleya-poster.webp",
+    duration: "0:58",
+    logo: { src: "/testimonios/cattleya-logo.webp", round: true },
+  },
 ];
 
 const CHAIN = ["Investigación", "Estrategia", "Creativos", "Meta Ads", "CRM", "Automatización", "Venta"];
