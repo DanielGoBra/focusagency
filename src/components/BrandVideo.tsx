@@ -12,6 +12,7 @@ export function BrandVideo({
   title,
   duration,
   priority = false,
+  portrait = false,
   className = "",
 }: {
   src: string;
@@ -20,13 +21,15 @@ export function BrandVideo({
   duration?: string;
   /** Portada visible al cargar la página (hero): se pide con prioridad en vez de en diferido. */
   priority?: boolean;
+  /** Video vertical 9:16 (testimonios grabados con el celular). */
+  portrait?: boolean;
   className?: string;
 }) {
   const [playing, setPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   return (
-    <div className={`relative aspect-video w-full overflow-hidden bg-[#071428] ${className}`}>
+    <div className={`relative w-full overflow-hidden bg-[#071428] ${portrait ? "aspect-[9/16]" : "aspect-video"} ${className}`}>
       {playing ? (
         <video
           ref={videoRef}
@@ -54,8 +57,8 @@ export function BrandVideo({
           <img
             src={poster}
             alt=""
-            width={1280}
-            height={720}
+            width={portrait ? 720 : 1280}
+            height={portrait ? 1280 : 720}
             loading={priority ? "eager" : "lazy"}
             fetchPriority={priority ? "high" : "auto"}
             decoding="async"

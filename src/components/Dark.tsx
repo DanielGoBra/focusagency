@@ -6,6 +6,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { NeuralField } from "./NeuralField";
 import { SiteHeader } from "./SiteHeader";
 import { Reveal, SocialGlyph } from "./Site";
+import { BrandVideo } from "./BrandVideo";
 
 type Icon = ComponentType<{ className?: string; strokeWidth?: number }>;
 
@@ -198,7 +199,38 @@ export function HeroWave({ className = "", seam = false }: { className?: string;
   );
 }
 
-export type Testimonial = { name: string; business: string; quote: string; video?: string };
+export type Testimonial = {
+  name: string;
+  business?: string;
+  quote?: string;
+  /** MP4 propio en /public (se muestra con BrandVideo) o URL de embed. */
+  video?: string;
+  poster?: string;
+  duration?: string;
+};
+
+function TestimonialVideo({ item, note }: { item: Testimonial; note: string }) {
+  if (item.video?.endsWith(".mp4") && item.poster) {
+    return (
+      <div className="hero-video relative w-full border-4! rounded-[1.1rem]!">
+        <BrandVideo src={item.video} poster={item.poster} title={`Testimonio de ${item.name}`} duration={item.duration} portrait />
+      </div>
+    );
+  }
+  return <VideoSlot src={item.video} title="Testimonio en video" note={note} className="aspect-[9/16] max-h-[460px]" compact />;
+}
+
+function TestimonialText({ item, large = false }: { item: Testimonial; large?: boolean }) {
+  return (
+    <>
+      {item.quote ? (
+        <p className={`leading-relaxed text-fg/80 ${large ? "text-lg font-semibold md:text-2xl md:leading-snug" : "flex-1 text-[15px]"}`}>“{item.quote}”</p>
+      ) : null}
+      <p className={`font-extrabold text-fg ${large ? "mt-6 text-xl" : "mt-4 text-sm"}`}>{item.name}</p>
+      {item.business ? <p className="text-xs font-bold tracking-[0.14em] text-accent-ink uppercase">{item.business}</p> : null}
+    </>
+  );
+}
 
 export function Testimonials({
   items,
@@ -217,32 +249,39 @@ export function Testimonials({
   title?: ReactNode;
   note?: string;
 }) {
+  if (items.length === 0) return null;
   return (
     <section id={id} className="relative mx-auto max-w-[1100px] px-5 py-12 md:px-8 md:py-16">
       <Reveal from="blur" className="text-center">
         <Kicker>{kicker}</Kicker>
         <h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">{title}</h2>
       </Reveal>
-      <div className="mt-8 grid auto-rows-fr gap-5 md:grid-cols-3">
-        {items.map((item, index) => (
-          <Reveal key={index} from="blur" delay={index * 140} className="h-full">
-            <GlowCard className="flex h-full flex-col rounded-[28px] p-3" style={{ animationDelay: `${index * -2.3}s` }}>
-              <VideoSlot
-                src={item.video}
-                title="Testimonio en video"
-                note={note}
-                className="aspect-[9/16] max-h-[460px]"
-                compact
-              />
-              <div className="flex flex-1 flex-col px-3 pt-5 pb-3 text-center">
-                <p className="flex-1 text-[15px] leading-relaxed text-fg/75">“{item.quote}”</p>
-                <p className="mt-4 text-sm font-bold text-fg">{item.name}</p>
-                <p className="text-xs font-bold tracking-[0.14em] text-accent-ink uppercase">{item.business}</p>
-              </div>
-            </GlowCard>
-          </Reveal>
-        ))}
-      </div>
+      {items.length === 1 ? (
+        // Con un solo testimonio, una tarjeta destacada: video vertical y la cita al lado.
+        <Reveal from="blur" className="mx-auto mt-8 max-w-3xl">
+          <GlowCard className="grid items-center gap-6 rounded-[28px] p-3 sm:grid-cols-[minmax(0,260px)_1fr] sm:gap-8 sm:p-4">
+            <div className="mx-auto w-full max-w-[280px]">
+              <TestimonialVideo item={items[0]!} note={note} />
+            </div>
+            <div className="px-3 pb-4 text-center sm:px-0 sm:pr-4 sm:pb-0 sm:text-left">
+              <TestimonialText item={items[0]!} large />
+            </div>
+          </GlowCard>
+        </Reveal>
+      ) : (
+        <div className="mt-8 grid auto-rows-fr gap-5 md:grid-cols-3">
+          {items.map((item, index) => (
+            <Reveal key={index} from="blur" delay={index * 140} className="h-full">
+              <GlowCard className="flex h-full flex-col rounded-[28px] p-3" style={{ animationDelay: `${index * -2.3}s` }}>
+                <TestimonialVideo item={item} note={note} />
+                <div className="flex flex-1 flex-col px-3 pt-5 pb-3 text-center">
+                  <TestimonialText item={item} />
+                </div>
+              </GlowCard>
+            </Reveal>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

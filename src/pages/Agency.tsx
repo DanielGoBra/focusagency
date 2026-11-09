@@ -62,10 +62,9 @@ const SECTIONS = [
   { hash: "casos", label: "Casos de éxito" },
 ];
 
+// Testimonios reales de clientes. Para agregar uno: video comprimido y portada en /public/testimonios.
 const TESTIMONIALS: Testimonial[] = [
-  { name: "Nombre del cliente", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del cliente, lo que cambió en su negocio con Focus." },
-  { name: "Nombre del cliente", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del cliente, lo que cambió en su negocio con Focus." },
-  { name: "Nombre del cliente", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del cliente, lo que cambió en su negocio con Focus." },
+  { name: "Cattleya", video: "/testimonios/cattleya.mp4", poster: "/testimonios/cattleya-poster.webp", duration: "0:58" },
 ];
 
 const CHAIN = ["Investigación", "Estrategia", "Creativos", "Meta Ads", "CRM", "Automatización", "Venta"];

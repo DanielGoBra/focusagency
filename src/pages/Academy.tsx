@@ -19,12 +19,11 @@ import { BrandVideo } from "../components/BrandVideo";
 
 type Icon = ComponentType<{ className?: string; strokeWidth?: number }>;
 
-// Cuando el cliente entregue el video de presentación de la academia, va aquí como URL de embed.
 
 const SECTIONS = [
   { hash: "clases", label: "Clases gratis" },
   { hash: "recursos", label: "Recursos" },
-  { hash: "testimonios", label: "Comunidad" },
+  // { hash: "testimonios", label: "Comunidad" }, — volver a mostrar cuando haya testimonios de estudiantes.
   { hash: "soporte", label: "Soporte" },
 ];
 
@@ -44,11 +43,9 @@ const FREE_COUNT = STEPS.filter((step) => !step.paid).length;
 const SAVINGS = STEPS.flatMap((step) => (step.value ? [{ title: step.title, value: step.value }] : []));
 const PLAN_FROM = PLANS.find((plan) => plan.id === "essential")?.price ?? "$79";
 
-const TESTIMONIALS: Testimonial[] = [
-  { name: "Nombre del estudiante", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del estudiante, qué aprendió y cómo lo aplicó en su negocio." },
-  { name: "Nombre del estudiante", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del estudiante, qué aprendió y cómo lo aplicó en su negocio." },
-  { name: "Nombre del estudiante", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del estudiante, qué aprendió y cómo lo aplicó en su negocio." },
-];
+// Testimonios de estudiantes. Mientras la lista esté vacía, la sección no se muestra.
+// Formato: { name, business, quote, video: "/testimonios/x.mp4", poster: "/testimonios/x-poster.webp", duration: "0:45" }
+const TESTIMONIALS: Testimonial[] = [];
 
 const FAQ = [
   ["¿Las clases tienen costo?", "No. Las clases de Focus Academy son gratis con tu suscripción a Focus Chat."],

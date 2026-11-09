@@ -110,31 +110,41 @@ function SocialLinks({ tone = "navy", onWhatsApp }: { tone?: "navy" | "white"; o
   );
 }
 
+// Testimonios reales de clientes de Focus Chat. Para agregar otro: video comprimido y portada en /public/testimonios.
+const CHAT_TESTIMONIALS = [
+  {
+    name: "Mogollantas",
+    business: "Llantas y rines",
+    quote: "Focus nos ha ayudado con nuestros videos, campañas publicitarias y automatización de WhatsApp. ¡Los resultados han sido excelentes!",
+    video: "/testimonios/mogollantas.mp4",
+    poster: "/testimonios/mogollantas-poster.webp",
+    duration: "0:19",
+  },
+];
+
 function ChatQuotes() {
-  const quotes = [
-    { name: "Nombre del cliente", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del cliente, lo que cambió en su negocio con Focus." },
-    { name: "Nombre del cliente", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del cliente, lo que cambió en su negocio con Focus." },
-    { name: "Nombre del cliente", business: "Negocio · Ciudad", quote: "Aquí va, en palabras del cliente, lo que cambió en su negocio con Focus." },
-  ];
+  const single = CHAT_TESTIMONIALS.length === 1;
   return (
     <section id="testimonios" className="quote-stage relative z-10 px-4 py-12">
       <Reveal className="text-center">
         <p className="text-xs font-bold tracking-[0.18em] text-[#19b7e6] uppercase">Lo que dicen de Focus</p>
         <h2 className="mt-3 text-4xl font-extrabold tracking-tight">Clientes que ya venden con Focus</h2>
       </Reveal>
-      <div className="mx-auto mt-8 grid max-w-5xl gap-5 md:grid-cols-3">
-        {quotes.map((item, index) => (
-          <Reveal key={index} delay={index * 120}>
-            <article className="flex h-full flex-col overflow-hidden rounded-[28px] border border-[#2bbdef]/50 bg-[#071428] text-white shadow-[0_0_28px_rgb(43_189_239/0.2)]">
-              <div className="flex aspect-[9/16] max-h-[420px] flex-col items-center justify-center gap-3 bg-[radial-gradient(circle_at_50%_40%,rgb(43_189_239/0.28),transparent_62%)] p-5 text-center">
-                <p className="text-lg font-extrabold">Testimonio en video</p>
-                <p className="text-sm text-white/70">Aquí subiremos el video de este cliente más adelante.</p>
-                <span className="rounded-full bg-[#1efa5d] px-3 py-1 text-[11px] font-extrabold tracking-[0.16em] text-[#071428] uppercase">Próximamente</span>
+      <div className={`mx-auto mt-8 grid gap-5 ${single ? "max-w-3xl" : "max-w-5xl md:grid-cols-3"}`}>
+        {CHAT_TESTIMONIALS.map((item, index) => (
+          <Reveal key={item.name} delay={index * 120}>
+            <article
+              className={`grid h-full overflow-hidden rounded-[28px] border border-[#2bbdef]/50 bg-[#071428] p-3 text-white shadow-[0_0_28px_rgb(43_189_239/0.2)] ${
+                single ? "items-center gap-6 sm:grid-cols-[minmax(0,260px)_1fr] sm:gap-8 sm:p-4" : "gap-4"
+              }`}
+            >
+              <div className="hero-video mx-auto w-full max-w-[280px] border-4! rounded-[1.1rem]!">
+                <BrandVideo src={item.video} poster={item.poster} title={`Testimonio de ${item.name}`} duration={item.duration} portrait />
               </div>
-              <div className="flex flex-1 flex-col px-4 py-4 text-center">
-                <p className="flex-1 text-sm leading-relaxed text-white/80">“{item.quote}”</p>
-                <p className="mt-4 text-sm font-bold">{item.name}</p>
-                <p className="text-[11px] font-bold tracking-[0.14em] text-[#3ef3ff] uppercase">{item.business}</p>
+              <div className={`px-3 pb-4 text-center ${single ? "sm:px-0 sm:pr-4 sm:pb-0 sm:text-left" : ""}`}>
+                <p className={`leading-relaxed text-white/85 ${single ? "text-lg font-semibold md:text-2xl md:leading-snug" : "text-sm"}`}>“{item.quote}”</p>
+                <p className={`font-extrabold ${single ? "mt-6 text-xl" : "mt-4 text-sm"}`}>{item.name}</p>
+                <p className="text-xs font-bold tracking-[0.14em] text-[#3ef3ff] uppercase">{item.business}</p>
               </div>
             </article>
           </Reveal>
