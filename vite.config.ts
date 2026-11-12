@@ -37,8 +37,12 @@ function contactDevApi(): Plugin {
   };
 }
 
+declare const process: { env: Record<string, string | undefined> };
+
 export default defineConfig({
   envPrefix: ["VITE_", "TURNSTILE_SITE_"],
+  // Vercel marca cada build como "production" o "preview"; en local queda "development".
+  define: { __VERCEL_ENV__: JSON.stringify(process.env.VERCEL_ENV ?? "development") },
   plugins: [react(), tailwindcss(), contactDevApi()],
   server: { port: 5173, strictPort: true },
 });

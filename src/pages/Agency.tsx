@@ -40,7 +40,6 @@ import {
   TikTokMark,
   Testimonials,
   ToolPills,
-  VideoSlot,
   useCycle,
   type Testimonial,
 } from "../components/Dark";
@@ -49,11 +48,10 @@ import { CampaignBars } from "../components/Charts";
 import { AudienceSelect } from "../components/AudienceSelect";
 import { ParticleMorph } from "../components/ParticleMorph";
 import { Reveal, SiteFooter, SocialGlyph, WhatsAppChat, openFocusWhatsApp } from "../components/Site";
+import { BrandVideo } from "../components/BrandVideo";
 
 type Icon = ComponentType<{ className?: string; strokeWidth?: number }>;
 
-// Cuando el cliente entregue el video de bienvenida, va aquí como URL de embed (YouTube, Vimeo…).
-const WELCOME_VIDEO = "";
 
 const CONSULTING_TEXT = "Hola, quiero agendar una consultoría con Focus Agency.";
 
@@ -307,12 +305,9 @@ function Welcome() {
         <div className="relative">
           <Reveal from="blur" delay={150}>
             <div className="relative mx-auto w-full max-w-[720px]">
-              <VideoSlot
-                src={WELCOME_VIDEO || undefined}
-                title="Aquí irá nuestro video de bienvenida"
-                note="Estamos preparando un video que muestra cómo trabajamos. Lo publicaremos en este espacio muy pronto."
-                className="aspect-video"
-              />
+              <div className="hero-video relative w-full">
+                <BrandVideo src="/videos/agency.mp4" poster="/videos/agency-poster.webp" title="Video de bienvenida de Focus Agency" duration="2:12" priority />
+              </div>
               {bubbles.map((bubble, index) => (
                 <span
                   key={index}
